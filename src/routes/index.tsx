@@ -1,13 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import { HomePage } from "@/features/home";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 import type { JSX } from "react";
 
-function HomeRoute(): JSX.Element {
-  return <HomePage />;
+function IndexRoute(): JSX.Element {
+  return <Navigate replace to="/recipes" />;
 }
 
 export const Route = createFileRoute("/")({
-  component: HomeRoute,
+  component: IndexRoute,
 });

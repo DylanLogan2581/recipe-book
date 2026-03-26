@@ -1,51 +1,12 @@
-import { Flame, NotebookPen, ShieldCheck } from "lucide-react";
+import {
+  recipeBrowsePrinciples,
+  recipePreviews,
+} from "../utils/recipeBrowseContent";
+
+import { RecipeBrowsePrincipleCard } from "./RecipeBrowsePrincipleCard";
+import { RecipePreviewCard } from "./RecipePreviewCard";
 
 import type { JSX } from "react";
-
-const recipeCards = [
-  {
-    title: "Skillet gnocchi with greens",
-    summary:
-      "Golden gnocchi, wilted greens, and lemony ricotta for a one-pan dinner with enough texture to feel special.",
-    detail: "25 min",
-    label: "Fast dinner",
-  },
-  {
-    title: "Smoky bean chili",
-    summary:
-      "A freezer-friendly batch recipe with a deep tomato base and toppings that can flex with what is already in the fridge.",
-    detail: "55 min",
-    label: "Batch cook",
-  },
-  {
-    title: "Sesame salmon rice bowls",
-    summary:
-      "Crisp vegetables, warm rice, and a glossy sesame glaze that keeps the bowl balanced without a long prep window.",
-    detail: "35 min",
-    label: "Protein-forward",
-  },
-] as const;
-
-const browsePrinciples = [
-  {
-    title: "Public inspiration",
-    description:
-      "The browse route is intentionally open so discovery can happen before sign-in.",
-    icon: Flame,
-  },
-  {
-    title: "Protected ownership",
-    description:
-      "Write actions can hook into auth later without changing the public reading experience here.",
-    icon: ShieldCheck,
-  },
-  {
-    title: "Room for notes",
-    description:
-      "The layout leaves space for future ingredients, steps, timers, and cook logs.",
-    icon: NotebookPen,
-  },
-] as const;
 
 export function RecipesPage(): JSX.Element {
   return (
@@ -66,43 +27,17 @@ export function RecipesPage(): JSX.Element {
 
       <section className="grid gap-4 xl:grid-cols-[1.35fr_0.65fr]">
         <div className="grid gap-4">
-          {recipeCards.map((recipe) => (
-            <article
-              key={recipe.title}
-              className="rounded-[1.75rem] border border-border/70 bg-card/90 p-5 shadow-sm"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-lg font-medium">{recipe.title}</h2>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                    {recipe.summary}
-                  </p>
-                </div>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                  {recipe.label}
-                </span>
-              </div>
-              <p className="mt-4 text-xs font-medium uppercase tracking-[0.24em] text-muted-foreground">
-                {recipe.detail}
-              </p>
-            </article>
+          {recipePreviews.map((recipe) => (
+            <RecipePreviewCard key={recipe.title} recipe={recipe} />
           ))}
         </div>
 
         <div className="grid gap-4">
-          {browsePrinciples.map((principle) => (
-            <article
+          {recipeBrowsePrinciples.map((principle) => (
+            <RecipeBrowsePrincipleCard
               key={principle.title}
-              className="rounded-[1.75rem] border border-border/70 bg-card/90 p-5 shadow-sm"
-            >
-              <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <principle.icon className="size-5" />
-              </div>
-              <h2 className="font-medium">{principle.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {principle.description}
-              </p>
-            </article>
+              principle={principle}
+            />
           ))}
         </div>
       </section>

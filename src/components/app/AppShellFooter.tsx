@@ -28,45 +28,55 @@ const footerHighlights = [
 
 export function AppShellFooter(): JSX.Element {
   return (
-    <footer className="pb-8 pt-6">
-      <div className="rounded-[2rem] border border-border/70 bg-card/90 px-5 py-6 shadow-[0_24px_80px_-48px_rgba(15,23,42,0.5)] backdrop-blur sm:px-6">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_repeat(3,minmax(0,1fr))]">
-          <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-              Kitchen Notes
-            </p>
-            <h2 className="max-w-sm text-2xl font-semibold">
-              The shell stays public-first while making room for ownership
-              actions.
-            </h2>
-            <p className="max-w-md text-sm leading-6 text-muted-foreground">
-              Browse recipes openly, keep the navigation simple, and give
-              signed-in cooks a clear account path as deeper features arrive.
-            </p>
+    <footer className="pb-10 pt-4 sm:pt-6">
+      <div className="overflow-hidden rounded-[2rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,253,249,0.92),rgba(246,238,226,0.92))] shadow-[0_24px_90px_-60px_rgba(69,52,35,0.55)] backdrop-blur">
+        <div className="px-5 py-6 sm:px-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+                Kitchen Notes
+              </p>
+              <h2 className="font-display text-3xl leading-none tracking-[-0.03em] text-foreground">
+                A calm shell for browsing now and ownership later.
+              </h2>
+              <p className="text-sm leading-7 text-muted-foreground sm:text-base">
+                The layout stays uncluttered on a crowded counter, keeps recipe
+                discovery public, and leaves a clear place for account-driven
+                actions as the app grows.
+              </p>
+            </div>
+
             <div className="flex flex-wrap gap-2">
-              <Button asChild variant="outline" size="lg">
+              <Button asChild variant="outline" size="lg" className="rounded-full px-4">
                 <Link to="/recipes">Browse recipes</Link>
               </Button>
-              <Button asChild size="lg">
+              <Button asChild size="lg" className="rounded-full px-4">
                 <Link to="/account">Account entry</Link>
               </Button>
             </div>
           </div>
 
-          {footerHighlights.map((highlight) => (
-            <article
-              key={highlight.title}
-              className="rounded-3xl border border-border/70 bg-background/75 p-4"
-            >
-              <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <highlight.icon className="size-5" />
-              </div>
-              <h3 className="font-medium">{highlight.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                {highlight.description}
-              </p>
-            </article>
-          ))}
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {footerHighlights.map((highlight) => (
+              <article
+                key={highlight.title}
+                className="rounded-[1.5rem] border border-border/70 bg-background/70 p-4 shadow-[0_18px_50px_-42px_rgba(69,52,35,0.55)]"
+              >
+                <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <highlight.icon className="size-5" />
+                </div>
+                <h3 className="font-medium">{highlight.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  {highlight.description}
+                </p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-6 border-t border-border/60 pt-4 text-sm text-muted-foreground">
+            Designed to stay readable from a phone propped next to the cutting
+            board.
+          </div>
         </div>
       </div>
     </footer>

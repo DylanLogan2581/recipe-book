@@ -56,14 +56,14 @@ export function AccountPage(): JSX.Element {
   );
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 py-6">
-      <section className="rounded-[2rem] border border-border/70 bg-card/95 px-6 py-8 shadow-[0_24px_80px_-50px_rgba(15,23,42,0.45)] sm:px-8">
+    <main className="mx-auto flex max-w-5xl flex-col gap-6 py-4 sm:py-6">
+      <section className="overflow-hidden rounded-[2rem] border border-border/80 bg-[radial-gradient(circle_at_top_left,rgba(217,170,93,0.18),transparent_26%),linear-gradient(180deg,rgba(255,253,249,0.96),rgba(246,238,226,0.92))] px-6 py-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
               Account Entry
             </p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+            <h1 className="font-display mt-3 text-4xl leading-none tracking-[-0.03em] text-foreground sm:text-5xl">
               {headline.title}
             </h1>
             <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base">
@@ -71,7 +71,7 @@ export function AccountPage(): JSX.Element {
             </p>
           </div>
 
-          <div className="rounded-[1.75rem] border border-border/70 bg-background/85 p-5 lg:max-w-sm">
+          <div className="rounded-[1.75rem] border border-border/70 bg-background/80 p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)] lg:max-w-sm">
             <div className="flex items-center gap-3">
               <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                 <LockKeyhole className="size-5" />
@@ -92,11 +92,13 @@ export function AccountPage(): JSX.Element {
       </section>
 
       <section className="grid gap-4 lg:grid-cols-3">
-        <article className="rounded-[1.75rem] border border-border/70 bg-card/90 p-5 shadow-sm">
+        <article className="rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,237,224,0.84))] p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.6)]">
           <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <Soup className="size-5" />
           </div>
-          <h2 className="font-medium">Browse without friction</h2>
+          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
+            Browse without friction
+          </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
             Recipe discovery remains public so the shell supports mixed-access
             behavior from the beginning.
@@ -109,11 +111,13 @@ export function AccountPage(): JSX.Element {
           </Button>
         </article>
 
-        <article className="rounded-[1.75rem] border border-border/70 bg-card/90 p-5 shadow-sm lg:col-span-2">
+        <article className="rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,252,246,0.92),rgba(244,236,222,0.85))] p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)] lg:col-span-2">
           <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <NotebookPen className="size-5" />
           </div>
-          <h2 className="font-medium">What comes next</h2>
+          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
+            What comes next
+          </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
             This route is intentionally light today. Its main job is to give the
             shell a clear account destination so sign-in, sign-up, sign-out, and

@@ -33,15 +33,15 @@ function RootShell(): JSX.Element {
   const authSummary = getAuthSummary(sessionQuery.isLoading, sessionQuery.data);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,rgba(250,247,240,0.9),rgba(255,255,255,1))]">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,rgba(255,207,128,0.24),transparent_62%)]" />
-      <div className="pointer-events-none absolute right-[-8rem] top-24 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(250,204,21,0.16),transparent_66%)] blur-3xl" />
-      <div className="pointer-events-none absolute left-[-9rem] top-64 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(251,146,60,0.12),transparent_66%)] blur-3xl" />
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(118,150,94,0.18),transparent_30%),radial-gradient(circle_at_top_right,rgba(220,174,104,0.16),transparent_24%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),transparent)]" />
+      <div className="pointer-events-none absolute inset-x-8 top-40 h-px bg-[linear-gradient(90deg,transparent,rgba(94,123,73,0.3),transparent)]" />
 
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-4 sm:px-5">
+      <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 sm:px-6">
         <AppShellHeader authSummary={authSummary} />
 
-        <div className="flex-1 py-4">
+        <div className="flex-1 py-4 sm:py-6">
           <Outlet />
         </div>
 
@@ -74,7 +74,7 @@ function getAuthSummary(
   if (sessionState === undefined) {
     return {
       badgeClassName:
-        "border border-border/70 bg-background/85 text-muted-foreground",
+        "border border-amber-300/70 bg-amber-50/85 text-amber-950",
       badgeText: "Guest browsing",
       ctaLabel: "Sign in",
       supportingText: "Browse freely now and unlock recipe ownership later.",
@@ -85,7 +85,7 @@ function getAuthSummary(
     case "authenticated":
       return {
         badgeClassName:
-          "border border-emerald-200/80 bg-emerald-50 text-emerald-900",
+          "border border-emerald-300/80 bg-emerald-50/90 text-emerald-950",
         badgeText:
           sessionState.email === null ? "Signed in" : sessionState.email,
         ctaLabel: "Account",
@@ -94,7 +94,8 @@ function getAuthSummary(
       };
     case "guest":
       return {
-        badgeClassName: "border border-amber-200/80 bg-amber-50 text-amber-950",
+        badgeClassName:
+          "border border-amber-300/80 bg-amber-50/90 text-amber-950",
         badgeText: "Guest browsing",
         ctaLabel: "Sign in",
         supportingText:

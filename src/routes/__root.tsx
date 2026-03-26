@@ -1,13 +1,13 @@
-import { QueryClientProvider } from "@tanstack/react-query";
-import {
-  createRootRouteWithContext,
-  Outlet,
-  Link,
-} from "@tanstack/react-router";
-import { Layers3, Sparkles } from "lucide-react";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy, Suspense, type JSX } from "react";
 
-import { Button } from "@/components/ui/button";
+import { AppShellFooter, AppShellHeader } from "@/components/app";
+import {
+  preloadSessionState,
+  sessionQueryOptions,
+  type AuthSessionState,
+} from "@/features/auth";
 import { type AppRouterContext } from "@/lib/queryClient";
 
 const isDev = import.meta.env.DEV;
@@ -28,81 +28,96 @@ const ReactQueryDevtools = isDev
     )
   : null;
 
+function RootShell(): JSX.Element {
+  const sessionQuery = useQuery(sessionQueryOptions);
+  const authSummary = getAuthSummary(sessionQuery.isLoading, sessionQuery.data);
+
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,rgba(250,247,240,0.9),rgba(255,255,255,1))]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(circle_at_top,rgba(255,207,128,0.24),transparent_62%)]" />
+      <div className="pointer-events-none absolute right-[-8rem] top-24 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(250,204,21,0.16),transparent_66%)] blur-3xl" />
+      <div className="pointer-events-none absolute left-[-9rem] top-64 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(251,146,60,0.12),transparent_66%)] blur-3xl" />
+
+      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-4 sm:px-5">
+        <AppShellHeader authSummary={authSummary} />
+
+        <div className="flex-1 py-4">
+          <Outlet />
+        </div>
+
+        <AppShellFooter />
+      </div>
+    </div>
+  );
+}
+
+function getAuthSummary(
+  isLoading: boolean,
+  sessionState: AuthSessionState | undefined,
+): {
+  badgeClassName: string;
+  badgeText: string;
+  ctaLabel: string;
+  supportingText: string;
+} {
+  if (isLoading) {
+    return {
+      badgeClassName:
+        "border border-border/70 bg-background/85 text-muted-foreground",
+      badgeText: "Checking access",
+      ctaLabel: "Account",
+      supportingText:
+        "Public recipe browsing stays open while session state loads.",
+    };
+  }
+
+  if (sessionState === undefined) {
+    return {
+      badgeClassName:
+        "border border-border/70 bg-background/85 text-muted-foreground",
+      badgeText: "Guest browsing",
+      ctaLabel: "Sign in",
+      supportingText: "Browse freely now and unlock recipe ownership later.",
+    };
+  }
+
+  switch (sessionState.kind) {
+    case "authenticated":
+      return {
+        badgeClassName:
+          "border border-emerald-200/80 bg-emerald-50 text-emerald-900",
+        badgeText:
+          sessionState.email === null ? "Signed in" : sessionState.email,
+        ctaLabel: "Account",
+        supportingText:
+          "Recipe ownership actions can grow from this account entry point.",
+      };
+    case "guest":
+      return {
+        badgeClassName: "border border-amber-200/80 bg-amber-50 text-amber-950",
+        badgeText: "Guest browsing",
+        ctaLabel: "Sign in",
+        supportingText:
+          "Guests can browse recipes without barriers and sign in when they need ownership tools.",
+      };
+    case "unconfigured":
+      return {
+        badgeClassName:
+          "border border-border/70 bg-background/85 text-muted-foreground",
+        badgeText: "Auth setup needed",
+        ctaLabel: "Account",
+        supportingText:
+          "The account area is ready even when Supabase auth is not configured yet.",
+      };
+  }
+}
+
 function RootLayout(): JSX.Element {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="relative min-h-screen overflow-hidden bg-background">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-linear-to-b from-muted/60 via-background to-transparent" />
-        <div className="pointer-events-none absolute left-1/2 -top-32 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/8 blur-3xl" />
-
-        <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4">
-          <header className="sticky top-0 z-10 py-4">
-            <div className="rounded-2xl border border-border/70 bg-background/85 px-4 py-3 shadow-sm backdrop-blur">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                    <Layers3 className="size-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">
-                      web application template
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      React, TanStack, shadcn/ui, and Supabase starter
-                    </p>
-                  </div>
-                </div>
-
-                <nav className="flex flex-wrap items-center gap-2">
-                  <Button asChild variant="ghost" size="sm">
-                    <Link
-                      to="/"
-                      activeProps={{ className: "bg-muted text-foreground" }}
-                      activeOptions={{ exact: true }}
-                    >
-                      Home
-                    </Link>
-                  </Button>
-                  <Button asChild variant="ghost" size="sm">
-                    <Link
-                      to="/about"
-                      activeProps={{ className: "bg-muted text-foreground" }}
-                    >
-                      About
-                    </Link>
-                  </Button>
-                </nav>
-              </div>
-            </div>
-          </header>
-
-          <div className="flex-1 py-4">
-            <Outlet />
-          </div>
-
-          <footer className="py-6">
-            <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-card/70 px-4 py-4 text-sm shadow-sm sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-medium">
-                  Built for fast starts and clean handoffs.
-                </p>
-                <p className="text-muted-foreground">
-                  Use the template as a launch point for product work,
-                  prototypes, and internal tools.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Sparkles className="size-4" />
-                <span>
-                  Consistent routes, shared UI, and a clear structure.
-                </span>
-              </div>
-            </div>
-          </footer>
-        </div>
-      </div>
+      <RootShell />
       {TanStackRouterDevtools !== null && ReactQueryDevtools !== null ? (
         <Suspense fallback={null}>
           <TanStackRouterDevtools />
@@ -114,5 +129,6 @@ function RootLayout(): JSX.Element {
 }
 
 export const Route = createRootRouteWithContext<AppRouterContext>()({
+  loader: ({ context }) => preloadSessionState(context.queryClient),
   component: RootLayout,
 });

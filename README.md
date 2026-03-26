@@ -29,18 +29,139 @@ npm install
 npm run dev
 ```
 
-The app usually runs at `http://localhost:5173`.
+The app usually runs at `http://localhost:5173` for frontend-only work.
 
-If you want Supabase connected in the browser app, copy `.env.example` to `.env` and set:
+Copy `.env.example` to `.env` when you want the browser app to talk to
+Supabase:
 
 ```bash
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
+cp .env.example .env
+```
+
+## Frontend Environment
+
+Only browser-safe values belong in `VITE_` variables because Vite embeds them
+into the client bundle at build time.
+
+Safe to expose in this project:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+Do not expose in frontend env files or browser code:
+
+- Supabase service-role keys
+- JWT signing secrets
+- SMTP credentials
+- third-party API tokens
+- Edge Function secrets or any other privileged backend-only value
+
+If `.env` is missing or the Supabase variables are blank, the app falls back to
+an "Auth setup needed" state instead of creating a client with partial config.
+
+## Local Supabase Workflow
+
+The local stack is configured through `supabase/config.toml` and is meant to be
+run with the Supabase CLI after `npm install`.
+
+Start the local stack:
+
+```bash
+npx supabase start
+```
+
+Inspect the local URLs and generated keys:
+
+```bash
+npx supabase status
+```
+
+Use the local API URL and anon key from `npx supabase status` in `.env`. The
+default local API URL for this config is `http://127.0.0.1:54321`.
+
+Useful local endpoints from the current config:
+
+- App dev server: `http://localhost:5173`
+- Supabase API: `http://127.0.0.1:54321`
+- Supabase Studio: `http://127.0.0.1:54323`
+- Inbucket email viewer: `http://127.0.0.1:54324`
+
+When you change SQL under `supabase/migrations`, rebuild local database state
+from migrations instead of making dashboard-only changes:
+
+```bash
+npx supabase migration new <name>
+npx supabase db reset
+```
+
+The checked-in template does not yet include any migrations, and it also does
+not currently commit `supabase/seed.sql` even though seeding is enabled in
+`supabase/config.toml`. Add the migration files and seed file alongside schema
+work before relying on reset-driven local setup.
+
+Stop the local stack when you are done:
+
+```bash
+npx supabase stop
+```
+
+## Access Model
+
+This repo is set up around a public-read, authenticated-write recipe model:
+
+- recipe browsing at `/recipes` is public
+- recipe detail pages should stay public to read as they are added
+- recipe create, delete, and other ownership actions require authentication
+- database enforcement for write access belongs in Row Level Security policies
+
+The current UI already reflects that direction: the shell keeps browsing open,
+and `/account` is the stable place for sign-in and future ownership flows.
+
+## Local Auth Testing
+
+The current app shell can read session state, but it does not yet ship a sign-in
+form. Until the dedicated auth flows land, use the existing account route plus a
+local browser console sign-up to verify auth wiring.
+
+For auth testing, run the frontend on `127.0.0.1:3000` so it matches the
+redirect origin currently configured in `supabase/config.toml`:
+
+```bash
+npm run dev -- --host 127.0.0.1 --port 3000
+```
+
+Then verify these states at `http://127.0.0.1:3000/account`:
+
+1. No `.env` or blank Supabase vars: the page shows the unconfigured state.
+2. Valid Supabase env with no session: the page shows guest browsing.
+3. Local signed-in session: the page shows the authenticated email badge.
+
+To create a local user and signed-in session in the current setup, run this in
+the browser devtools console while the Vite dev server is open:
+
+```js
+const { supabase } = await import("/src/lib/supabase.ts");
+
+await supabase?.auth.signUp({
+  email: "cook@example.com",
+  password: "password123",
+});
+```
+
+Local email confirmations are disabled in `supabase/config.toml`, so the call
+should create the user and sign the browser session in immediately. To clear the
+session again:
+
+```js
+const { supabase } = await import("/src/lib/supabase.ts");
+
+await supabase?.auth.signOut();
 ```
 
 ## Scripts
 
 - `npm run dev` starts the Vite dev server
+- `npm run dev -- --host 127.0.0.1 --port 3000` runs the app on the auth test origin
 - `npm run build` type-checks and builds the app
 - `npm run lint` runs ESLint, Markdown linting, and SQL formatting checks
 - `npm run preview` serves the production build locally

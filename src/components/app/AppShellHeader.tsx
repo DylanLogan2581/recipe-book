@@ -1,11 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  BookOpenText,
-  ChefHat,
-  LayoutGrid,
-  NotebookPen,
-  UserRound,
-} from "lucide-react";
+import { BookOpenText, ChefHat, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,7 +24,7 @@ export function AppShellHeader({
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:gap-6">
             <Link
-              to="/"
+              to="/recipes"
               className="flex items-center gap-3 rounded-2xl transition hover:opacity-90"
             >
               <div className="flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
@@ -50,30 +44,11 @@ export function AppShellHeader({
             <nav className="flex flex-wrap items-center gap-2">
               <Button asChild variant="ghost" size="lg">
                 <Link
-                  to="/"
-                  activeOptions={{ exact: true }}
-                  activeProps={{ className: "bg-primary/10 text-foreground" }}
-                >
-                  <LayoutGrid />
-                  Home
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" size="lg">
-                <Link
                   to="/recipes"
                   activeProps={{ className: "bg-primary/10 text-foreground" }}
                 >
                   <BookOpenText />
-                  Browse recipes
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" size="lg">
-                <Link
-                  to="/about"
-                  activeProps={{ className: "bg-primary/10 text-foreground" }}
-                >
-                  <NotebookPen />
-                  Kitchen guide
+                  Recipe shelf
                 </Link>
               </Button>
             </nav>

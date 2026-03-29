@@ -46,6 +46,42 @@ export function formatRecipeYield(
   return `${yieldQuantity} ${yieldUnit}`;
 }
 
+export function formatIngredientText(ingredient: {
+  amount: number | null;
+  item: string;
+  preparation: string | null;
+  unit: string | null;
+}): string {
+  const amountText = ingredient.amount === null ? null : `${ingredient.amount}`;
+  const unitText = ingredient.unit;
+  const lead = [amountText, unitText].filter(Boolean).join(" ").trim();
+  const itemText =
+    ingredient.preparation === null
+      ? ingredient.item
+      : `${ingredient.item}, ${ingredient.preparation}`;
+
+  if (lead === "") {
+    return itemText;
+  }
+
+  return `${lead} ${itemText}`;
+}
+
+export function formatStepTimer(timerSeconds: number): string {
+  if (timerSeconds < 60) {
+    return `${timerSeconds} sec timer`;
+  }
+
+  const wholeMinutes = Math.floor(timerSeconds / 60);
+  const remainingSeconds = timerSeconds % 60;
+
+  if (remainingSeconds === 0) {
+    return `${wholeMinutes} min timer`;
+  }
+
+  return `${wholeMinutes} min ${remainingSeconds} sec timer`;
+}
+
 export function getRecipeCountLabel(
   count: number,
   singular: string,

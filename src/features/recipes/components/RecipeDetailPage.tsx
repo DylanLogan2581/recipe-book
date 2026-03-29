@@ -3,17 +3,19 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { sessionQueryOptions } from "@/features/auth";
 
 import { recipeDetailQueryOptions } from "../queries/recipeQueryOptions";
 import {
   formatRecipeTime,
   formatRecipeYield,
-  getRecipeCountLabel,
   getRecipeScalingLabel,
   getRecipeSummary,
 } from "../utils/recipePresentation";
 
+import { RecipeDetailCollectionSection } from "./RecipeDetailCollectionSection";
 import { RecipeDetailPageLoading } from "./RecipeDetailPageLoading";
+import { RecipeOwnerActionsPanel } from "./RecipeOwnerActionsPanel";
 
 import type { JSX } from "react";
 
@@ -25,6 +27,7 @@ export function RecipeDetailPage({
   recipeId,
 }: RecipeDetailPageProps): JSX.Element {
   const recipeDetailQuery = useQuery(recipeDetailQueryOptions(recipeId));
+  const sessionQuery = useQuery(sessionQueryOptions);
 
   if (recipeDetailQuery.data === undefined) {
     return <RecipeDetailPageLoading />;
@@ -37,20 +40,6 @@ export function RecipeDetailPage({
     formatRecipeTime(recipe),
     formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit),
     getRecipeScalingLabel(recipe.isScalable),
-  ];
-  const recipeSections = [
-    {
-      description: "Ordered ingredients are ready for the fuller read.",
-      title: getRecipeCountLabel(recipe.ingredients.length, "ingredient"),
-    },
-    {
-      description: "Equipment stays separate so prep remains predictable.",
-      title: getRecipeCountLabel(recipe.equipment.length, "tool", "tools"),
-    },
-    {
-      description: "Steps are already captured in cooking order.",
-      title: getRecipeCountLabel(recipe.steps.length, "step"),
-    },
   ];
 
   return (
@@ -91,24 +80,36 @@ export function RecipeDetailPage({
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {recipeSections.map((section) => (
-          <article
-            key={section.title}
-            className="rounded-[1.75rem] border border-border/70 bg-background/85 p-5 shadow-[0_18px_54px_-42px_rgba(69,52,35,0.45)]"
-          >
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-              Recipe structure
-            </p>
-            <p className="mt-3 font-display text-2xl tracking-[-0.03em] text-foreground">
-              {section.title}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {section.description}
-            </p>
-          </article>
-        ))}
-      </section>
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)] lg:items-start">
+        <div className="space-y-4">
+          <RecipeDetailCollectionSection
+            description="Ingredients stay in recipe order so grocery prep and cooking setup remain predictable."
+            items={recipe.ingredients}
+            kind="ingredients"
+            title="Ingredients"
+          />
+          <RecipeDetailCollectionSection
+            description="Equipment is separated from ingredients so the reading flow stays calm while you cook."
+            items={recipe.equipment}
+            kind="equipment"
+            title="Equipment"
+          />
+          <RecipeDetailCollectionSection
+            description="Each step is presented in order, with any saved timer notes staying attached to the right instruction."
+            items={recipe.steps}
+            kind="steps"
+            title="Method"
+          />
+        </div>
+
+        <div className="lg:sticky lg:top-24">
+          <RecipeOwnerActionsPanel
+            isSessionLoading={sessionQuery.isLoading}
+            recipe={recipe}
+            sessionState={sessionQuery.data}
+          />
+        </div>
+      </div>
     </main>
   );
 }

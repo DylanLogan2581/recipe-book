@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
 import {
+  formatIngredientText,
   formatRecipeTime,
   formatRecipeYield,
+  formatStepTimer,
   getRecipeLoadErrorCopy,
   getRecipeSummary,
 } from "./recipePresentation";
@@ -57,6 +59,46 @@ describe("formatRecipeYield", () => {
     expect(formatRecipeYield(null, "loaves")).toBe("loaves");
     expect(formatRecipeYield(2, null)).toBe("2 servings");
     expect(formatRecipeYield(null, null)).toBe("Yield not set");
+  });
+});
+
+describe("formatIngredientText", () => {
+  it("combines amount, unit, item, and preparation in reading order", () => {
+    expect(
+      formatIngredientText({
+        amount: 2,
+        item: "lemons",
+        preparation: "thinly sliced",
+        unit: null,
+      }),
+    ).toBe("2 lemons, thinly sliced");
+    expect(
+      formatIngredientText({
+        amount: 1.5,
+        item: "flour",
+        preparation: null,
+        unit: "cups",
+      }),
+    ).toBe("1.5 cups flour");
+  });
+
+  it("falls back to the ingredient item when no amount metadata exists", () => {
+    expect(
+      formatIngredientText({
+        amount: null,
+        item: "olive oil",
+        preparation: null,
+        unit: null,
+      }),
+    ).toBe("olive oil");
+  });
+});
+
+describe("formatStepTimer", () => {
+  it("formats short, exact-minute, and mixed timers", () => {
+    expect(formatStepTimer(45)).toBe("45 sec timer");
+    expect(formatStepTimer(600)).toBe("10 min timer");
+    expect(formatStepTimer(125)).toBe("2 min 5 sec timer");
   });
 });
 

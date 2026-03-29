@@ -1,7 +1,10 @@
 export { RecipeDetailPage } from "./components/RecipeDetailPage";
+export { RecipeDetailHero } from "./components/RecipeDetailHero";
 export { RecipeDetailPageErrorState } from "./components/RecipeDetailPageErrorState";
 export { RecipeDetailPageLoading } from "./components/RecipeDetailPageLoading";
+export { RecipeDetailPageSections } from "./components/RecipeDetailPageSections";
 export { RecipesPage } from "./components/RecipesPage";
+export { RecipesPageContent } from "./components/RecipesPageContent";
 export { RecipesPageErrorState } from "./components/RecipesPageErrorState";
 export { RecipesPageLoading } from "./components/RecipesPageLoading";
 export {

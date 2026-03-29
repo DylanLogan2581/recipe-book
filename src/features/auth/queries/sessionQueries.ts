@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import type { QueryClient } from "@tanstack/react-query";
 
 export type AuthSessionState =
-  | { kind: "authenticated"; email: string | null }
+  | { kind: "authenticated"; email: string | null; userId: string }
   | { kind: "guest" }
   | { kind: "unconfigured" };
 
@@ -23,6 +23,7 @@ async function getAuthSessionState(): Promise<AuthSessionState> {
   return {
     kind: "authenticated",
     email: data.session.user.email ?? null,
+    userId: data.session.user.id,
   };
 }
 

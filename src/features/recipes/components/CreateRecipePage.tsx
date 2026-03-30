@@ -7,6 +7,11 @@ import { sessionQueryOptions } from "@/features/auth";
 import { RecipeDataAccessError } from "../queries/recipeApi";
 import { isRecipeMutationAuthError } from "../queries/recipeAuth";
 import { createRecipeMutationOptions } from "../queries/recipeMutationOptions";
+import {
+  deleteRecipeCoverPhoto,
+  RecipePhotoUploadError,
+  uploadRecipeCoverPhoto,
+} from "../queries/recipePhotoApi";
 import { recipeCreateFormSchema } from "../schemas/recipeFormSchema";
 import { createEmptyRecipeCreateFormValues } from "../utils/recipeFormValues";
 
@@ -27,6 +32,8 @@ export function CreateRecipePage(): JSX.Element {
   const sessionQuery = useQuery(sessionQueryOptions);
   const createRecipeMutation = useMutation(createRecipeMutationOptions(queryClient));
   const [feedback, setFeedback] = useState<FormFeedback | null>(null);
+  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [values, setValues] = useState(createEmptyRecipeCreateFormValues);
 
   if (sessionQuery.isLoading) {
@@ -56,6 +63,59 @@ export function CreateRecipePage(): JSX.Element {
     return <RecipeCreateAuthPrompt sessionState={sessionQuery.data} />;
   }
 
+  function handleSubmitRecipe(): void {
+    void submitRecipe();
+  }
+
+  async function submitRecipe(): Promise<void> {
+    setFeedback(null);
+
+    const parsedValues = recipeCreateFormSchema.safeParse(values);
+
+    if (!parsedValues.success) {
+      setFeedback({
+        description:
+          parsedValues.error.issues[0]?.message ??
+          "Review the form values and try again.",
+        title: "Recipe form needs attention",
+        tone: "error",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    let uploadedCoverPhotoPath: string | null = null;
+
+    try {
+      if (selectedCoverPhoto !== null) {
+        uploadedCoverPhotoPath = await uploadRecipeCoverPhoto(selectedCoverPhoto);
+      }
+
+      const recipe = await createRecipeMutation.mutateAsync({
+        ...parsedValues.data,
+        coverImagePath: uploadedCoverPhotoPath,
+      });
+
+      void navigate({
+        params: { recipeId: recipe.id },
+        to: "/recipes/$recipeId",
+      });
+    } catch (error) {
+      if (uploadedCoverPhotoPath !== null) {
+        await deleteRecipeCoverPhoto(uploadedCoverPhotoPath).catch(() => undefined);
+      }
+
+      setFeedback({
+        description: getCreateRecipeErrorMessage(error),
+        title: "Recipe could not be created",
+        tone: "error",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <main className="mx-auto max-w-5xl py-6">
       <section className="rounded-[2rem] border border-border/80 bg-[radial-gradient(circle_at_top_left,rgba(95,123,73,0.16),transparent_24%),linear-gradient(180deg,rgba(255,253,249,0.96),rgba(246,238,226,0.92))] px-6 py-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
@@ -83,36 +143,18 @@ export function CreateRecipePage(): JSX.Element {
 
       <div className="mt-6">
         <RecipeCreateForm
-          isPending={createRecipeMutation.isPending}
+          coverPhotoName={selectedCoverPhoto?.name ?? null}
+          isPending={isSubmitting}
+          isPhotoAttached={selectedCoverPhoto !== null}
+          onCoverPhotoChange={(file) => {
+            setSelectedCoverPhoto(file);
+          }}
+          onRemoveCoverPhoto={() => {
+            setSelectedCoverPhoto(null);
+          }}
           onSubmit={(event) => {
             event.preventDefault();
-            setFeedback(null);
-
-            const parsedValues = recipeCreateFormSchema.safeParse(values);
-
-            if (!parsedValues.success) {
-              setFeedback({
-                description:
-                  parsedValues.error.issues[0]?.message ??
-                  "Review the form values and try again.",
-                title: "Recipe form needs attention",
-                tone: "error",
-              });
-              return;
-            }
-
-            createRecipeMutation.mutate(parsedValues.data, {
-              onError: (error) => {
-                setFeedback({
-                  description: getCreateRecipeErrorMessage(error),
-                  title: "Recipe could not be created",
-                  tone: "error",
-                });
-              },
-              onSuccess: (recipe) => {
-                void navigate({ to: "/recipes/$recipeId", params: { recipeId: recipe.id } });
-              },
-            });
+            handleSubmitRecipe();
           }}
           setValues={setValues}
           values={values}
@@ -122,8 +164,12 @@ export function CreateRecipePage(): JSX.Element {
   );
 }
 
-function getCreateRecipeErrorMessage(error: Error): string {
+function getCreateRecipeErrorMessage(error: unknown): string {
   if (isRecipeMutationAuthError(error)) {
+    return error.message;
+  }
+
+  if (error instanceof RecipePhotoUploadError) {
     return error.message;
   }
 

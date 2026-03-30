@@ -5,6 +5,7 @@ export { RecipeDetailPageErrorState } from "./components/RecipeDetailPageErrorSt
 export { RecipeDetailPageLoading } from "./components/RecipeDetailPageLoading";
 export { RecipeDetailPageSections } from "./components/RecipeDetailPageSections";
 export { RecipeCreateAuthPrompt } from "./components/RecipeCreateAuthPrompt";
+export { RecipeCoverImage } from "./components/RecipeCoverImage";
 export { RecipeDeleteDialog } from "./components/RecipeDeleteDialog";
 export { RecipeDeleteSuccessBanner } from "./components/RecipeDeleteSuccessBanner";
 export { RecipeCreateForm } from "./components/RecipeCreateForm";
@@ -22,6 +23,16 @@ export {
   RecipeDataAccessError,
   type RecipeDataAccessErrorCode,
 } from "./queries/recipeApi";
+export {
+  buildRecipeCoverPhotoPath,
+  deleteRecipeCoverPhoto,
+  getRecipeCoverPhotoUrl,
+  recipeCoverPhotoBucket,
+  RecipePhotoUploadError,
+  uploadRecipeCoverPhoto,
+  validateRecipeCoverPhoto,
+  type RecipePhotoUploadErrorCode,
+} from "./queries/recipePhotoApi";
 export {
   isRecipeMutationAuthError,
   RecipeMutationAuthError,

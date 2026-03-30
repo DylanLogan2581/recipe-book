@@ -10,6 +10,8 @@ import {
   getRecipeSummary,
 } from "../utils/recipePresentation";
 
+import { RecipeCoverImage } from "./RecipeCoverImage";
+
 import type { RecipeListItem } from "../types/recipes";
 import type { JSX } from "react";
 
@@ -31,6 +33,11 @@ export function RecipePreviewCard({
   return (
     <article className="rounded-[2rem] border border-border/70 bg-card/95 p-5 shadow-[0_18px_54px_-40px_rgba(69,52,35,0.5)] sm:p-6">
       <div className="flex flex-col gap-5">
+        <RecipeCoverImage
+          coverImagePath={recipe.coverImagePath}
+          title={recipe.title}
+          variant="list"
+        />
         <div className="space-y-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-primary">

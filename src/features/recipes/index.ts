@@ -5,6 +5,8 @@ export { RecipeDetailPageErrorState } from "./components/RecipeDetailPageErrorSt
 export { RecipeDetailPageLoading } from "./components/RecipeDetailPageLoading";
 export { RecipeDetailPageSections } from "./components/RecipeDetailPageSections";
 export { RecipeCreateAuthPrompt } from "./components/RecipeCreateAuthPrompt";
+export { RecipeDeleteDialog } from "./components/RecipeDeleteDialog";
+export { RecipeDeleteSuccessBanner } from "./components/RecipeDeleteSuccessBanner";
 export { RecipeCreateForm } from "./components/RecipeCreateForm";
 export { RecipesPage } from "./components/RecipesPage";
 export { RecipesPageContent } from "./components/RecipesPageContent";
@@ -36,6 +38,10 @@ export {
   recipeListQueryOptions,
 } from "./queries/recipeQueryOptions";
 export { recipeCreateFormSchema } from "./schemas/recipeFormSchema";
+export {
+  recipeShelfSearchSchema,
+  type RecipeShelfSearch,
+} from "./schemas/recipeShelfSearchSchema";
 export type {
   CreateRecipeEquipmentInput,
   CreateRecipeIngredientInput,

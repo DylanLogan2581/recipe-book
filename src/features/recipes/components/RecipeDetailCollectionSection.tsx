@@ -1,8 +1,12 @@
+import { useStepTimer } from "../hooks/useStepTimer";
 import {
+  formatCountdownClock,
   formatIngredientText,
   formatStepTimer,
   getRecipeCountLabel,
 } from "../utils/recipePresentation";
+
+import { RecipeStepTimerControl } from "./RecipeStepTimerControl";
 
 import type {
   RecipeEquipment,
@@ -36,6 +40,7 @@ export function RecipeDetailCollectionSection(
   props: RecipeDetailCollectionSectionProps,
 ): JSX.Element {
   const isMethod = props.kind === "steps";
+  const stepTimer = useStepTimer();
 
   return (
     <section className="rounded-[1.75rem] border border-border/70 bg-card/95 p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)] sm:p-6">
@@ -148,7 +153,10 @@ export function RecipeDetailCollectionSection(
                     </p>
                     {step.timerSeconds !== null ? (
                       <span className="rounded-full border border-amber-300/70 bg-amber-50/85 px-2.5 py-1 text-xs font-medium text-amber-950">
-                        {formatStepTimer(step.timerSeconds)}
+                        {stepTimer.activeStepId === step.id &&
+                        stepTimer.remainingSeconds !== null
+                          ? `${formatCountdownClock(stepTimer.remainingSeconds)} left`
+                          : formatStepTimer(step.timerSeconds)}
                       </span>
                     ) : null}
                   </div>
@@ -156,6 +164,21 @@ export function RecipeDetailCollectionSection(
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
                       {step.notes}
                     </p>
+                  ) : null}
+                  {step.timerSeconds !== null ? (
+                    <RecipeStepTimerControl
+                      isActive={stepTimer.activeStepId === step.id}
+                      onStart={() => {
+                        stepTimer.startTimer(step.id, step.timerSeconds ?? 0);
+                      }}
+                      onStop={stepTimer.stopTimer}
+                      remainingSeconds={
+                        stepTimer.activeStepId === step.id
+                          ? stepTimer.remainingSeconds
+                          : null
+                      }
+                      timerSeconds={step.timerSeconds}
+                    />
                   ) : null}
                 </div>
               </div>

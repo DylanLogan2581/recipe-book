@@ -1,13 +1,47 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, LockKeyhole, NotebookPen, Soup } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+import {
+  signInMutationOptions,
+  signOutMutationOptions,
+  signUpMutationOptions,
+} from "../queries/authMutationOptions";
 import { sessionQueryOptions } from "../queries/sessionQueries";
+import { authCredentialsSchema } from "../schemas/authSchemas";
+import { createEmptyAuthFormValues } from "../utils/authFormValues";
+
+import { AuthenticatedAccountPanel } from "./AuthenticatedAccountPanel";
+import { AuthFormCard } from "./AuthFormCard";
 
 import type { AuthSessionState } from "../queries/sessionQueries";
 import type { JSX } from "react";
+
+type AuthFeedback = {
+  description: string;
+  tone: "error" | "success";
+  title: string;
+};
+
+type AuthActionResult = {
+  message: string;
+};
+
+type CredentialMutation = {
+  mutate: (
+    values: {
+      email: string;
+      password: string;
+    },
+    options: {
+      onError: (error: Error) => void;
+      onSuccess: (result: AuthActionResult) => void;
+    },
+  ) => void;
+};
 
 function getHeadlineText(
   kind: "authenticated" | "guest" | "loading" | "unconfigured",
@@ -44,7 +78,14 @@ function getHeadlineText(
 }
 
 export function AccountPage(): JSX.Element {
+  const queryClient = useQueryClient();
   const sessionQuery = useQuery(sessionQueryOptions);
+  const signInMutation = useMutation(signInMutationOptions(queryClient));
+  const signUpMutation = useMutation(signUpMutationOptions(queryClient));
+  const signOutMutation = useMutation(signOutMutationOptions(queryClient));
+  const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
+  const [signInValues, setSignInValues] = useState(createEmptyAuthFormValues);
+  const [signUpValues, setSignUpValues] = useState(createEmptyAuthFormValues);
 
   const kind = sessionQuery.isLoading
     ? "loading"
@@ -54,6 +95,8 @@ export function AccountPage(): JSX.Element {
     sessionQuery.isLoading,
     sessionQuery.data,
   );
+  const isGuest = sessionQuery.data?.kind === "guest" || sessionQuery.data === undefined;
+  const isConfigured = sessionQuery.data?.kind !== "unconfigured";
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-6 py-4 sm:py-6">
@@ -91,6 +134,21 @@ export function AccountPage(): JSX.Element {
         </div>
       </section>
 
+      {feedback !== null ? (
+        <section
+          className={
+            feedback.tone === "success"
+              ? "rounded-[1.5rem] border border-emerald-300/70 bg-emerald-50/80 px-5 py-4 text-emerald-950"
+              : "rounded-[1.5rem] border border-destructive/20 bg-destructive/5 px-5 py-4 text-foreground"
+          }
+        >
+          <p className="text-sm font-semibold">{feedback.title}</p>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            {feedback.description}
+          </p>
+        </section>
+      ) : null}
+
       <section className="grid gap-4 lg:grid-cols-3">
         <article className="rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,237,224,0.84))] p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.6)]">
           <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -116,15 +174,128 @@ export function AccountPage(): JSX.Element {
             <NotebookPen className="size-5" />
           </div>
           <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            What comes next
+            Ownership guard behavior
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            This route is intentionally light today. Its main job is to give the
-            shell a clear account destination so sign-in, sign-up, sign-out, and
-            ownership prompts can slot into an established place.
+            Public recipe routes stay open. Creating or deleting recipes still
+            requires an authenticated session, and existing UI prompts point
+            guests back here when ownership tools are needed.
           </p>
         </article>
       </section>
+
+      <section className="grid gap-4 lg:grid-cols-2">
+        {sessionQuery.data?.kind === "authenticated" ? (
+          <AuthenticatedAccountPanel
+            isPending={signOutMutation.isPending}
+            onSignOut={() => {
+              setFeedback(null);
+              signOutMutation.mutate(undefined, {
+                onError: (error) => {
+                  setFeedback({
+                    description: error.message,
+                    title: "Sign-out failed",
+                    tone: "error",
+                  });
+                },
+                onSuccess: (result) => {
+                  setFeedback({
+                    description: result.message,
+                    title: "Signed out",
+                    tone: "success",
+                  });
+                },
+              });
+            }}
+            sessionState={sessionQuery.data}
+          />
+        ) : (
+          <>
+            <AuthFormCard
+              description="Use your existing Supabase account to unlock recipe ownership actions while public browsing stays open."
+              email={signInValues.email}
+              isPending={signInMutation.isPending}
+              onEmailChange={(event) => {
+                setSignInValues((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }));
+              }}
+              onPasswordChange={(event) => {
+                setSignInValues((current) => ({
+                  ...current,
+                  password: event.target.value,
+                }));
+              }}
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitCredentials(signInValues, signInMutation, {
+                  setFeedback,
+                  setValues: setSignInValues,
+                  successTitle: "Signed in",
+                });
+              }}
+              password={signInValues.password}
+              submitLabel="Sign in"
+              title="Sign in"
+            />
+            <AuthFormCard
+              description="Create a first-pass account so future recipe authoring and ownership flows have an authenticated foundation."
+              email={signUpValues.email}
+              isPending={signUpMutation.isPending}
+              onEmailChange={(event) => {
+                setSignUpValues((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }));
+              }}
+              onPasswordChange={(event) => {
+                setSignUpValues((current) => ({
+                  ...current,
+                  password: event.target.value,
+                }));
+              }}
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitCredentials(signUpValues, signUpMutation, {
+                  setFeedback,
+                  setValues: setSignUpValues,
+                  successTitle: "Account ready",
+                });
+              }}
+              password={signUpValues.password}
+              submitLabel="Create account"
+              title="Sign up"
+            />
+          </>
+        )}
+      </section>
+
+      {!isConfigured ? (
+        <section className="rounded-[1.75rem] border border-border/70 bg-background/85 px-5 py-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)]">
+          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
+            Supabase auth is not configured here yet
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Add the public Supabase URL and anon key to enable sign-in, sign-up,
+            and sign-out in this environment. Public recipe browsing can stay
+            available either way.
+          </p>
+        </section>
+      ) : null}
+
+      {isGuest ? (
+        <section className="rounded-[1.75rem] border border-amber-300/70 bg-amber-50/80 px-5 py-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)]">
+          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-amber-950">
+            Guests can browse, but ownership still requires sign-in
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-amber-950/85">
+            The recipe shelf and detail pages stay public, while future create,
+            edit, and delete actions will keep redirecting or prompting guests
+            here before they continue.
+          </p>
+        </section>
+      ) : null}
     </main>
   );
 }
@@ -149,4 +320,49 @@ function getCurrentStateText(
     case "unconfigured":
       return "unconfigured";
   }
+}
+
+function submitCredentials(
+  values: {
+    email: string;
+    password: string;
+  },
+  mutation: CredentialMutation,
+  options: {
+    setFeedback: (feedback: AuthFeedback) => void;
+    setValues: (value: {
+      email: string;
+      password: string;
+    }) => void;
+    successTitle: string;
+  },
+): void {
+  const parsed = authCredentialsSchema.safeParse(values);
+
+  if (!parsed.success) {
+    options.setFeedback({
+      description: parsed.error.issues[0]?.message ?? "Review the form values and try again.",
+      title: "Form validation needed",
+      tone: "error",
+    });
+    return;
+  }
+
+  mutation.mutate(parsed.data, {
+    onError: (error) => {
+      options.setFeedback({
+        description: error.message,
+        title: "Auth request failed",
+        tone: "error",
+      });
+    },
+    onSuccess: (result) => {
+      options.setFeedback({
+        description: result.message,
+        title: options.successTitle,
+        tone: "success",
+      });
+      options.setValues(createEmptyAuthFormValues());
+    },
+  });
 }

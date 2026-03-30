@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  buildRecipeCookLogInsert,
   buildRecipeIngredientInsertRows,
   buildRecipeStepInsertRows,
   mapRecipeDetailRecord,
@@ -20,6 +21,38 @@ describe("mapRecipeDetailRecord", () => {
       is_scalable: true,
       owner_id: "owner-1",
       prep_minutes: 12,
+      recipe_cook_logs: [
+        {
+          cooked_on: "2026-03-23",
+          created_at: "2026-03-23T18:00:00.000Z",
+          id: "cook-log-2",
+          notes: "Added extra lemon juice.",
+          owner_id: "owner-1",
+          photo_path: null,
+          recipe_id: "recipe-1",
+          updated_at: "2026-03-23T18:00:00.000Z",
+        },
+        {
+          cooked_on: "2026-03-25",
+          created_at: "2026-03-25T20:00:00.000Z",
+          id: "cook-log-1",
+          notes: "Finished with parmesan.",
+          owner_id: "owner-1",
+          photo_path: "owner-1/cook-log-1.jpg",
+          recipe_id: "recipe-1",
+          updated_at: "2026-03-25T20:00:00.000Z",
+        },
+        {
+          cooked_on: "2026-03-25",
+          created_at: "2026-03-25T21:30:00.000Z",
+          id: "cook-log-3",
+          notes: "Tossed in extra pasta water.",
+          owner_id: "owner-1",
+          photo_path: null,
+          recipe_id: "recipe-1",
+          updated_at: "2026-03-25T21:30:00.000Z",
+        },
+      ],
       recipe_equipment: [
         {
           created_at: "2026-03-26T10:00:00.000Z",
@@ -100,6 +133,11 @@ describe("mapRecipeDetailRecord", () => {
     });
 
     expect(recipe.totalMinutes).toBe(30);
+    expect(recipe.cookLogs.map((item) => item.id)).toEqual([
+      "cook-log-3",
+      "cook-log-1",
+      "cook-log-2",
+    ]);
     expect(recipe.ingredients.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.equipment.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.steps.map((item) => item.position)).toEqual([1, 2]);
@@ -147,6 +185,22 @@ describe("recipe insert builders", () => {
         timer_seconds: 90,
       },
     ]);
+  });
+
+  it("normalizes cook log inserts for optional values", () => {
+    expect(
+      buildRecipeCookLogInsert({
+        cookedOn: null,
+        notes: " ",
+        photoPath: " ",
+        recipeId: "recipe-1",
+      }),
+    ).toEqual({
+      cooked_on: undefined,
+      notes: null,
+      photo_path: null,
+      recipe_id: "recipe-1",
+    });
   });
 });
 

@@ -60,6 +60,7 @@ function createTestQueryClient(): QueryClient {
 function buildRecipeDetail(overrides: Partial<RecipeDetail> = {}): RecipeDetail {
   return {
     cookMinutes: 20,
+    cookLogs: [],
     coverImagePath: null,
     createdAt: "2026-03-27T10:00:00.000Z",
     description: "Silky lemon pasta with parmesan.",

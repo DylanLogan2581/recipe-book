@@ -42,7 +42,19 @@ export type RecipeStep = {
   timerSeconds: number | null;
 };
 
+export type RecipeCookLogEntry = {
+  cookedOn: string;
+  createdAt: string;
+  id: string;
+  notes: string | null;
+  ownerId: string;
+  photoPath: string | null;
+  recipeId: string;
+  updatedAt: string;
+};
+
 export type RecipeDetail = RecipeListItem & {
+  cookLogs: RecipeCookLogEntry[];
   equipment: RecipeEquipment[];
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];
@@ -82,6 +94,13 @@ export type CreateRecipeInput = {
   title: string;
   yieldQuantity?: number | null;
   yieldUnit?: string | null;
+};
+
+export type CreateRecipeCookLogInput = {
+  cookedOn?: string | null;
+  notes?: string | null;
+  photoPath?: string | null;
+  recipeId: string;
 };
 
 export type DeleteRecipeInput = {

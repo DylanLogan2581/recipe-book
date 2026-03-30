@@ -72,6 +72,16 @@ const recipeDetailSelect = `
   cover_image_path,
   created_at,
   updated_at,
+  recipe_cook_logs (
+    id,
+    recipe_id,
+    owner_id,
+    cooked_on,
+    notes,
+    photo_path,
+    created_at,
+    updated_at
+  ),
   recipe_ingredients (
     id,
     position,

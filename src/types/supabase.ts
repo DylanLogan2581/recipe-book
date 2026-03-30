@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      recipe_cook_logs: {
+        Row: {
+          cooked_on: string;
+          created_at: string;
+          id: string;
+          notes: string | null;
+          owner_id: string;
+          photo_path: string | null;
+          recipe_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          cooked_on?: string;
+          created_at?: string;
+          id?: string;
+          notes?: string | null;
+          owner_id?: string;
+          photo_path?: string | null;
+          recipe_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          cooked_on?: string;
+          created_at?: string;
+          id?: string;
+          notes?: string | null;
+          owner_id?: string;
+          photo_path?: string | null;
+          recipe_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            columns: ["recipe_id"];
+            foreignKeyName: "recipe_cook_logs_recipe_id_fkey";
+            isOneToOne: false;
+            referencedColumns: ["id"];
+            referencedRelation: "recipes";
+          },
+        ];
+      };
       recipe_equipment: {
         Row: {
           created_at: string;

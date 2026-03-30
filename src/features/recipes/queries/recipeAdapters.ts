@@ -1,10 +1,12 @@
 import type { Database } from "@/types/supabase";
 
 import type {
+  CreateRecipeCookLogInput,
   CreateRecipeEquipmentInput,
   CreateRecipeIngredientInput,
   CreateRecipeInput,
   CreateRecipeStepInput,
+  RecipeCookLogEntry,
   RecipeDetail,
   RecipeEquipment,
   RecipeIngredient,
@@ -22,10 +24,14 @@ type RecipeEquipmentInsert =
 type RecipeEquipmentRow = Database["public"]["Tables"]["recipe_equipment"]["Row"];
 type RecipeStepInsert = Database["public"]["Tables"]["recipe_steps"]["Insert"];
 type RecipeStepRow = Database["public"]["Tables"]["recipe_steps"]["Row"];
+type RecipeCookLogInsert =
+  Database["public"]["Tables"]["recipe_cook_logs"]["Insert"];
+export type RecipeCookLogRow = Database["public"]["Tables"]["recipe_cook_logs"]["Row"];
 
 export type RecipeListRecord = RecipeRow;
 
 export type RecipeDetailRecord = RecipeRow & {
+  recipe_cook_logs: RecipeCookLogRow[] | null;
   recipe_equipment: RecipeEquipmentRow[] | null;
   recipe_ingredients: RecipeIngredientRow[] | null;
   recipe_steps: RecipeStepRow[] | null;
@@ -87,9 +93,21 @@ export function buildRecipeStepInsertRows(
   }));
 }
 
+export function buildRecipeCookLogInsert(
+  input: CreateRecipeCookLogInput,
+): RecipeCookLogInsert {
+  return {
+    cooked_on: input.cookedOn ?? undefined,
+    notes: normalizeOptionalText(input.notes),
+    photo_path: normalizeOptionalText(input.photoPath),
+    recipe_id: input.recipeId,
+  };
+}
+
 export function mapRecipeDetailRecord(record: RecipeDetailRecord): RecipeDetail {
   return {
     ...mapRecipeListRecord(record),
+    cookLogs: sortCookLogs(record.recipe_cook_logs ?? []).map(mapRecipeCookLogRow),
     equipment: sortByPosition(record.recipe_equipment ?? []).map(
       mapRecipeEquipmentRow,
     ),
@@ -163,6 +181,19 @@ function mapRecipeStepRow(row: RecipeStepRow): RecipeStep {
   };
 }
 
+export function mapRecipeCookLogRow(row: RecipeCookLogRow): RecipeCookLogEntry {
+  return {
+    cookedOn: row.cooked_on,
+    createdAt: row.created_at,
+    id: row.id,
+    notes: row.notes,
+    ownerId: row.owner_id,
+    photoPath: row.photo_path,
+    recipeId: row.recipe_id,
+    updatedAt: row.updated_at,
+  };
+}
+
 function normalizeOptionalText(value: string | null | undefined): string | null {
   if (value === undefined || value === null) {
     return null;
@@ -179,4 +210,14 @@ function normalizeRecipeBodyText(value: string | null | undefined): string {
 
 function sortByPosition<T extends { position: number }>(items: T[]): T[] {
   return [...items].sort((left, right) => left.position - right.position);
+}
+
+function sortCookLogs<T extends { cooked_on: string; created_at: string }>(items: T[]): T[] {
+  return [...items].sort((left, right) => {
+    if (left.cooked_on === right.cooked_on) {
+      return right.created_at.localeCompare(left.created_at);
+    }
+
+    return right.cooked_on.localeCompare(left.cooked_on);
+  });
 }

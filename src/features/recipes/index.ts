@@ -6,6 +6,7 @@ export { RecipeDetailPageLoading } from "./components/RecipeDetailPageLoading";
 export { RecipeDetailPageSections } from "./components/RecipeDetailPageSections";
 export { RecipeCreateAuthPrompt } from "./components/RecipeCreateAuthPrompt";
 export { RecipeCoverImage } from "./components/RecipeCoverImage";
+export { RecipeCookLogSection } from "./components/RecipeCookLogSection";
 export { RecipeDeleteDialog } from "./components/RecipeDeleteDialog";
 export { RecipeDeleteSuccessBanner } from "./components/RecipeDeleteSuccessBanner";
 export { RecipeCreateForm } from "./components/RecipeCreateForm";
@@ -34,6 +35,16 @@ export {
   type RecipePhotoUploadErrorCode,
 } from "./queries/recipePhotoApi";
 export {
+  buildRecipeCookLogPhotoPath,
+  deleteRecipeCookLogPhoto,
+  getRecipeCookLogPhotoUrl,
+  recipeCookLogPhotoBucket,
+  RecipeCookLogPhotoError,
+  uploadRecipeCookLogPhoto,
+  validateRecipeCookLogPhoto,
+} from "./queries/recipeCookLogPhotoApi";
+export { createRecipeCookLog } from "./queries/recipeCookLogApi";
+export {
   isRecipeMutationAuthError,
   RecipeMutationAuthError,
   requireRecipeMutationAuth,
@@ -56,12 +67,14 @@ export {
   type RecipeShelfSearch,
 } from "./schemas/recipeShelfSearchSchema";
 export type {
+  CreateRecipeCookLogInput,
   CreateRecipeEquipmentInput,
   CreateRecipeIngredientInput,
   CreateRecipeInput,
   CreateRecipeStepInput,
   DeleteRecipeInput,
   DeleteRecipeResult,
+  RecipeCookLogEntry,
   RecipeDetail,
   RecipeEquipment,
   RecipeIngredient,

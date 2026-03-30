@@ -1,5 +1,6 @@
 import type { AuthSessionState } from "@/features/auth";
 
+import { RecipeCookLogSection } from "./RecipeCookLogSection";
 import { RecipeDetailCollectionSection } from "./RecipeDetailCollectionSection";
 import { RecipeOwnerActionsPanel } from "./RecipeOwnerActionsPanel";
 import { RecipeScalingPanel } from "./RecipeScalingPanel";
@@ -51,6 +52,7 @@ export function RecipeDetailPageSections({
           kind="steps"
           title="Method"
         />
+        <RecipeCookLogSection recipe={recipe} sessionState={sessionState} />
       </div>
 
       <div className="lg:sticky lg:top-24">

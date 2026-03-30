@@ -16,6 +16,7 @@ type RecipeDetailCollectionSectionProps =
       description: string;
       items: RecipeIngredient[];
       kind: "ingredients";
+      scaleFactor?: number;
       title: string;
     }
   | {
@@ -75,7 +76,7 @@ export function RecipeDetailCollectionSection(
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <p className="text-sm font-medium leading-6 text-foreground sm:text-[0.95rem]">
-                      {formatIngredientText(ingredient)}
+                      {formatIngredientText(ingredient, props.scaleFactor ?? 1)}
                     </p>
                     {ingredient.isOptional ? (
                       <span className="rounded-full border border-border/70 bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground">

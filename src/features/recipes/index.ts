@@ -8,6 +8,7 @@ export { RecipeCreateAuthPrompt } from "./components/RecipeCreateAuthPrompt";
 export { RecipeDeleteDialog } from "./components/RecipeDeleteDialog";
 export { RecipeDeleteSuccessBanner } from "./components/RecipeDeleteSuccessBanner";
 export { RecipeCreateForm } from "./components/RecipeCreateForm";
+export { RecipeScalingPanel } from "./components/RecipeScalingPanel";
 export { RecipesPage } from "./components/RecipesPage";
 export { RecipesPageContent } from "./components/RecipesPageContent";
 export { RecipesPageErrorState } from "./components/RecipesPageErrorState";
@@ -65,3 +66,10 @@ export {
   type RecipeCreateIngredientFormValue,
   type RecipeCreateStepFormValue,
 } from "./utils/recipeFormValues";
+export {
+  canScaleRecipe,
+  formatScaleLabel,
+  recipeScaleOptions,
+  scaleIngredientAmount,
+  scaleRecipeYield,
+} from "./utils/recipeScaling";

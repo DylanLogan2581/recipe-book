@@ -55,6 +55,11 @@ describe("formatRecipeYield", () => {
     expect(formatRecipeYield(4, "servings")).toBe("4 servings");
   });
 
+  it("applies the active scale factor to the displayed yield", () => {
+    expect(formatRecipeYield(4, "servings", 0.5)).toBe("2 servings");
+    expect(formatRecipeYield(4, "servings", 2)).toBe("8 servings");
+  });
+
   it("falls back cleanly when quantity or unit is missing", () => {
     expect(formatRecipeYield(null, "loaves")).toBe("loaves");
     expect(formatRecipeYield(2, null)).toBe("2 servings");
@@ -80,6 +85,20 @@ describe("formatIngredientText", () => {
         unit: "cups",
       }),
     ).toBe("1.5 cups flour");
+  });
+
+  it("applies the active scale factor to ingredient amounts", () => {
+    expect(
+      formatIngredientText(
+        {
+          amount: 1.5,
+          item: "flour",
+          preparation: null,
+          unit: "cups",
+        },
+        2,
+      ),
+    ).toBe("3 cups flour");
   });
 
   it("falls back to the ingredient item when no amount metadata exists", () => {

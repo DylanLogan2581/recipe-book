@@ -15,16 +15,18 @@ import type { JSX } from "react";
 
 type RecipeDetailHeroProps = {
   recipe: RecipeDetail;
+  scaleFactor: number;
 };
 
 export function RecipeDetailHero({
   recipe,
+  scaleFactor,
 }: RecipeDetailHeroProps): JSX.Element {
   const summary = getRecipeSummary(recipe.summary, recipe.description);
   const description = recipe.description.trim();
   const metadata = [
     formatRecipeTime(recipe),
-    formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit),
+    formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor),
     getRecipeScalingLabel(recipe.isScalable),
   ];
 

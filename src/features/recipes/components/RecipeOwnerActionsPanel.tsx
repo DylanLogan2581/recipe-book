@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 
-
 import { Button } from "@/components/ui/button";
 import type { AuthSessionState } from "@/features/auth";
 
@@ -21,7 +20,7 @@ export function RecipeOwnerActionsPanel({
   const state = getOwnerActionState(isSessionLoading, recipe, sessionState);
 
   return (
-    <aside className="rounded-[1.75rem] border border-border/70 bg-background/85 p-5 shadow-[0_18px_54px_-42px_rgba(69,52,35,0.45)]">
+    <aside className="rounded-[1.75rem] border border-border/70 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,237,224,0.84))] p-5 shadow-[0_18px_54px_-42px_rgba(69,52,35,0.45)]">
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
         Owner Actions
       </p>
@@ -32,7 +31,12 @@ export function RecipeOwnerActionsPanel({
         {state.description}
       </p>
       {state.ctaLabel !== null ? (
-        <Button asChild className="mt-5 w-full" size="lg" variant={state.ctaVariant}>
+        <Button
+          asChild
+          className="mt-5 w-full rounded-xl"
+          size="lg"
+          variant={state.ctaVariant}
+        >
           <Link to={state.ctaTo}>{state.ctaLabel}</Link>
         </Button>
       ) : null}

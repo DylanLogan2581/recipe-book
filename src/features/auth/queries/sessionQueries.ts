@@ -9,6 +9,8 @@ export type AuthSessionState =
   | { kind: "guest" }
   | { kind: "unconfigured" };
 
+export const sessionQueryKey = ["auth", "session"] as const;
+
 async function getAuthSessionState(): Promise<AuthSessionState> {
   if (supabase === null) {
     return { kind: "unconfigured" };
@@ -28,7 +30,7 @@ async function getAuthSessionState(): Promise<AuthSessionState> {
 }
 
 export const sessionQueryOptions = queryOptions({
-  queryKey: ["auth", "session"],
+  queryKey: sessionQueryKey,
   queryFn: getAuthSessionState,
   staleTime: 30_000,
 });

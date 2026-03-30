@@ -9,6 +9,7 @@ export { RecipeDeleteDialog } from "./components/RecipeDeleteDialog";
 export { RecipeDeleteSuccessBanner } from "./components/RecipeDeleteSuccessBanner";
 export { RecipeCreateForm } from "./components/RecipeCreateForm";
 export { RecipeScalingPanel } from "./components/RecipeScalingPanel";
+export { RecipeStepTimerControl } from "./components/RecipeStepTimerControl";
 export { RecipesPage } from "./components/RecipesPage";
 export { RecipesPageContent } from "./components/RecipesPageContent";
 export { RecipesPageErrorState } from "./components/RecipesPageErrorState";
@@ -73,3 +74,4 @@ export {
   scaleIngredientAmount,
   scaleRecipeYield,
 } from "./utils/recipeScaling";
+export { useStepTimer } from "./hooks/useStepTimer";

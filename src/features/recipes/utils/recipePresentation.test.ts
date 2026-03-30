@@ -4,6 +4,7 @@ import { RecipeDataAccessError } from "../queries/recipeApi";
 
 import {
   formatIngredientText,
+  formatCountdownClock,
   formatRecipeTime,
   formatRecipeYield,
   formatStepTimer,
@@ -118,6 +119,14 @@ describe("formatStepTimer", () => {
     expect(formatStepTimer(45)).toBe("45 sec timer");
     expect(formatStepTimer(600)).toBe("10 min timer");
     expect(formatStepTimer(125)).toBe("2 min 5 sec timer");
+  });
+});
+
+describe("formatCountdownClock", () => {
+  it("formats countdown output as minutes and zero-padded seconds", () => {
+    expect(formatCountdownClock(45)).toBe("0:45");
+    expect(formatCountdownClock(125)).toBe("2:05");
+    expect(formatCountdownClock(600)).toBe("10:00");
   });
 });
 

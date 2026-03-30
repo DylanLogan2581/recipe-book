@@ -88,6 +88,13 @@ export function formatStepTimer(timerSeconds: number): string {
   return `${wholeMinutes} min ${remainingSeconds} sec timer`;
 }
 
+export function formatCountdownClock(timerSeconds: number): string {
+  const wholeMinutes = Math.floor(timerSeconds / 60);
+  const remainingSeconds = timerSeconds % 60;
+
+  return `${wholeMinutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+}
+
 export function getRecipeCountLabel(
   count: number,
   singular: string,

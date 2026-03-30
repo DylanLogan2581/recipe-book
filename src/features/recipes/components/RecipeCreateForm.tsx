@@ -20,7 +20,11 @@ const checkboxClassName =
   "size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20";
 
 type RecipeCreateFormProps = {
+  coverPhotoName: string | null;
+  isPhotoAttached: boolean;
   isPending: boolean;
+  onCoverPhotoChange: (file: File | null) => void;
+  onRemoveCoverPhoto: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   setValues: (
     updater: (current: RecipeCreateFormValues) => RecipeCreateFormValues,
@@ -29,7 +33,11 @@ type RecipeCreateFormProps = {
 };
 
 export function RecipeCreateForm({
+  coverPhotoName,
+  isPhotoAttached,
   isPending,
+  onCoverPhotoChange,
+  onRemoveCoverPhoto,
   onSubmit,
   setValues,
   values,
@@ -165,6 +173,50 @@ export function RecipeCreateForm({
           />
           Allow serving scaling for this recipe.
         </label>
+
+        <div className="mt-5 rounded-[1.5rem] border border-border/70 bg-background/75 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="max-w-2xl">
+              <p className="text-sm font-medium text-foreground">Cover photo</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Upload a JPG, PNG, or WebP image up to 5 MB. The file is stored
+                in Supabase Storage and the recipe saves only the storage path.
+              </p>
+            </div>
+            {isPhotoAttached ? (
+              <Button
+                className="rounded-full px-4"
+                onClick={onRemoveCoverPhoto}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                Remove photo
+              </Button>
+            ) : null}
+          </div>
+
+          <label className="mt-4 block">
+            <span className="text-sm font-medium text-foreground">
+              Select image
+            </span>
+            <input
+              accept="image/jpeg,image/png,image/webp"
+              className={`${inputClassName} file:mr-3 file:rounded-full file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary`}
+              disabled={isPending}
+              onChange={(event) => {
+                onCoverPhotoChange(event.target.files?.[0] ?? null);
+              }}
+              type="file"
+            />
+          </label>
+
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            {coverPhotoName === null
+              ? "No cover photo selected yet."
+              : `Selected file: ${coverPhotoName}`}
+          </p>
+        </div>
       </section>
 
       <RecipeCreateCollectionSection

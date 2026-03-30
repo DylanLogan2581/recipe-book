@@ -1,5 +1,7 @@
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
+import { scaleIngredientAmount, scaleRecipeYield } from "./recipeScaling";
+
 type RecipeLoadSurface = "detail" | "list";
 
 type RecipeLoadErrorCopy = {
@@ -30,20 +32,23 @@ export function formatRecipeTime(recipe: {
 export function formatRecipeYield(
   yieldQuantity: number | null,
   yieldUnit: string | null,
+  scaleFactor = 1,
 ): string {
-  if (yieldQuantity === null && yieldUnit === null) {
+  const scaledYieldQuantity = scaleRecipeYield(yieldQuantity, scaleFactor);
+
+  if (scaledYieldQuantity === null && yieldUnit === null) {
     return "Yield not set";
   }
 
-  if (yieldQuantity === null) {
+  if (scaledYieldQuantity === null) {
     return yieldUnit ?? "Yield not set";
   }
 
   if (yieldUnit === null) {
-    return `${yieldQuantity} servings`;
+    return `${scaledYieldQuantity} servings`;
   }
 
-  return `${yieldQuantity} ${yieldUnit}`;
+  return `${scaledYieldQuantity} ${yieldUnit}`;
 }
 
 export function formatIngredientText(ingredient: {
@@ -51,8 +56,9 @@ export function formatIngredientText(ingredient: {
   item: string;
   preparation: string | null;
   unit: string | null;
-}): string {
-  const amountText = ingredient.amount === null ? null : `${ingredient.amount}`;
+}, scaleFactor = 1): string {
+  const scaledAmount = scaleIngredientAmount(ingredient.amount, scaleFactor);
+  const amountText = scaledAmount === null ? null : `${scaledAmount}`;
   const unitText = ingredient.unit;
   const lead = [amountText, unitText].filter(Boolean).join(" ").trim();
   const itemText =

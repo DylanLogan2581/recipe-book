@@ -1,3 +1,7 @@
+import { Link } from "@tanstack/react-router";
+
+import { Button } from "@/components/ui/button";
+
 import type { JSX } from "react";
 
 type RecipesPageHeaderProps = {
@@ -36,6 +40,11 @@ export function RecipesPageHeader({
             Mobile-friendly reading
           </span>
         </div>
+        <div className="mt-6">
+          <Button asChild size="lg" className="rounded-full px-5">
+            <Link to="/recipes/new">Create a recipe</Link>
+          </Button>
+        </div>
       </div>
 
       <aside className="rounded-[2rem] border border-border/70 bg-background/85 p-6 shadow-[0_20px_60px_-44px_rgba(69,52,35,0.5)]">
@@ -59,6 +68,15 @@ export function RecipesPageHeader({
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
               This first pass stays intentionally lean so filtering can arrive
               later without redesigning the route.
+            </p>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              Authoring now has a dedicated route.
+            </p>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+              The create flow stays behind auth, while guests can still follow
+              the same entry point and get routed toward sign-in guidance.
             </p>
           </div>
         </div>

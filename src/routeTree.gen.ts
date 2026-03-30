@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RecipesRouteImport } from './routes/recipes'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecipesNewRouteImport } from './routes/recipes.new'
 import { Route as RecipesRecipeIdRouteImport } from './routes/recipes.$recipeId'
 
 const RecipesRoute = RecipesRouteImport.update({
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecipesNewRoute = RecipesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => RecipesRoute,
+} as any)
 const RecipesRecipeIdRoute = RecipesRecipeIdRouteImport.update({
   id: '/$recipeId',
   path: '/$recipeId',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/recipes': typeof RecipesRouteWithChildren
   '/recipes/$recipeId': typeof RecipesRecipeIdRoute
+  '/recipes/new': typeof RecipesNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/recipes': typeof RecipesRouteWithChildren
   '/recipes/$recipeId': typeof RecipesRecipeIdRoute
+  '/recipes/new': typeof RecipesNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,25 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/recipes': typeof RecipesRouteWithChildren
   '/recipes/$recipeId': typeof RecipesRecipeIdRoute
+  '/recipes/new': typeof RecipesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/recipes' | '/recipes/$recipeId'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/recipes'
+    | '/recipes/$recipeId'
+    | '/recipes/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/recipes' | '/recipes/$recipeId'
-  id: '__root__' | '/' | '/account' | '/recipes' | '/recipes/$recipeId'
+  to: '/' | '/account' | '/recipes' | '/recipes/$recipeId' | '/recipes/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/recipes'
+    | '/recipes/$recipeId'
+    | '/recipes/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -91,6 +111,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recipes/new': {
+      id: '/recipes/new'
+      path: '/new'
+      fullPath: '/recipes/new'
+      preLoaderRoute: typeof RecipesNewRouteImport
+      parentRoute: typeof RecipesRoute
+    }
     '/recipes/$recipeId': {
       id: '/recipes/$recipeId'
       path: '/$recipeId'
@@ -103,10 +130,12 @@ declare module '@tanstack/react-router' {
 
 interface RecipesRouteChildren {
   RecipesRecipeIdRoute: typeof RecipesRecipeIdRoute
+  RecipesNewRoute: typeof RecipesNewRoute
 }
 
 const RecipesRouteChildren: RecipesRouteChildren = {
   RecipesRecipeIdRoute: RecipesRecipeIdRoute,
+  RecipesNewRoute: RecipesNewRoute,
 }
 
 const RecipesRouteWithChildren =

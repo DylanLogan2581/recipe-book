@@ -8,6 +8,11 @@ import {
   sessionQueryOptions,
   type AuthSessionState,
 } from "@/features/auth";
+import {
+  ThemePresetPicker,
+  ThemePresetProvider,
+  useThemePreset,
+} from "@/features/theme";
 import { type AppRouterContext } from "@/lib/queryClient";
 
 const isDev = import.meta.env.DEV;
@@ -31,15 +36,33 @@ const ReactQueryDevtools = isDev
 function RootShell(): JSX.Element {
   const sessionQuery = useQuery(sessionQueryOptions);
   const authSummary = getAuthSummary(sessionQuery.isLoading, sessionQuery.data);
+  const { activeThemePresetId, setActiveThemePresetId } = useThemePreset();
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(118,150,94,0.18),transparent_30%),radial-gradient(circle_at_top_right,rgba(220,174,104,0.16),transparent_24%)]" />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[linear-gradient(180deg,rgba(255,255,255,0.42),transparent)]" />
-      <div className="pointer-events-none absolute inset-x-8 top-40 h-px bg-[linear-gradient(90deg,transparent,rgba(94,123,73,0.3),transparent)]" />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ backgroundImage: "var(--app-shell-overlay)" }}
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-64"
+        style={{ backgroundImage: "var(--app-shell-top-wash)" }}
+      />
+      <div
+        className="pointer-events-none absolute inset-x-8 top-40 h-px"
+        style={{ backgroundImage: "var(--app-shell-divider)" }}
+      />
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 sm:px-6">
-        <AppShellHeader authSummary={authSummary} />
+        <AppShellHeader
+          authSummary={authSummary}
+          themePresetPicker={
+            <ThemePresetPicker
+              activeThemePresetId={activeThemePresetId}
+              onThemePresetChange={setActiveThemePresetId}
+            />
+          }
+        />
 
         <div className="flex-1 py-4 sm:py-6">
           <Outlet />
@@ -118,7 +141,9 @@ function RootLayout(): JSX.Element {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RootShell />
+      <ThemePresetProvider>
+        <RootShell />
+      </ThemePresetProvider>
       {TanStackRouterDevtools !== null && ReactQueryDevtools !== null ? (
         <Suspense fallback={null}>
           <TanStackRouterDevtools />

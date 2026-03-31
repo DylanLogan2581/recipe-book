@@ -29,7 +29,10 @@ const footerHighlights = [
 export function AppShellFooter(): JSX.Element {
   return (
     <footer className="pb-10 pt-4 sm:pt-6">
-      <div className="overflow-hidden rounded-[2rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,253,249,0.92),rgba(246,238,226,0.92))] shadow-[0_24px_90px_-60px_rgba(69,52,35,0.55)] backdrop-blur">
+      <div
+        className="overflow-hidden rounded-[2rem] border border-border/80 shadow-[0_24px_90px_-60px_rgba(69,52,35,0.55)] backdrop-blur"
+        style={{ backgroundImage: "var(--app-shell-footer-surface)" }}
+      >
         <div className="px-5 py-6 sm:px-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-3">

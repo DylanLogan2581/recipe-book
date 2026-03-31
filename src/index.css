@@ -38,6 +38,159 @@
   --sidebar-accent-foreground: oklch(0.32 0.03 48);
   --sidebar-border: oklch(0.89 0.018 80);
   --sidebar-ring: oklch(0.62 0.08 150);
+  --app-body-background:
+    radial-gradient(circle at top left, rgba(116, 149, 92, 0.16), transparent 28%),
+    radial-gradient(circle at top right, rgba(217, 170, 93, 0.16), transparent 24%),
+    linear-gradient(
+      180deg,
+      rgba(255, 252, 247, 0.98) 0%,
+      rgba(247, 240, 229, 0.96) 44%,
+      rgba(252, 248, 241, 0.98) 100%
+    );
+  --app-shell-overlay:
+    radial-gradient(
+      circle at top left,
+      rgba(118, 150, 94, 0.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(220, 174, 104, 0.16),
+      transparent 24%
+    );
+  --app-shell-top-wash: linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent);
+  --app-shell-divider:
+    linear-gradient(90deg, transparent, rgba(94, 123, 73, 0.3), transparent);
+  --app-shell-header-surface:
+    linear-gradient(135deg, rgba(255, 252, 246, 0.92), rgba(244, 236, 222, 0.92));
+  --app-shell-footer-surface:
+    linear-gradient(180deg, rgba(255, 253, 249, 0.92), rgba(246, 238, 226, 0.92));
+  --app-shell-icon-gradient:
+    linear-gradient(180deg, rgba(95, 123, 73, 1), rgba(70, 96, 54, 1));
+}
+
+:root[data-theme-preset="garden"] {
+  --background: oklch(0.985 0.01 146);
+  --foreground: oklch(0.31 0.032 156);
+  --card: oklch(0.992 0.006 150);
+  --card-foreground: oklch(0.31 0.032 156);
+  --popover: oklch(0.996 0.004 150);
+  --popover-foreground: oklch(0.31 0.032 156);
+  --primary: oklch(0.47 0.085 160);
+  --primary-foreground: oklch(0.985 0.008 150);
+  --secondary: oklch(0.955 0.023 154);
+  --secondary-foreground: oklch(0.31 0.032 156);
+  --muted: oklch(0.965 0.014 150);
+  --muted-foreground: oklch(0.56 0.02 155);
+  --accent: oklch(0.935 0.034 118);
+  --accent-foreground: oklch(0.31 0.032 156);
+  --border: oklch(0.9 0.018 150);
+  --input: oklch(0.9 0.018 150);
+  --ring: oklch(0.64 0.09 160);
+  --chart-1: oklch(0.63 0.11 160);
+  --chart-2: oklch(0.8 0.08 132);
+  --chart-3: oklch(0.72 0.08 188);
+  --chart-4: oklch(0.68 0.07 82);
+  --chart-5: oklch(0.58 0.06 212);
+  --sidebar: oklch(0.99 0.006 150);
+  --sidebar-foreground: oklch(0.31 0.032 156);
+  --sidebar-primary: oklch(0.47 0.085 160);
+  --sidebar-primary-foreground: oklch(0.985 0.008 150);
+  --sidebar-accent: oklch(0.955 0.023 154);
+  --sidebar-accent-foreground: oklch(0.31 0.032 156);
+  --sidebar-border: oklch(0.9 0.018 150);
+  --sidebar-ring: oklch(0.64 0.09 160);
+  --app-body-background:
+    radial-gradient(circle at top left, rgba(87, 150, 125, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(191, 214, 122, 0.16), transparent 24%),
+    linear-gradient(
+      180deg,
+      rgba(248, 253, 249, 0.98) 0%,
+      rgba(237, 246, 239, 0.96) 44%,
+      rgba(248, 252, 247, 0.98) 100%
+    );
+  --app-shell-overlay:
+    radial-gradient(
+      circle at top left,
+      rgba(71, 133, 111, 0.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(174, 199, 92, 0.18),
+      transparent 24%
+    );
+  --app-shell-top-wash: linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent);
+  --app-shell-divider:
+    linear-gradient(90deg, transparent, rgba(71, 133, 111, 0.34), transparent);
+  --app-shell-header-surface:
+    linear-gradient(135deg, rgba(248, 253, 249, 0.92), rgba(231, 244, 237, 0.92));
+  --app-shell-footer-surface:
+    linear-gradient(180deg, rgba(251, 255, 252, 0.92), rgba(234, 244, 238, 0.92));
+  --app-shell-icon-gradient:
+    linear-gradient(180deg, rgba(78, 130, 111, 1), rgba(56, 96, 81, 1));
+}
+
+:root[data-theme-preset="citrus"] {
+  --background: oklch(0.986 0.01 62);
+  --foreground: oklch(0.33 0.035 36);
+  --card: oklch(0.992 0.006 60);
+  --card-foreground: oklch(0.33 0.035 36);
+  --popover: oklch(0.996 0.004 60);
+  --popover-foreground: oklch(0.33 0.035 36);
+  --primary: oklch(0.53 0.11 42);
+  --primary-foreground: oklch(0.985 0.008 70);
+  --secondary: oklch(0.958 0.024 74);
+  --secondary-foreground: oklch(0.33 0.035 36);
+  --muted: oklch(0.966 0.015 60);
+  --muted-foreground: oklch(0.58 0.02 38);
+  --accent: oklch(0.94 0.04 82);
+  --accent-foreground: oklch(0.33 0.035 36);
+  --border: oklch(0.9 0.02 58);
+  --input: oklch(0.9 0.02 58);
+  --ring: oklch(0.62 0.11 42);
+  --chart-1: oklch(0.65 0.12 42);
+  --chart-2: oklch(0.78 0.1 78);
+  --chart-3: oklch(0.69 0.08 22);
+  --chart-4: oklch(0.73 0.08 100);
+  --chart-5: oklch(0.61 0.07 210);
+  --sidebar: oklch(0.99 0.006 60);
+  --sidebar-foreground: oklch(0.33 0.035 36);
+  --sidebar-primary: oklch(0.53 0.11 42);
+  --sidebar-primary-foreground: oklch(0.985 0.008 70);
+  --sidebar-accent: oklch(0.958 0.024 74);
+  --sidebar-accent-foreground: oklch(0.33 0.035 36);
+  --sidebar-border: oklch(0.9 0.02 58);
+  --sidebar-ring: oklch(0.62 0.11 42);
+  --app-body-background:
+    radial-gradient(circle at top left, rgba(228, 143, 80, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(231, 196, 96, 0.16), transparent 24%),
+    linear-gradient(
+      180deg,
+      rgba(255, 250, 244, 0.98) 0%,
+      rgba(250, 239, 226, 0.96) 44%,
+      rgba(255, 247, 239, 0.98) 100%
+    );
+  --app-shell-overlay:
+    radial-gradient(
+      circle at top left,
+      rgba(210, 120, 68, 0.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at top right,
+      rgba(228, 184, 81, 0.18),
+      transparent 24%
+    );
+  --app-shell-top-wash: linear-gradient(180deg, rgba(255, 255, 255, 0.44), transparent);
+  --app-shell-divider:
+    linear-gradient(90deg, transparent, rgba(201, 121, 66, 0.34), transparent);
+  --app-shell-header-surface:
+    linear-gradient(135deg, rgba(255, 250, 244, 0.92), rgba(248, 235, 220, 0.92));
+  --app-shell-footer-surface:
+    linear-gradient(180deg, rgba(255, 252, 247, 0.92), rgba(247, 233, 217, 0.92));
+  --app-shell-icon-gradient:
+    linear-gradient(180deg, rgba(207, 120, 67, 1), rgba(166, 91, 51, 1));
 }
 
 .dark {
@@ -124,15 +277,7 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    background-image:
-      radial-gradient(circle at top left, rgba(116, 149, 92, 0.16), transparent 28%),
-      radial-gradient(circle at top right, rgba(217, 170, 93, 0.16), transparent 24%),
-      linear-gradient(
-        180deg,
-        rgba(255, 252, 247, 0.98) 0%,
-        rgba(247, 240, 229, 0.96) 44%,
-        rgba(252, 248, 241, 0.98) 100%
-      );
+    background-image: var(--app-body-background);
     background-attachment: fixed;
   }
   html {

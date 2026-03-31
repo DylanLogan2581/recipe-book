@@ -4,7 +4,7 @@ import { BookOpenText, ChefHat, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 
 type AppShellHeaderProps = {
   authSummary: {
@@ -13,14 +13,19 @@ type AppShellHeaderProps = {
     ctaLabel: string;
     supportingText: string;
   };
+  themePresetPicker: ReactNode;
 };
 
 export function AppShellHeader({
   authSummary,
+  themePresetPicker,
 }: AppShellHeaderProps): JSX.Element {
   return (
     <header className="sticky top-0 z-20 pt-4 sm:pt-6">
-      <div className="overflow-hidden rounded-[2.25rem] border border-border/80 bg-[linear-gradient(135deg,rgba(255,252,246,0.92),rgba(244,236,222,0.92))] shadow-[0_28px_90px_-60px_rgba(69,52,35,0.6)] backdrop-blur">
+      <div
+        className="overflow-hidden rounded-[2.25rem] border border-border/80 shadow-[0_28px_90px_-60px_rgba(69,52,35,0.6)] backdrop-blur"
+        style={{ backgroundImage: "var(--app-shell-header-surface)" }}
+      >
         <div className="border-b border-border/60 px-5 py-3 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="inline-flex items-center rounded-full border border-border/70 bg-background/80 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
@@ -40,7 +45,10 @@ export function AppShellHeader({
                 to="/recipes"
                 className="flex items-start gap-4 rounded-[1.75rem] transition hover:opacity-90"
               >
-                <div className="flex size-14 items-center justify-center rounded-[1.5rem] bg-[linear-gradient(180deg,rgba(95,123,73,1),rgba(70,96,54,1))] text-primary-foreground shadow-[0_14px_40px_-24px_rgba(70,96,54,0.8)]">
+                <div
+                  className="flex size-14 items-center justify-center rounded-[1.5rem] text-primary-foreground shadow-[0_14px_40px_-24px_rgba(70,96,54,0.8)]"
+                  style={{ backgroundImage: "var(--app-shell-icon-gradient)" }}
+                >
                   <ChefHat className="size-6" />
                 </div>
                 <div className="space-y-1.5">
@@ -94,6 +102,8 @@ export function AppShellHeader({
                 {authSummary.supportingText}
               </p>
             </div>
+
+            {themePresetPicker}
 
             <Button asChild size="lg" className="rounded-full px-4 shadow-sm">
               <Link to="/account">

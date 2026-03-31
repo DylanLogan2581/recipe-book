@@ -44,11 +44,10 @@ export function CreateRecipePage(): JSX.Element {
             Recipe Authoring
           </p>
           <h1 className="mt-3 font-display text-4xl tracking-[-0.04em] text-foreground sm:text-5xl">
-            Checking kitchen access
+            Loading
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-            The app is confirming session state before it shows owner-only
-            authoring tools.
+            Checking session status.
           </p>
         </section>
       </main>
@@ -123,12 +122,10 @@ export function CreateRecipePage(): JSX.Element {
           Recipe Authoring
         </p>
         <h1 className="mt-3 font-display text-4xl tracking-[-0.04em] text-foreground sm:text-5xl">
-          Build a recipe without losing the cooking flow.
+          Create recipe
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-          Capture the basics first, then stack ingredients, equipment, and
-          ordered steps in one pass. Successful saves land on the new detail
-          page immediately.
+          Add the recipe details and save when you are ready.
         </p>
       </section>
 

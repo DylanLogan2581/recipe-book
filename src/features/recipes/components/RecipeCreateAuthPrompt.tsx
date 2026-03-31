@@ -50,7 +50,7 @@ function getAuthPromptCopy(
     return {
       ctaLabel: "Sign in to continue",
       description:
-        "Recipe creation is an owner-only flow. Public browsing stays open, but you need an authenticated account before you can add basics, ingredients, equipment, and steps.",
+        "You need to sign in before creating a recipe.",
       title: "Sign in before creating a recipe",
     };
   }
@@ -58,7 +58,7 @@ function getAuthPromptCopy(
   return {
     ctaLabel: "Review account setup",
     description:
-      "This environment can browse public recipes, but Supabase auth is not configured yet, so owner-only authoring tools cannot submit safely.",
-    title: "Auth setup is still required",
+      "Auth is not configured in this environment.",
+    title: "Auth setup required",
   };
 }

@@ -7,21 +7,18 @@ import type { JSX } from "react";
 
 const footerHighlights = [
   {
-    title: "Browse first",
-    description:
-      "Keep recipe browsing open to guests so anyone can scan dinner ideas before committing to an account.",
+    title: "Browse",
+    description: "View recipes without signing in.",
     icon: Soup,
   },
   {
-    title: "Own your versions",
-    description:
-      "Recipe ownership, edits, and future cooking memories stay ready for signed-in cooks without cluttering the public flow.",
+    title: "Save",
+    description: "Use your account for recipe actions.",
     icon: NotebookText,
   },
   {
-    title: "Built for busy counters",
-    description:
-      "Readable spacing, clear sections, and mobile-friendly layout keep the experience usable while you cook.",
+    title: "Cook",
+    description: "Open recipes in a clean reading view.",
     icon: ShieldCheck,
   },
 ] as const;
@@ -37,15 +34,13 @@ export function AppShellFooter(): JSX.Element {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-3">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                Kitchen Notes
+                Recipe Book
               </p>
               <h2 className="font-display text-3xl leading-none tracking-[-0.03em] text-foreground">
-                A calm shell for browsing now and ownership later.
+                Keep your recipes in one place.
               </h2>
               <p className="text-sm leading-7 text-muted-foreground sm:text-base">
-                The layout stays uncluttered on a crowded counter, keeps recipe
-                discovery public, and leaves a clear place for account-driven
-                actions as the app grows.
+                Browse recipes, open details, and manage your account.
               </p>
             </div>
 
@@ -54,7 +49,7 @@ export function AppShellFooter(): JSX.Element {
                 <Link to="/recipes">Browse recipes</Link>
               </Button>
               <Button asChild size="lg" className="rounded-full px-4">
-                <Link to="/account">Account entry</Link>
+                <Link to="/account">Account</Link>
               </Button>
             </div>
           </div>
@@ -77,8 +72,7 @@ export function AppShellFooter(): JSX.Element {
           </div>
 
           <div className="mt-6 border-t border-border/60 pt-4 text-sm text-muted-foreground">
-            Designed to stay readable from a phone propped next to the cutting
-            board.
+            Simple recipe browsing and account access.
           </div>
         </div>
       </div>

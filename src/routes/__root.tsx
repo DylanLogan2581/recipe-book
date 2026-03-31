@@ -89,8 +89,7 @@ function getAuthSummary(
         "border border-border/70 bg-background/85 text-muted-foreground",
       badgeText: "Checking access",
       ctaLabel: "Account",
-      supportingText:
-        "Public recipe browsing stays open while session state loads.",
+      supportingText: "Loading account status.",
     };
   }
 
@@ -100,7 +99,7 @@ function getAuthSummary(
         "border border-amber-300/70 bg-amber-50/85 text-amber-950",
       badgeText: "Guest browsing",
       ctaLabel: "Sign in",
-      supportingText: "Browse freely now and unlock recipe ownership later.",
+      supportingText: "Sign in to manage recipes.",
     };
   }
 
@@ -112,8 +111,7 @@ function getAuthSummary(
         badgeText:
           sessionState.email === null ? "Signed in" : sessionState.email,
         ctaLabel: "Account",
-        supportingText:
-          "Recipe ownership actions can grow from this account entry point.",
+        supportingText: "You can manage recipes from your account.",
       };
     case "guest":
       return {
@@ -121,8 +119,7 @@ function getAuthSummary(
           "border border-amber-300/80 bg-amber-50/90 text-amber-950",
         badgeText: "Guest browsing",
         ctaLabel: "Sign in",
-        supportingText:
-          "Guests can browse recipes without barriers and sign in when they need ownership tools.",
+        supportingText: "Browse recipes or sign in.",
       };
     case "unconfigured":
       return {
@@ -130,8 +127,7 @@ function getAuthSummary(
           "border border-border/70 bg-background/85 text-muted-foreground",
         badgeText: "Auth setup needed",
         ctaLabel: "Account",
-        supportingText:
-          "The account area is ready even when Supabase auth is not configured yet.",
+        supportingText: "Auth is not configured in this environment.",
       };
   }
 }

@@ -52,27 +52,23 @@ function getHeadlineText(
   switch (kind) {
     case "authenticated":
       return {
-        title: "Your account entry is ready.",
-        description:
-          "Signed-in state already feeds the shell, so recipe ownership actions can attach here without changing the public browsing flow.",
+        title: "Account",
+        description: "You are signed in.",
       };
     case "guest":
       return {
-        title: "Public browsing stays open.",
-        description:
-          "Guests can keep browsing recipes right now, and this page is where sign-in and future ownership actions will land.",
+        title: "Account",
+        description: "Sign in to manage recipes.",
       };
     case "loading":
       return {
-        title: "Checking your kitchen access.",
-        description:
-          "The app is confirming session state so the shell can show the right account treatment.",
+        title: "Account",
+        description: "Checking session status.",
       };
     case "unconfigured":
       return {
-        title: "Auth can plug in here when Supabase is ready.",
-        description:
-          "The account entry point is already part of the shell even if environment config has not been connected yet.",
+        title: "Account",
+        description: "Auth is not configured.",
       };
   }
 }
@@ -120,16 +116,12 @@ export function AccountPage(): JSX.Element {
                 <LockKeyhole className="size-5" />
               </div>
               <div>
-                <h2 className="font-medium">Shell-aware account status</h2>
+                <h2 className="font-medium">Status</h2>
                 <p className="text-sm text-muted-foreground">
                   Current state: {currentStateText}
                 </p>
               </div>
             </div>
-            <p className="mt-4 text-sm leading-6 text-muted-foreground">
-              The app shell now has a stable place for sign-in and future
-              account actions without blocking browsing routes.
-            </p>
           </div>
         </div>
       </section>
@@ -155,11 +147,10 @@ export function AccountPage(): JSX.Element {
             <Soup className="size-5" />
           </div>
           <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            Browse without friction
+            Recipes
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Recipe discovery remains public so the shell supports mixed-access
-            behavior from the beginning.
+            Browse the recipe shelf.
           </p>
           <Button asChild variant="outline" className="mt-4" size="lg">
             <Link to="/recipes">
@@ -174,12 +165,10 @@ export function AccountPage(): JSX.Element {
             <NotebookPen className="size-5" />
           </div>
           <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            Ownership guard behavior
+            Access
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Public recipe routes stay open. Creating or deleting recipes still
-            requires an authenticated session, and existing UI prompts point
-            guests back here when ownership tools are needed.
+            Creating and deleting recipes requires sign-in.
           </p>
         </article>
       </section>
@@ -212,7 +201,7 @@ export function AccountPage(): JSX.Element {
         ) : (
           <>
             <AuthFormCard
-              description="Use your existing Supabase account to unlock recipe ownership actions while public browsing stays open."
+              description="Use your existing account."
               email={signInValues.email}
               isPending={signInMutation.isPending}
               onEmailChange={(event) => {
@@ -240,7 +229,7 @@ export function AccountPage(): JSX.Element {
               title="Sign in"
             />
             <AuthFormCard
-              description="Create a first-pass account so future recipe authoring and ownership flows have an authenticated foundation."
+              description="Create a new account."
               email={signUpValues.email}
               isPending={signUpMutation.isPending}
               onEmailChange={(event) => {
@@ -274,12 +263,10 @@ export function AccountPage(): JSX.Element {
       {!isConfigured ? (
         <section className="rounded-[1.75rem] border border-border/70 bg-background/85 px-5 py-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)]">
           <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            Supabase auth is not configured here yet
+            Auth not configured
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Add the public Supabase URL and anon key to enable sign-in, sign-up,
-            and sign-out in this environment. Public recipe browsing can stay
-            available either way.
+            Add the public Supabase URL and anon key to enable sign-in.
           </p>
         </section>
       ) : null}
@@ -287,12 +274,10 @@ export function AccountPage(): JSX.Element {
       {isGuest ? (
         <section className="rounded-[1.75rem] border border-amber-300/70 bg-amber-50/80 px-5 py-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)]">
           <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-amber-950">
-            Guests can browse, but ownership still requires sign-in
+            Sign in required
           </h2>
           <p className="mt-2 text-sm leading-6 text-amber-950/85">
-            The recipe shelf and detail pages stay public, while future create,
-            edit, and delete actions will keep redirecting or prompting guests
-            here before they continue.
+            Sign in before creating or deleting recipes.
           </p>
         </section>
       ) : null}

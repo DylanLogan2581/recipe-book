@@ -29,11 +29,10 @@ export function AppShellHeader({
         <div className="border-b border-border/60 px-5 py-3 sm:px-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="inline-flex items-center rounded-full border border-border/70 bg-background/80 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-              Counter-ready recipe keeper
+              Recipe Book
             </p>
             <p className="text-xs leading-5 text-muted-foreground sm:text-sm">
-              Public browsing stays open now. Ownership tools can grow in place
-              later.
+              Browse recipes and manage your account.
             </p>
           </div>
         </div>
@@ -56,11 +55,10 @@ export function AppShellHeader({
                     Recipe Book
                   </p>
                   <p className="font-display text-2xl leading-none tracking-[-0.03em] text-foreground sm:text-3xl">
-                    Keep the dishes you actually cook.
+                    Recipes you want to keep.
                   </p>
                   <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-                    Weeknight staples, helpful notes, and future ownership flows
-                    all sit inside one calm kitchen-ready shell.
+                    Browse, save, and revisit recipes.
                   </p>
                 </div>
               </Link>
@@ -86,7 +84,7 @@ export function AppShellHeader({
           <div className="flex flex-col gap-3 sm:max-w-sm sm:self-stretch lg:w-full lg:max-w-sm">
             <div className="rounded-[1.75rem] border border-border/70 bg-background/70 p-4 shadow-[0_18px_48px_-36px_rgba(69,52,35,0.5)]">
               <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-                Kitchen access
+                Account
               </p>
               <div className="mt-3 flex items-center gap-2 text-sm">
                 <span

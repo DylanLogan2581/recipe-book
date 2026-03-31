@@ -133,8 +133,8 @@ function getOwnerActionState(
       ctaTo: "/recipes",
       ctaVariant: "outline",
       description:
-        "Ownership tools stay separate from the public reading view, and the app is checking whether this recipe belongs to you.",
-      title: "Checking kitchen access",
+        "Checking access for this recipe.",
+      title: "Checking access",
     };
   }
 
@@ -144,8 +144,8 @@ function getOwnerActionState(
       ctaTo: "/account",
       ctaVariant: "default",
       description:
-        "Anyone can read this recipe. Sign in from the account area before future create, edit, or delete actions become available.",
-      title: "Sign in for ownership tools",
+        "Sign in to manage recipes.",
+      title: "Sign in required",
     };
   }
 
@@ -155,8 +155,8 @@ function getOwnerActionState(
       ctaTo: "/account",
       ctaVariant: "outline",
       description:
-        "Public reading is still available, but ownership controls cannot light up until Supabase auth is configured for this environment.",
-      title: "Auth setup still needed",
+        "Auth is not configured in this environment.",
+      title: "Auth setup needed",
     };
   }
 
@@ -166,7 +166,7 @@ function getOwnerActionState(
       ctaTo: "/account",
       ctaVariant: "outline",
       description:
-        "This recipe belongs to you. Owner-only controls are intentionally separated here so edit and delete flows can land without disturbing the cooking view.",
+        "You can manage this recipe.",
       title: "You own this recipe",
     };
   }
@@ -176,7 +176,7 @@ function getOwnerActionState(
     ctaTo: "/recipes",
     ctaVariant: "outline",
     description:
-      "This recipe belongs to another cook. Public reading stays open, while any ownership actions remain private to the signed-in owner.",
+      "This recipe belongs to another account.",
     title: "Public view only",
   };
 }

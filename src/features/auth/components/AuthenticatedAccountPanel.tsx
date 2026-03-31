@@ -21,8 +21,8 @@ export function AuthenticatedAccountPanel({
       </h2>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">
         {sessionState.email === null
-          ? "This session is ready for recipe ownership actions."
-          : `Signed in as ${sessionState.email}. Recipe create and delete flows can now rely on your authenticated session.`}
+          ? "You can manage recipes."
+          : `Signed in as ${sessionState.email}.`}
       </p>
       <Button className="mt-5 w-full rounded-[1rem]" disabled={isPending} onClick={onSignOut} size="lg">
         {isPending ? "Signing out..." : "Sign out"}

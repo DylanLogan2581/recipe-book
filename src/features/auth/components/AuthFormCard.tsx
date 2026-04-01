@@ -27,11 +27,11 @@ export function AuthFormCard({
   title,
 }: AuthFormCardProps): JSX.Element {
   return (
-    <article className="rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,237,224,0.84))] p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)]">
-      <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
+    <article className="rounded-[1.5rem] border border-border/80 bg-background/85 p-5 shadow-[0_18px_48px_-38px_rgba(69,52,35,0.45)]">
+      <h2 className="text-sm font-semibold text-foreground">
         {title}
       </h2>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">
         {description}
       </p>
 

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, LockKeyhole, NotebookPen, Soup } from "lucide-react";
+import { LockKeyhole, Palette, Soup } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { ThemePresetPicker, useThemePreset } from "@/features/theme";
 
 import {
   signInMutationOptions,
@@ -82,6 +83,7 @@ export function AccountPage(): JSX.Element {
   const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
   const [signInValues, setSignInValues] = useState(createEmptyAuthFormValues);
   const [signUpValues, setSignUpValues] = useState(createEmptyAuthFormValues);
+  const { activeThemePresetId, setActiveThemePresetId } = useThemePreset();
 
   const kind = sessionQuery.isLoading
     ? "loading"
@@ -95,33 +97,25 @@ export function AccountPage(): JSX.Element {
   const isConfigured = sessionQuery.data?.kind !== "unconfigured";
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 py-4 sm:py-6">
-      <section className="overflow-hidden rounded-[2rem] border border-border/80 bg-[radial-gradient(circle_at_top_left,rgba(217,170,93,0.18),transparent_26%),linear-gradient(180deg,rgba(255,253,249,0.96),rgba(246,238,226,0.92))] px-6 py-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-              Account Entry
-            </p>
-            <h1 className="font-display mt-3 text-4xl leading-none tracking-[-0.03em] text-foreground sm:text-5xl">
+    <main className="mx-auto flex max-w-4xl flex-col gap-4 py-4 sm:py-6">
+      <section className="rounded-[1.75rem] border border-border/80 bg-card/95 px-5 py-6 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)] sm:px-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
+          Account
+        </p>
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="font-display text-3xl leading-none tracking-[-0.03em] text-foreground sm:text-4xl">
               {headline.title}
             </h1>
-            <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base">
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
               {headline.description}
             </p>
           </div>
-
-          <div className="rounded-[1.75rem] border border-border/70 bg-background/80 p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)] lg:max-w-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <LockKeyhole className="size-5" />
-              </div>
-              <div>
-                <h2 className="font-medium">Status</h2>
-                <p className="text-sm text-muted-foreground">
-                  Current state: {currentStateText}
-                </p>
-              </div>
-            </div>
+          <div className="rounded-[1.25rem] border border-border/70 bg-background/80 px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+              Status
+            </p>
+            <p className="mt-1 text-sm text-foreground">{currentStateText}</p>
           </div>
         </div>
       </section>
@@ -141,146 +135,161 @@ export function AccountPage(): JSX.Element {
         </section>
       ) : null}
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        <article className="rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(245,237,224,0.84))] p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.6)]">
-          <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <Soup className="size-5" />
-          </div>
-          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            Recipes
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Browse the recipe shelf.
-          </p>
-          <Button asChild variant="outline" className="mt-4" size="lg">
-            <Link to="/recipes">
-              Browse recipes
-              <ArrowRight />
-            </Link>
-          </Button>
-        </article>
-
-        <article className="rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,252,246,0.92),rgba(244,236,222,0.85))] p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)] lg:col-span-2">
-          <div className="mb-4 flex size-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <NotebookPen className="size-5" />
-          </div>
-          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            Access
-          </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-            Creating and deleting recipes requires sign-in.
-          </p>
-        </article>
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-2">
-        {sessionQuery.data?.kind === "authenticated" ? (
-          <AuthenticatedAccountPanel
-            isPending={signOutMutation.isPending}
-            onSignOut={() => {
-              setFeedback(null);
-              signOutMutation.mutate(undefined, {
-                onError: (error) => {
-                  setFeedback({
-                    description: error.message,
-                    title: "Sign-out failed",
-                    tone: "error",
-                  });
-                },
-                onSuccess: (result) => {
-                  setFeedback({
-                    description: result.message,
-                    title: "Signed out",
-                    tone: "success",
-                  });
-                },
-              });
-            }}
-            sessionState={sessionQuery.data}
-          />
-        ) : (
-          <>
-            <AuthFormCard
-              description="Use your existing account."
-              email={signInValues.email}
-              isPending={signInMutation.isPending}
-              onEmailChange={(event) => {
-                setSignInValues((current) => ({
-                  ...current,
-                  email: event.target.value,
-                }));
-              }}
-              onPasswordChange={(event) => {
-                setSignInValues((current) => ({
-                  ...current,
-                  password: event.target.value,
-                }));
-              }}
-              onSubmit={(event) => {
-                event.preventDefault();
-                submitCredentials(signInValues, signInMutation, {
-                  setFeedback,
-                  setValues: setSignInValues,
-                  successTitle: "Signed in",
+      <section className="grid gap-4 md:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
+        <div className="space-y-4">
+          {sessionQuery.data?.kind === "authenticated" ? (
+            <AuthenticatedAccountPanel
+              isPending={signOutMutation.isPending}
+              onSignOut={() => {
+                setFeedback(null);
+                signOutMutation.mutate(undefined, {
+                  onError: (error) => {
+                    setFeedback({
+                      description: error.message,
+                      title: "Sign-out failed",
+                      tone: "error",
+                    });
+                  },
+                  onSuccess: (result) => {
+                    setFeedback({
+                      description: result.message,
+                      title: "Signed out",
+                      tone: "success",
+                    });
+                  },
                 });
               }}
-              password={signInValues.password}
-              submitLabel="Sign in"
-              title="Sign in"
+              sessionState={sessionQuery.data}
             />
-            <AuthFormCard
-              description="Create a new account."
-              email={signUpValues.email}
-              isPending={signUpMutation.isPending}
-              onEmailChange={(event) => {
-                setSignUpValues((current) => ({
-                  ...current,
-                  email: event.target.value,
-                }));
-              }}
-              onPasswordChange={(event) => {
-                setSignUpValues((current) => ({
-                  ...current,
-                  password: event.target.value,
-                }));
-              }}
-              onSubmit={(event) => {
-                event.preventDefault();
-                submitCredentials(signUpValues, signUpMutation, {
-                  setFeedback,
-                  setValues: setSignUpValues,
-                  successTitle: "Account ready",
-                });
-              }}
-              password={signUpValues.password}
-              submitLabel="Create account"
-              title="Sign up"
-            />
-          </>
-        )}
+          ) : (
+            <section className="grid gap-4 lg:grid-cols-2">
+              <AuthFormCard
+                description="Use your existing account."
+                email={signInValues.email}
+                isPending={signInMutation.isPending}
+                onEmailChange={(event) => {
+                  setSignInValues((current) => ({
+                    ...current,
+                    email: event.target.value,
+                  }));
+                }}
+                onPasswordChange={(event) => {
+                  setSignInValues((current) => ({
+                    ...current,
+                    password: event.target.value,
+                  }));
+                }}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  submitCredentials(signInValues, signInMutation, {
+                    setFeedback,
+                    setValues: setSignInValues,
+                    successTitle: "Signed in",
+                  });
+                }}
+                password={signInValues.password}
+                submitLabel="Sign in"
+                title="Sign in"
+              />
+              <AuthFormCard
+                description="Create a new account."
+                email={signUpValues.email}
+                isPending={signUpMutation.isPending}
+                onEmailChange={(event) => {
+                  setSignUpValues((current) => ({
+                    ...current,
+                    email: event.target.value,
+                  }));
+                }}
+                onPasswordChange={(event) => {
+                  setSignUpValues((current) => ({
+                    ...current,
+                    password: event.target.value,
+                  }));
+                }}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  submitCredentials(signUpValues, signUpMutation, {
+                    setFeedback,
+                    setValues: setSignUpValues,
+                    successTitle: "Account ready",
+                  });
+                }}
+                password={signUpValues.password}
+                submitLabel="Create account"
+                title="Sign up"
+              />
+            </section>
+          )}
+
+          {!isConfigured ? (
+            <section className="rounded-[1.5rem] border border-border/70 bg-background/85 px-5 py-4">
+              <h2 className="text-sm font-semibold text-foreground">
+                Auth not configured
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                Add the public Supabase URL and anon key to enable sign-in.
+              </p>
+            </section>
+          ) : null}
+
+          {isGuest ? (
+            <section className="rounded-[1.5rem] border border-amber-300/70 bg-amber-50/80 px-5 py-4">
+              <h2 className="text-sm font-semibold text-amber-950">
+                Sign in required
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-amber-950/85">
+                Sign in before creating or deleting recipes.
+              </p>
+            </section>
+          ) : null}
+        </div>
+
+        <div className="space-y-4">
+          <section className="rounded-[1.5rem] border border-border/80 bg-background/85 p-4 shadow-[0_18px_48px_-38px_rgba(69,52,35,0.45)]">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Palette className="size-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">Appearance</h2>
+                <p className="text-sm text-muted-foreground">Choose a theme preset.</p>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <ThemePresetPicker
+                activeThemePresetId={activeThemePresetId}
+                onThemePresetChange={setActiveThemePresetId}
+                variant="compact"
+              />
+            </div>
+          </section>
+
+          <article className="rounded-[1.5rem] border border-border/80 bg-background/85 p-4 shadow-[0_18px_48px_-38px_rgba(69,52,35,0.45)]">
+            <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <LockKeyhole className="size-4" />
+            </div>
+            <h2 className="text-sm font-semibold text-foreground">Access</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+              Creating and deleting recipes requires sign-in.
+            </p>
+          </article>
+
+          <article className="rounded-[1.5rem] border border-border/80 bg-background/85 p-4 shadow-[0_18px_48px_-38px_rgba(69,52,35,0.45)]">
+            <div className="mb-3 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Soup className="size-5" />
+            </div>
+            <h2 className="text-sm font-semibold text-foreground">Recipes</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+              Open the recipe shelf.
+            </p>
+            <Button asChild className="mt-4 w-full rounded-xl" size="lg" variant="outline">
+              <Link to="/recipes">Browse recipes</Link>
+            </Button>
+          </article>
+        </div>
       </section>
-
-      {!isConfigured ? (
-        <section className="rounded-[1.75rem] border border-border/70 bg-background/85 px-5 py-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)]">
-          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-foreground">
-            Auth not configured
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Add the public Supabase URL and anon key to enable sign-in.
-          </p>
-        </section>
-      ) : null}
-
-      {isGuest ? (
-        <section className="rounded-[1.75rem] border border-amber-300/70 bg-amber-50/80 px-5 py-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)]">
-          <h2 className="font-display text-2xl leading-none tracking-[-0.02em] text-amber-950">
-            Sign in required
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-amber-950/85">
-            Sign in before creating or deleting recipes.
-          </p>
-        </section>
-      ) : null}
     </main>
   );
 }

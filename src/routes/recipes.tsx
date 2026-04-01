@@ -1,26 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import {
-  preloadRecipeList,
-  recipeShelfSearchSchema,
-  RecipesPage,
-  RecipesPageErrorState,
-  RecipesPageLoading,
-} from "@/features/recipes";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import type { JSX } from "react";
 
-function RecipesRouteComponent(): JSX.Element {
-  const search = Route.useSearch();
-
-  return <RecipesPage showDeletedBanner={search.deleted === "1"} />;
+function RecipesLayoutRoute(): JSX.Element {
+  return <Outlet />;
 }
 
 export const Route = createFileRoute("/recipes")({
-  loader: ({ context }) => preloadRecipeList(context.queryClient),
-  validateSearch: recipeShelfSearchSchema,
-  component: RecipesRouteComponent,
-  errorComponent: RecipesPageErrorState,
-  pendingComponent: RecipesPageLoading,
-  pendingMs: 0,
+  component: RecipesLayoutRoute,
 });

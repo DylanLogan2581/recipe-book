@@ -15,7 +15,7 @@ import {
 import type { FormEvent, JSX } from "react";
 
 const inputClassName =
-  "mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "mt-2 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
 const checkboxClassName =
   "size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20";
 
@@ -45,22 +45,13 @@ export function RecipeCreateForm({
   values,
 }: RecipeCreateFormProps): JSX.Element {
   return (
-    <form className="space-y-6" onSubmit={onSubmit}>
-      <section className="rounded-[2rem] border border-border/80 bg-card/95 px-6 py-6 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
-        <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-            Basics
-          </p>
-          <h2 className="mt-3 font-display text-3xl tracking-[-0.03em] text-foreground">
-            Start with the shape of the recipe.
-          </h2>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Capture the title, quick summary, yield, timing, and whether serving
-            scaling should stay available later.
-          </p>
-        </div>
+    <form className="space-y-10" onSubmit={onSubmit}>
+      <section className="space-y-6 border-b border-border pb-8">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          Basics
+        </h2>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           <label className="md:col-span-2">
             <span className="text-sm font-medium text-foreground">Title</span>
             <input
@@ -98,7 +89,7 @@ export function RecipeCreateForm({
                 const description = event.target.value;
                 setValues((current) => ({ ...current, description }));
               }}
-              placeholder="Add any context, serving notes, or why this dish earns a spot in the rotation."
+              placeholder="Add any context or serving notes."
               value={values.description}
             />
           </label>
@@ -163,7 +154,7 @@ export function RecipeCreateForm({
           </label>
         </div>
 
-        <label className="mt-5 flex items-center gap-3 rounded-2xl border border-border/70 bg-background/75 px-4 py-3 text-sm text-foreground">
+        <label className="flex items-center gap-3 text-sm text-foreground">
           <input
             checked={values.isScalable}
             className={checkboxClassName}
@@ -173,21 +164,20 @@ export function RecipeCreateForm({
             }}
             type="checkbox"
           />
-          Allow serving scaling for this recipe.
+          Allow ingredient scaling
         </label>
 
-        <div className="mt-5 rounded-[1.5rem] border border-border/70 bg-background/75 p-4">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-2xl">
-              <p className="text-sm font-medium text-foreground">Cover photo</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Upload a JPG, PNG, or WebP image up to 5 MB. The file is stored
-                in Supabase Storage and the recipe saves only the storage path.
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Cover photo</h3>
+              <p className="text-sm text-muted-foreground">
+                JPG, PNG, or WebP up to 5 MB.
               </p>
             </div>
             {isPhotoAttached ? (
               <Button
-                className="rounded-full px-4"
+                className="rounded-md px-4"
                 onClick={onRemoveCoverPhoto}
                 size="sm"
                 type="button"
@@ -198,25 +188,20 @@ export function RecipeCreateForm({
             ) : null}
           </div>
 
-          <label className="mt-4 block">
-            <span className="text-sm font-medium text-foreground">
-              Select image
-            </span>
-            <input
-              accept="image/jpeg,image/png,image/webp"
-              className={`${inputClassName} file:mr-3 file:rounded-full file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary`}
-              disabled={isPending}
-              key={coverPhotoInputResetKey}
-              onChange={(event) => {
-                onCoverPhotoChange(event.target.files?.[0] ?? null);
-              }}
-              type="file"
-            />
-          </label>
+          <input
+            accept="image/jpeg,image/png,image/webp"
+            className={`${inputClassName} file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground`}
+            disabled={isPending}
+            key={coverPhotoInputResetKey}
+            onChange={(event) => {
+              onCoverPhotoChange(event.target.files?.[0] ?? null);
+            }}
+            type="file"
+          />
 
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {coverPhotoName === null
-              ? "No cover photo selected yet."
+              ? "No cover photo selected."
               : `Selected file: ${coverPhotoName}`}
           </p>
         </div>
@@ -224,9 +209,9 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add ingredient"
-        description="Keep ingredients in cooking order so prep and shopping stay predictable."
-        items={values.ingredients}
         itemLabel="Ingredient"
+        items={values.ingredients}
+        minimumItems={1}
         onAdd={() => {
           setValues((current) => ({
             ...current,
@@ -263,9 +248,9 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add equipment"
-        description="Equipment is optional, but it helps future cooks see the setup at a glance."
-        items={values.equipment}
         itemLabel="Equipment"
+        items={values.equipment}
+        minimumItems={0}
         onAdd={() => {
           setValues((current) => ({
             ...current,
@@ -299,9 +284,9 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add step"
-        description="Steps stay ordered so the detail page can render a clean cooking flow immediately after creation."
-        items={values.steps}
         itemLabel="Step"
+        items={values.steps}
+        minimumItems={1}
         onAdd={() => {
           setValues((current) => ({
             ...current,
@@ -329,12 +314,12 @@ export function RecipeCreateForm({
         title="Steps"
       />
 
-      <div className="flex flex-wrap items-center justify-end gap-3">
-        <Button asChild size="lg" variant="outline" className="rounded-full px-5">
+      <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-6">
+        <Button asChild className="rounded-md px-5" size="lg" variant="outline">
           <Link to="/recipes">Cancel</Link>
         </Button>
         <Button
-          className="rounded-full px-6"
+          className="rounded-md px-6"
           disabled={isPending}
           size="lg"
           type="submit"
@@ -348,9 +333,9 @@ export function RecipeCreateForm({
 
 type RecipeCreateCollectionSectionProps<TItem> = {
   addLabel: string;
-  description: string;
-  items: TItem[];
   itemLabel: string;
+  items: TItem[];
+  minimumItems: number;
   onAdd: () => void;
   onRemove: (index: number) => void;
   renderItem: (item: TItem, index: number) => JSX.Element;
@@ -359,27 +344,22 @@ type RecipeCreateCollectionSectionProps<TItem> = {
 
 function RecipeCreateCollectionSection<TItem>({
   addLabel,
-  description,
-  items,
   itemLabel,
+  items,
+  minimumItems,
   onAdd,
   onRemove,
   renderItem,
   title,
 }: RecipeCreateCollectionSectionProps<TItem>): JSX.Element {
   return (
-    <section className="rounded-[2rem] border border-border/80 bg-background/85 px-6 py-6 shadow-[0_20px_60px_-44px_rgba(69,52,35,0.5)] sm:px-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-            {title}
-          </p>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            {description}
-          </p>
-        </div>
+    <section className="space-y-4 border-b border-border pb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {title}
+        </h2>
         <Button
-          className="rounded-full px-5"
+          className="rounded-md px-4"
           onClick={onAdd}
           type="button"
           variant="outline"
@@ -388,18 +368,18 @@ function RecipeCreateCollectionSection<TItem>({
         </Button>
       </div>
 
-      <div className="mt-6 space-y-4">
+      <div className="space-y-4">
         {items.map((item, index) => (
           <article
             key={`${title}-${index + 1}`}
-            className="rounded-[1.5rem] border border-border/70 bg-card/90 p-4 shadow-[0_16px_40px_-34px_rgba(69,52,35,0.45)]"
+            className="rounded-lg border border-border bg-background p-4"
           >
             <div className="flex items-center justify-between gap-3">
               <p className="text-sm font-semibold text-foreground">
                 {itemLabel} {index + 1}
               </p>
               <Button
-                disabled={items.length === 1 && (title === "Ingredients" || title === "Steps")}
+                disabled={items.length <= minimumItems}
                 onClick={() => {
                   onRemove(index);
                 }}
@@ -432,7 +412,7 @@ function IngredientFields({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <label className="md:col-span-2">
-        <span className="text-sm font-medium text-foreground">Ingredient name</span>
+        <span className="text-sm font-medium text-foreground">Ingredient</span>
         <input
           className={inputClassName}
           onChange={(event) => {
@@ -492,7 +472,7 @@ function IngredientFields({
         />
       </label>
 
-      <label className="md:col-span-2 flex items-center gap-3 rounded-2xl border border-border/70 bg-background/75 px-4 py-3 text-sm text-foreground">
+      <label className="md:col-span-2 flex items-center gap-3 text-sm text-foreground">
         <input
           checked={ingredient.isOptional}
           className={checkboxClassName}
@@ -501,7 +481,7 @@ function IngredientFields({
           }}
           type="checkbox"
         />
-        Mark ingredient {index + 1} as optional.
+        Optional ingredient {index + 1}
       </label>
     </div>
   );
@@ -521,7 +501,7 @@ function EquipmentFields({
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <label>
-        <span className="text-sm font-medium text-foreground">Equipment name</span>
+        <span className="text-sm font-medium text-foreground">Equipment</span>
         <input
           className={inputClassName}
           onChange={(event) => {
@@ -544,7 +524,7 @@ function EquipmentFields({
         />
       </label>
 
-      <label className="md:col-span-2 flex items-center gap-3 rounded-2xl border border-border/70 bg-background/75 px-4 py-3 text-sm text-foreground">
+      <label className="md:col-span-2 flex items-center gap-3 text-sm text-foreground">
         <input
           checked={equipment.isOptional}
           className={checkboxClassName}
@@ -553,7 +533,7 @@ function EquipmentFields({
           }}
           type="checkbox"
         />
-        Mark equipment {index + 1} as optional.
+        Optional equipment {index + 1}
       </label>
     </div>
   );
@@ -605,8 +585,8 @@ function StepFields({ index, onChange, step }: StepFieldsProps): JSX.Element {
         />
       </label>
 
-      <p className="md:col-span-2 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-        Step {index + 1} stays in recipe order.
+      <p className="md:col-span-2 text-sm text-muted-foreground">
+        Step {index + 1}
       </p>
     </div>
   );

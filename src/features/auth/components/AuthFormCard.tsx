@@ -13,7 +13,7 @@ type AuthFormCardProps = {
 };
 
 const inputClassName =
-  "h-11 w-full rounded-[1rem] border border-border/70 bg-background/90 px-4 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-3 focus:ring-primary/15";
+  "h-11 w-full rounded-md border border-border bg-background px-4 text-sm text-foreground outline-none transition focus:border-primary/50 focus:ring-3 focus:ring-primary/15";
 
 export function AuthFormCard({
   description,
@@ -27,11 +27,11 @@ export function AuthFormCard({
   title,
 }: AuthFormCardProps): JSX.Element {
   return (
-    <article className="rounded-[1.5rem] border border-border/80 bg-background/85 p-5 shadow-[0_18px_48px_-38px_rgba(69,52,35,0.45)]">
+    <article className="rounded-lg border border-border bg-background p-5">
       <h2 className="text-sm font-semibold text-foreground">
         {title}
       </h2>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">
+      <p className="mt-1 text-sm text-muted-foreground">
         {description}
       </p>
 
@@ -70,7 +70,7 @@ export function AuthFormCard({
         </div>
 
         <button
-          className="inline-flex h-11 w-full items-center justify-center rounded-[1rem] bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
           disabled={isPending}
           type="submit"
         >

@@ -8,11 +8,19 @@ import {
 import type { RecipeDetail } from "../types/recipes";
 
 describe("createEmptyRecipeCreateFormValues", () => {
-  it("starts equipment empty while keeping required collections seeded", () => {
-    expect(createEmptyRecipeCreateFormValues()).toMatchObject({
+  it("starts ingredient, equipment, and step collections empty", () => {
+    expect(createEmptyRecipeCreateFormValues()).toEqual({
+      cookMinutes: "",
+      description: "",
       equipment: [],
-      ingredients: [expect.any(Object)],
-      steps: [expect.any(Object)],
+      ingredients: [],
+      isScalable: true,
+      prepMinutes: "",
+      steps: [],
+      summary: "",
+      title: "",
+      yieldQuantity: "",
+      yieldUnit: "",
     });
   });
 });
@@ -100,6 +108,36 @@ describe("createRecipeFormValuesFromRecipe", () => {
       title: "Tomato Sauce",
       yieldQuantity: "4",
       yieldUnit: "servings",
+    });
+  });
+
+  it("preserves empty recipe collections instead of seeding placeholders", () => {
+    const recipe: RecipeDetail = {
+      cookLogs: [],
+      cookMinutes: null,
+      coverImagePath: null,
+      createdAt: "2026-04-03T00:00:00.000Z",
+      description: "",
+      equipment: [],
+      id: "recipe-2",
+      ingredients: [],
+      isScalable: false,
+      ownerId: "user-1",
+      prepMinutes: null,
+      steps: [],
+      summary: "",
+      title: "Plain Rice",
+      totalMinutes: null,
+      updatedAt: "2026-04-03T00:00:00.000Z",
+      yieldQuantity: null,
+      yieldUnit: null,
+    };
+
+    expect(createRecipeFormValuesFromRecipe(recipe)).toMatchObject({
+      equipment: [],
+      ingredients: [],
+      steps: [],
+      title: "Plain Rice",
     });
   });
 });

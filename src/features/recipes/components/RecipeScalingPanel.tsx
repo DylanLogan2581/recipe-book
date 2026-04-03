@@ -24,13 +24,22 @@ export function RecipeScalingPanel({
 
   return (
     <section className="flex flex-col gap-4 border-t border-border pt-6 lg:flex-row lg:items-center lg:justify-between">
-      <div className="space-y-1">
-        <h2 className="text-lg font-semibold tracking-tight text-foreground">
-          Scale ingredients
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          {isScalable ? formatScaleLabel(scaleFactor) : getScalingPanelStatus(recipe)}
-        </p>
+      <div className="space-y-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            Scale ingredients
+          </h2>
+          {isScalable ? (
+            <span className="rounded-full border border-border bg-background px-3 py-1 text-sm text-muted-foreground">
+              Current: {formatScaleLabel(scaleFactor)}
+            </span>
+          ) : null}
+        </div>
+        {!isScalable ? (
+          <p className="text-sm text-muted-foreground">
+            {getScalingPanelStatus(recipe)}
+          </p>
+        ) : null}
       </div>
 
       <div className="flex flex-wrap gap-2">

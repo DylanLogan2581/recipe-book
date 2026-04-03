@@ -1,3 +1,5 @@
+import type { RecipeDetail } from "../types/recipes";
+
 export type RecipeCreateIngredientFormValue = {
   amount: string;
   isOptional: boolean;
@@ -74,4 +76,47 @@ export function createEmptyRecipeCreateFormValues(): RecipeCreateFormValues {
     yieldQuantity: "",
     yieldUnit: "",
   };
+}
+
+export function createRecipeFormValuesFromRecipe(
+  recipe: RecipeDetail,
+): RecipeCreateFormValues {
+  return {
+    cookMinutes: formatOptionalNumber(recipe.cookMinutes),
+    description: recipe.description,
+    equipment: recipe.equipment.map((item) => ({
+      details: item.details ?? "",
+      isOptional: item.isOptional,
+      name: item.name,
+    })),
+    ingredients:
+      recipe.ingredients.length === 0
+        ? [createEmptyRecipeIngredientFormValue()]
+        : recipe.ingredients.map((ingredient) => ({
+            amount: formatOptionalNumber(ingredient.amount),
+            isOptional: ingredient.isOptional,
+            item: ingredient.item,
+            notes: ingredient.notes ?? "",
+            preparation: ingredient.preparation ?? "",
+            unit: ingredient.unit ?? "",
+          })),
+    isScalable: recipe.isScalable,
+    prepMinutes: formatOptionalNumber(recipe.prepMinutes),
+    steps:
+      recipe.steps.length === 0
+        ? [createEmptyRecipeStepFormValue()]
+        : recipe.steps.map((step) => ({
+            instruction: step.instruction,
+            notes: step.notes ?? "",
+            timerSeconds: formatOptionalNumber(step.timerSeconds),
+          })),
+    summary: recipe.summary,
+    title: recipe.title,
+    yieldQuantity: formatOptionalNumber(recipe.yieldQuantity),
+    yieldUnit: recipe.yieldUnit ?? "",
+  };
+}
+
+function formatOptionalNumber(value: number | null): string {
+  return value === null ? "" : String(value);
 }

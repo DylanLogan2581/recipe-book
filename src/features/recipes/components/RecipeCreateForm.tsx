@@ -1,5 +1,3 @@
-import { Link } from "@tanstack/react-router";
-
 import { Button } from "@/components/ui/button";
 
 import {
@@ -20,28 +18,36 @@ const checkboxClassName =
   "size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20";
 
 type RecipeCreateFormProps = {
-  coverPhotoName: string | null;
+  cancelButton: JSX.Element;
   coverPhotoInputResetKey: number;
-  isPhotoAttached: boolean;
+  coverPhotoStatusMessage: string;
+  hasCoverPhoto: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
   onRemoveCoverPhoto: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  removeCoverPhotoLabel: string;
   setValues: (
     updater: (current: RecipeCreateFormValues) => RecipeCreateFormValues,
   ) => void;
+  submitLabel: string;
+  submitPendingLabel: string;
   values: RecipeCreateFormValues;
 };
 
 export function RecipeCreateForm({
-  coverPhotoName,
+  cancelButton,
   coverPhotoInputResetKey,
-  isPhotoAttached,
+  coverPhotoStatusMessage,
+  hasCoverPhoto,
   isPending,
   onCoverPhotoChange,
   onRemoveCoverPhoto,
   onSubmit,
+  removeCoverPhotoLabel,
   setValues,
+  submitLabel,
+  submitPendingLabel,
   values,
 }: RecipeCreateFormProps): JSX.Element {
   return (
@@ -175,7 +181,7 @@ export function RecipeCreateForm({
                 JPG, PNG, or WebP up to 5 MB.
               </p>
             </div>
-            {isPhotoAttached ? (
+            {hasCoverPhoto ? (
               <Button
                 className="rounded-md px-4"
                 onClick={onRemoveCoverPhoto}
@@ -183,7 +189,7 @@ export function RecipeCreateForm({
                 type="button"
                 variant="outline"
               >
-                Remove photo
+                {removeCoverPhotoLabel}
               </Button>
             ) : null}
           </div>
@@ -199,11 +205,7 @@ export function RecipeCreateForm({
             type="file"
           />
 
-          <p className="text-sm text-muted-foreground">
-            {coverPhotoName === null
-              ? "No cover photo selected."
-              : `Selected file: ${coverPhotoName}`}
-          </p>
+          <p className="text-sm text-muted-foreground">{coverPhotoStatusMessage}</p>
         </div>
       </section>
 
@@ -312,16 +314,14 @@ export function RecipeCreateForm({
       />
 
       <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-6">
-        <Button asChild className="rounded-md px-5" size="lg" variant="outline">
-          <Link to="/recipes">Cancel</Link>
-        </Button>
+        {cancelButton}
         <Button
           className="rounded-md px-6"
           disabled={isPending}
           size="lg"
           type="submit"
         >
-          {isPending ? "Saving recipe..." : "Create recipe"}
+          {isPending ? submitPendingLabel : submitLabel}
         </Button>
       </div>
     </form>

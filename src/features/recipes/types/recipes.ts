@@ -110,3 +110,7 @@ export type DeleteRecipeInput = {
 export type DeleteRecipeResult = {
   recipeId: string;
 };
+
+export type UpdateRecipeInput = CreateRecipeInput & {
+  recipeId: string;
+};

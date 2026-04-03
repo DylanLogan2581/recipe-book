@@ -1,4 +1,5 @@
 export { CreateRecipePage } from "./components/CreateRecipePage";
+export { EditRecipePage } from "./components/EditRecipePage";
 export { RecipeDetailPage } from "./components/RecipeDetailPage";
 export { RecipeDetailHero } from "./components/RecipeDetailHero";
 export { RecipeDetailPageErrorState } from "./components/RecipeDetailPageErrorState";
@@ -21,6 +22,7 @@ export {
   getRecipeDetail,
   listRecipes,
   RecipeDataAccessError,
+  updateRecipe,
   type RecipeDataAccessErrorCode,
 } from "./queries/recipeApi";
 export {
@@ -53,6 +55,7 @@ export { recipeMutationKeys, recipeQueryKeys } from "./queries/recipeKeys";
 export {
   createRecipeMutationOptions,
   deleteRecipeMutationOptions,
+  updateRecipeMutationOptions,
 } from "./queries/recipeMutationOptions";
 export {
   preloadRecipeDetail,
@@ -79,12 +82,14 @@ export type {
   RecipeIngredient,
   RecipeListItem,
   RecipeStep,
+  UpdateRecipeInput,
 } from "./types/recipes";
 export {
   createEmptyRecipeCreateFormValues,
   createEmptyRecipeEquipmentFormValue,
   createEmptyRecipeIngredientFormValue,
   createEmptyRecipeStepFormValue,
+  createRecipeFormValuesFromRecipe,
   type RecipeCreateEquipmentFormValue,
   type RecipeCreateFormValues,
   type RecipeCreateIngredientFormValue,

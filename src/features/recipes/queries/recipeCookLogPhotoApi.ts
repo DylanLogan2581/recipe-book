@@ -164,16 +164,12 @@ function getRecipeCookLogPhotoExtension(fileName: string): string {
   return extension === "" ? "jpg" : extension;
 }
 
-function isRecipeCookLogPhotoBucketMissingError(error: unknown): boolean {
-  if (typeof error !== "object" || error === null) {
+function isRecipeCookLogPhotoBucketMissingError(candidate: unknown): boolean {
+  if (candidate === null || typeof candidate !== "object") {
     return false;
   }
 
-  const storageError = error as {
-    error?: string;
-    message?: string;
-    statusCode?: string;
-  };
+  const storageError = candidate as Record<string, unknown>;
 
   return (
     storageError.statusCode === "404" &&

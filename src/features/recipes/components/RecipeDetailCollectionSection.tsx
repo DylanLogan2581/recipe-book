@@ -3,7 +3,6 @@ import {
   formatCountdownClock,
   formatIngredientText,
   formatStepTimer,
-  getRecipeCountLabel,
 } from "../utils/recipePresentation";
 
 import { RecipeStepTimerControl } from "./RecipeStepTimerControl";
@@ -40,11 +39,13 @@ export function RecipeDetailCollectionSection(
 
   return (
     <section className="space-y-4 border-t border-border pt-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center gap-3">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           {props.title}
         </h2>
-        <p className="text-sm text-muted-foreground">{getCountText(props.kind, props.items.length)}</p>
+        <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
+          {props.items.length}
+        </span>
       </div>
 
       {props.items.length === 0 ? (
@@ -165,20 +166,6 @@ export function RecipeDetailCollectionSection(
       ) : null}
     </section>
   );
-}
-
-function getCountText(
-  kind: RecipeDetailCollectionSectionProps["kind"],
-  count: number,
-): string {
-  switch (kind) {
-    case "ingredients":
-      return getRecipeCountLabel(count, "ingredient");
-    case "equipment":
-      return getRecipeCountLabel(count, "piece", "pieces");
-    case "steps":
-      return getRecipeCountLabel(count, "step");
-  }
 }
 
 function getEmptyText(kind: RecipeDetailCollectionSectionProps["kind"]): string {

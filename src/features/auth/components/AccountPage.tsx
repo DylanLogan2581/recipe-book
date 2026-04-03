@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { ThemePresetPicker, useThemePreset } from "@/features/theme";
 
 import {
@@ -226,12 +224,6 @@ export function AccountPage(): JSX.Element {
             variant="compact"
           />
         </section>
-
-        <div className="border-t border-border pt-6">
-          <Button asChild className="rounded-md px-4" size="lg" variant="outline">
-            <Link to="/recipes">Browse recipes</Link>
-          </Button>
-        </div>
       </div>
     </main>
   );

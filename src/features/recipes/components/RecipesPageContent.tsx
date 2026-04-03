@@ -16,7 +16,7 @@ export function RecipesPageContent({
   }
 
   return (
-    <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
       {recipes.map((recipe) => (
         <RecipePreviewCard key={recipe.id} recipe={recipe} />
       ))}

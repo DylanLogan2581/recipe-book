@@ -33,27 +33,17 @@ const ReactQueryDevtools = isDev
 
 function RootShell(): JSX.Element {
   const sessionQuery = useQuery(sessionQueryOptions);
-  const authSummary = getAuthSummary(sessionQuery.isLoading, sessionQuery.data);
+  const authActionLabel = getAuthActionLabel(
+    sessionQuery.isLoading,
+    sessionQuery.data,
+  );
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{ backgroundImage: "var(--app-shell-overlay)" }}
-      />
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-64"
-        style={{ backgroundImage: "var(--app-shell-top-wash)" }}
-      />
-      <div
-        className="pointer-events-none absolute inset-x-8 top-40 h-px"
-        style={{ backgroundImage: "var(--app-shell-divider)" }}
-      />
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-4 sm:px-6 lg:px-8">
+        <AppShellHeader authActionLabel={authActionLabel} />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-[92rem] flex-col px-4 sm:px-6 lg:px-8">
-        <AppShellHeader authSummary={authSummary} />
-
-        <div className="flex-1 py-4 sm:py-6">
+        <div className="flex-1 py-5 sm:py-6">
           <Outlet />
         </div>
       </div>
@@ -61,61 +51,25 @@ function RootShell(): JSX.Element {
   );
 }
 
-function getAuthSummary(
+function getAuthActionLabel(
   isLoading: boolean,
   sessionState: AuthSessionState | undefined,
-): {
-  badgeClassName: string;
-  badgeText: string;
-  ctaLabel: string;
-  supportingText: string;
-} {
+): string {
   if (isLoading) {
-    return {
-      badgeClassName:
-        "border border-border/70 bg-background/85 text-muted-foreground",
-      badgeText: "Checking access",
-      ctaLabel: "Account",
-      supportingText: "Loading account status.",
-    };
+    return "Account";
   }
 
   if (sessionState === undefined) {
-    return {
-      badgeClassName:
-        "border border-amber-300/70 bg-amber-50/85 text-amber-950",
-      badgeText: "Guest browsing",
-      ctaLabel: "Sign in",
-      supportingText: "Sign in to manage recipes.",
-    };
+    return "Sign in";
   }
 
   switch (sessionState.kind) {
     case "authenticated":
-      return {
-        badgeClassName:
-          "border border-emerald-300/80 bg-emerald-50/90 text-emerald-950",
-        badgeText:
-          sessionState.email === null ? "Signed in" : sessionState.email,
-        ctaLabel: "Account",
-        supportingText: "You can manage recipes from your account.",
-      };
+      return "Account";
     case "guest":
-      return {
-        badgeClassName:
-          "border border-amber-300/80 bg-amber-50/90 text-amber-950",
-        badgeText: "Guest browsing",
-        ctaLabel: "Sign in",
-        supportingText: "Browse recipes or sign in.",
-      };
+      return "Sign in";
     case "unconfigured":
-      return {
-        badgeClassName:
-          "border border-border/70 bg-background/85 text-muted-foreground",
-        badgeText: "Auth setup needed",
-        ctaLabel: "Account",
-        supportingText: "Auth is not configured in this environment.",
-      };
+      return "Account";
   }
 }
 

@@ -17,20 +17,17 @@ import type { JSX } from "react";
 
 type RecipeDetailCollectionSectionProps =
   | {
-      description: string;
       items: RecipeIngredient[];
       kind: "ingredients";
       scaleFactor?: number;
       title: string;
     }
   | {
-      description: string;
       items: RecipeEquipment[];
       kind: "equipment";
       title: string;
     }
   | {
-      description: string;
       items: RecipeStep[];
       kind: "steps";
       title: string;
@@ -39,43 +36,29 @@ type RecipeDetailCollectionSectionProps =
 export function RecipeDetailCollectionSection(
   props: RecipeDetailCollectionSectionProps,
 ): JSX.Element {
-  const isMethod = props.kind === "steps";
   const stepTimer = useStepTimer();
 
   return (
-    <section className="rounded-[1.75rem] border border-border/70 bg-card/95 p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)] sm:p-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-            {isMethod ? "Cooking flow" : "Recipe details"}
-          </p>
-          <h2 className="mt-2 font-display text-2xl tracking-[-0.03em] text-foreground sm:text-3xl">
-            {props.title}
-          </h2>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {getCountText(props.kind, props.items.length)}
-        </p>
+    <section className="space-y-4 border-t border-border pt-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          {props.title}
+        </h2>
+        <p className="text-sm text-muted-foreground">{getCountText(props.kind, props.items.length)}</p>
       </div>
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-[0.95rem]">
-        {props.description}
-      </p>
 
       {props.items.length === 0 ? (
-        <div className="mt-5 rounded-[1.4rem] border border-dashed border-border/70 bg-background/70 px-4 py-5 text-sm leading-6 text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
           {getEmptyText(props.kind)}
         </div>
       ) : null}
 
       {props.kind === "ingredients" && props.items.length > 0 ? (
-        <ul className="mt-5 grid gap-3">
+        <ul className="divide-y divide-border rounded-lg border border-border bg-background">
           {props.items.map((ingredient) => (
-            <li
-              key={ingredient.id}
-              className="rounded-[1.4rem] border border-border/60 bg-background/85 px-4 py-4"
-            >
+            <li key={ingredient.id} className="px-4 py-4">
               <div className="flex items-start gap-3">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border/70 bg-card text-xs font-semibold text-muted-foreground">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
                   {ingredient.position}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -84,7 +67,7 @@ export function RecipeDetailCollectionSection(
                       {formatIngredientText(ingredient, props.scaleFactor ?? 1)}
                     </p>
                     {ingredient.isOptional ? (
-                      <span className="rounded-full border border-border/70 bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                      <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
                         Optional
                       </span>
                     ) : null}
@@ -102,14 +85,11 @@ export function RecipeDetailCollectionSection(
       ) : null}
 
       {props.kind === "equipment" && props.items.length > 0 ? (
-        <ul className="mt-5 grid gap-3">
+        <ul className="divide-y divide-border rounded-lg border border-border bg-background">
           {props.items.map((equipment) => (
-            <li
-              key={equipment.id}
-              className="rounded-[1.4rem] border border-border/60 bg-background/85 px-4 py-4"
-            >
+            <li key={equipment.id} className="px-4 py-4">
               <div className="flex items-start gap-3">
-                <div className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border/70 bg-card text-xs font-semibold text-muted-foreground">
+                <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
                   {equipment.position}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -118,7 +98,7 @@ export function RecipeDetailCollectionSection(
                       {equipment.name}
                     </p>
                     {equipment.isOptional ? (
-                      <span className="rounded-full border border-border/70 bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground">
+                      <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
                         Optional
                       </span>
                     ) : null}
@@ -136,14 +116,11 @@ export function RecipeDetailCollectionSection(
       ) : null}
 
       {props.kind === "steps" && props.items.length > 0 ? (
-        <ol className="mt-5 space-y-4">
+        <ol className="space-y-4">
           {props.items.map((step) => (
-            <li
-              key={step.id}
-              className="rounded-[1.4rem] border border-border/60 bg-background/85 px-4 py-4 sm:px-5"
-            >
+            <li key={step.id} className="rounded-lg border border-border bg-background px-4 py-4 sm:px-5">
               <div className="flex items-start gap-3 sm:gap-4">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-[1rem] border border-border/70 bg-card text-sm font-semibold text-foreground shadow-[0_12px_24px_-20px_rgba(69,52,35,0.5)] sm:size-11">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground sm:size-10">
                   {step.position}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -152,7 +129,7 @@ export function RecipeDetailCollectionSection(
                       {step.instruction}
                     </p>
                     {step.timerSeconds !== null ? (
-                      <span className="rounded-full border border-amber-300/70 bg-amber-50/85 px-2.5 py-1 text-xs font-medium text-amber-950">
+                      <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
                         {stepTimer.activeStepId === step.id &&
                         stepTimer.remainingSeconds !== null
                           ? `${formatCountdownClock(stepTimer.remainingSeconds)} left`

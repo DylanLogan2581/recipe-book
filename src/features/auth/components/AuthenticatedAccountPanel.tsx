@@ -15,16 +15,16 @@ export function AuthenticatedAccountPanel({
   sessionState,
 }: AuthenticatedAccountPanelProps): JSX.Element {
   return (
-    <article className="rounded-[1.5rem] border border-emerald-300/70 bg-emerald-50/80 p-5 shadow-[0_18px_48px_-38px_rgba(69,52,35,0.45)]">
-      <h2 className="text-sm font-semibold text-foreground">Signed in</h2>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">
-        {sessionState.email === null
-          ? "You can manage recipes."
-          : `Signed in as ${sessionState.email}.`}
-      </p>
-      <Button className="mt-4 w-full rounded-xl" disabled={isPending} onClick={onSignOut} size="lg">
+    <section className="flex flex-col gap-4 rounded-lg border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 className="text-sm font-semibold text-foreground">Signed in</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {sessionState.email ?? "This account can manage recipes."}
+        </p>
+      </div>
+      <Button className="rounded-md px-4" disabled={isPending} onClick={onSignOut} size="lg">
         {isPending ? "Signing out..." : "Sign out"}
       </Button>
-    </article>
+    </section>
   );
 }

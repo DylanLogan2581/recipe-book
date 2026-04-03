@@ -61,31 +61,22 @@ export function RecipeCookLogSection({
     sessionState.userId === recipe.ownerId;
 
   return (
-    <section className="rounded-[1.75rem] border border-border/70 bg-card/95 p-5 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)] sm:p-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-            Cook history
-          </p>
-          <h2 className="mt-2 font-display text-2xl tracking-[-0.03em] text-foreground sm:text-3xl">
-            Kitchen memories
-          </h2>
-        </div>
+    <section className="space-y-4 border-t border-border pt-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          Kitchen memories
+        </h2>
         <p className="text-sm text-muted-foreground">
           {recipe.cookLogs.length} {recipe.cookLogs.length === 1 ? "entry" : "entries"}
         </p>
       </div>
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-[0.95rem]">
-        Keep a simple record of when this recipe was cooked, what changed, and
-        how it turned out.
-      </p>
 
       {feedback === null ? null : (
         <div
           className={
             feedback.tone === "success"
-              ? "mt-5 rounded-[1.4rem] border border-emerald-300/70 bg-emerald-50/85 px-4 py-4 text-emerald-950"
-              : "mt-5 rounded-[1.4rem] border border-destructive/20 bg-destructive/5 px-4 py-4 text-foreground"
+              ? "rounded-lg border border-emerald-300/70 bg-emerald-50/85 px-4 py-4 text-emerald-950"
+              : "rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-4 text-foreground"
           }
         >
           <p className="text-sm font-semibold">{feedback.title}</p>
@@ -97,7 +88,7 @@ export function RecipeCookLogSection({
 
       {isOwner ? (
         <form
-          className="mt-5 rounded-[1.5rem] border border-border/70 bg-background/80 p-4"
+          className="rounded-lg border border-border bg-background p-4"
           onSubmit={(event) => {
             event.preventDefault();
             void handleCreateCookLog();
@@ -120,7 +111,7 @@ export function RecipeCookLogSection({
               <span className="text-sm font-medium text-foreground">Photo</span>
               <input
                 accept="image/jpeg,image/png,image/webp"
-                className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-full file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
                 disabled={isSubmitting}
                 onChange={(event) => {
                   setSelectedPhoto(event.target.files?.[0] ?? null);
@@ -132,7 +123,7 @@ export function RecipeCookLogSection({
             <label className="md:col-span-2">
               <span className="text-sm font-medium text-foreground">Notes</span>
               <textarea
-                className="mt-2 min-h-28 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
                 onChange={(event) => {
                   setNotes(event.target.value);
                 }}
@@ -143,12 +134,12 @@ export function RecipeCookLogSection({
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {selectedPhoto === null
                 ? "No memory photo selected."
                 : `Selected photo: ${selectedPhoto.name}`}
             </p>
-            <Button className="rounded-full px-5" disabled={isSubmitting} size="lg" type="submit">
+            <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
               {isSubmitting ? "Saving memory..." : "Save cook memory"}
             </Button>
           </div>
@@ -156,11 +147,11 @@ export function RecipeCookLogSection({
       ) : null}
 
       {recipe.cookLogs.length === 0 ? (
-        <div className="mt-5 rounded-[1.4rem] border border-dashed border-border/70 bg-background/70 px-4 py-5 text-sm leading-6 text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
           No cook memories were saved for this recipe yet.
         </div>
       ) : (
-        <ol className="mt-5 space-y-4">
+        <ol className="space-y-4">
           {recipe.cookLogs.map((cookLog) => (
             <CookLogCard key={cookLog.id} cookLog={cookLog} />
           ))}
@@ -219,20 +210,20 @@ function CookLogCard({
   const photoUrl = getRecipeCookLogPhotoUrl(cookLog.photoPath);
 
   return (
-    <li className="rounded-[1.4rem] border border-border/60 bg-background/85 px-4 py-4 sm:px-5">
+    <li className="rounded-lg border border-border bg-background px-4 py-4 sm:px-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
         {photoUrl !== null ? (
           <img
             alt={`Cook memory from ${cookLog.cookedOn}`}
-            className="aspect-[4/3] w-full rounded-[1.2rem] border border-border/70 object-cover lg:w-52"
+            className="aspect-[4/3] w-full rounded-lg border border-border object-cover lg:w-52"
             src={photoUrl}
           />
         ) : null}
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+          <p className="text-sm font-medium text-foreground">
             {cookLog.cookedOn}
           </p>
-          <p className="mt-2 text-sm leading-6 text-foreground">
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
             {cookLog.notes ?? "No notes were added for this cook memory."}
           </p>
         </div>

@@ -12,27 +12,11 @@ export function RecipeCoverImage({
   coverImagePath,
   title,
   variant,
-}: RecipeCoverImageProps): JSX.Element {
+}: RecipeCoverImageProps): JSX.Element | null {
   const coverImageUrl = getRecipeCoverPhotoUrl(coverImagePath);
 
   if (coverImageUrl === null) {
-    return (
-      <div
-        className={getRecipeCoverImageClassName(variant)}
-        aria-label={`${title} cover placeholder`}
-      >
-        <div className="rounded-full border border-white/35 bg-white/10 px-3 py-1 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-white/90">
-          Recipe photo
-        </div>
-        <p className="mt-3 max-w-xs font-display text-3xl leading-none tracking-[-0.04em] text-white sm:text-4xl">
-          {title}
-        </p>
-        <p className="mt-3 max-w-sm text-sm leading-6 text-white/80">
-          Add a cover photo during recipe creation to give this dish a visual
-          anchor in the shelf and detail views.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -47,11 +31,10 @@ export function RecipeCoverImage({
 }
 
 function getRecipeCoverImageClassName(variant: RecipeCoverImageProps["variant"]): string {
-  const baseClassName =
-    "overflow-hidden rounded-[1.75rem] border border-border/70 bg-[radial-gradient(circle_at_top_left,rgba(95,123,73,0.72),rgba(64,83,50,0.9))] shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)]";
+  const baseClassName = "overflow-hidden border border-border bg-muted";
 
   if (variant === "detail") {
-    return `${baseClassName} aspect-[4/3] min-h-64`;
+    return `${baseClassName} aspect-[16/10] rounded-xl`;
   }
 
   return `${baseClassName} aspect-[16/9]`;

@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import type { AuthSessionState } from "@/features/auth";
 
 import {
   formatRecipeTime,
@@ -11,18 +12,23 @@ import {
 } from "../utils/recipePresentation";
 
 import { RecipeCoverImage } from "./RecipeCoverImage";
+import { RecipeOwnerActionsPanel } from "./RecipeOwnerActionsPanel";
 
 import type { RecipeDetail } from "../types/recipes";
 import type { JSX } from "react";
 
 type RecipeDetailHeroProps = {
+  isSessionLoading: boolean;
   recipe: RecipeDetail;
   scaleFactor: number;
+  sessionState: AuthSessionState | undefined;
 };
 
 export function RecipeDetailHero({
+  isSessionLoading,
   recipe,
   scaleFactor,
+  sessionState,
 }: RecipeDetailHeroProps): JSX.Element {
   const summary = getRecipeSummary(recipe.summary, recipe.description);
   const description = recipe.description.trim();
@@ -33,83 +39,62 @@ export function RecipeDetailHero({
   ];
 
   return (
-    <>
-      <div className="sticky top-3 z-10 -mx-2 px-2 sm:static sm:mx-0 sm:px-0">
-        <Button
-          asChild
-          variant="ghost"
-          size="lg"
-          className="rounded-full border border-border/70 bg-background/90 px-4 shadow-[0_16px_42px_-36px_rgba(69,52,35,0.6)] backdrop-blur sm:bg-transparent sm:shadow-none"
-        >
+    <section className="space-y-6">
+      <div>
+        <Button asChild className="rounded-md px-3" size="lg" variant="ghost">
           <Link to="/recipes">
             <ArrowLeft />
-            Back to recipe shelf
+            Back to recipes
           </Link>
         </Button>
       </div>
 
-      <section className="overflow-hidden rounded-[2rem] border border-border/70 bg-[radial-gradient(circle_at_top_left,rgba(217,170,93,0.16),transparent_28%),linear-gradient(180deg,rgba(255,253,249,0.96),rgba(246,238,226,0.92))] px-5 py-6 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8 sm:py-8">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(17rem,1fr)] lg:items-start">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-              Recipe Detail
-            </p>
-            <h1 className="mt-3 font-display text-4xl leading-[0.95] tracking-[-0.05em] text-foreground sm:text-5xl lg:text-6xl">
-              {recipe.title}
-            </h1>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-              {summary}
-            </p>
-            {description !== "" && description !== summary ? (
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">
-                {description}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-start">
+        <div className="min-w-0 space-y-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+                {recipe.title}
+              </h1>
+              <p className="mt-3 max-w-3xl text-base text-muted-foreground">
+                {summary}
               </p>
-            ) : null}
+              {description !== "" && description !== summary ? (
+                <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground">
+                  {description}
+                </p>
+              ) : null}
+            </div>
+
+            <RecipeOwnerActionsPanel
+              isSessionLoading={isSessionLoading}
+              recipe={recipe}
+              sessionState={sessionState}
+            />
           </div>
 
-          <div className="space-y-4">
+          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+            {metadata.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-border bg-background px-3 py-1.5"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {recipe.coverImagePath !== null ? (
+          <div className="lg:justify-self-end">
             <RecipeCoverImage
               coverImagePath={recipe.coverImagePath}
               title={recipe.title}
               variant="detail"
             />
-
-            <aside className="rounded-[1.75rem] border border-border/70 bg-background/80 p-4 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.55)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-                Cook at a glance
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                {metadata.map((item, index) => (
-                  <div
-                    key={item}
-                    className="rounded-[1.25rem] border border-border/70 bg-card/90 px-3 py-3"
-                  >
-                    <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-                      {getMetadataLabel(index)}
-                    </p>
-                    <p className="mt-2 text-sm font-medium leading-6 text-foreground">
-                      {item}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </aside>
           </div>
-        </div>
-      </section>
-    </>
+        ) : null}
+      </div>
+    </section>
   );
-}
-
-function getMetadataLabel(index: number): string {
-  switch (index) {
-    case 0:
-      return "Time";
-    case 1:
-      return "Yield";
-    case 2:
-      return "Scaling";
-    default:
-      return "Detail";
-  }
 }

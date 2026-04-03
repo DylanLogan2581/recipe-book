@@ -5,6 +5,7 @@ import {
   getRecipeCoverPhotoUrl,
   recipeCoverPhotoBucket,
   RecipePhotoUploadError,
+  uploadRecipeCoverPhoto,
   validateRecipeCoverPhoto,
 } from "./recipePhotoApi";
 
@@ -83,5 +84,88 @@ describe("getRecipeCoverPhotoUrl", () => {
 
   it("returns null when the path or client is missing", () => {
     expect(getRecipeCoverPhotoUrl(null, null)).toBeNull();
+  });
+});
+
+describe("uploadRecipeCoverPhoto", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("uploads the file to the recipe cover photo bucket", async () => {
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(
+      "00000000-0000-4000-8000-000000000999",
+    );
+
+    const upload = vi.fn().mockResolvedValue({
+      error: null,
+    });
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "user-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      storage: {
+        from: vi.fn().mockReturnValue({
+          upload,
+        }),
+      },
+    };
+
+    await expect(
+      uploadRecipeCoverPhoto(
+        new File(["photo"], "Cover Shot.PNG", {
+          type: "image/png",
+        }),
+        client as never,
+      ),
+    ).resolves.toBe(
+      "user-1/00000000-0000-4000-8000-000000000999-cover-shot.png",
+    );
+    expect(client.storage.from).toHaveBeenCalledWith(recipeCoverPhotoBucket);
+  });
+
+  it("maps a missing bucket error to a guided upload error", async () => {
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "user-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      storage: {
+        from: vi.fn().mockReturnValue({
+          upload: vi.fn().mockResolvedValue({
+            error: {
+              statusCode: "404",
+              error: "Bucket not found",
+              message: "Bucket not found",
+            },
+          }),
+        }),
+      },
+    };
+
+    await expect(
+      uploadRecipeCoverPhoto(
+        new File(["photo"], "cover.png", {
+          type: "image/png",
+        }),
+        client as never,
+      ),
+    ).rejects.toMatchObject({
+      code: "storage-bucket-missing",
+      name: "RecipePhotoUploadError",
+    });
   });
 });

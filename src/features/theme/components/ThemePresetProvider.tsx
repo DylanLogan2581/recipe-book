@@ -1,7 +1,11 @@
 import { startTransition, useEffect, useState } from "react";
 
 import { ThemePresetContext } from "../context/themePresetContext";
-import { defaultThemePresetId, type ThemePresetId } from "../utils/themePresets";
+import {
+  defaultThemePresetId,
+  getThemePresetColorScheme,
+  type ThemePresetId,
+} from "../utils/themePresets";
 
 import type { JSX, PropsWithChildren } from "react";
 
@@ -13,7 +17,8 @@ export function ThemePresetProvider({
 
   useEffect(() => {
     document.documentElement.dataset.themePreset = activeThemePresetId;
-    document.documentElement.style.colorScheme = "light";
+    document.documentElement.style.colorScheme =
+      getThemePresetColorScheme(activeThemePresetId);
   }, [activeThemePresetId]);
 
   return (

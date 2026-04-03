@@ -4,6 +4,7 @@ export { useThemePreset } from "./hooks/useThemePreset";
 export {
   defaultThemePresetId,
   getThemePreset,
+  getThemePresetColorScheme,
   isThemePresetId,
   themePresets,
   type ThemePreset,

@@ -21,38 +21,6 @@ describe("mapRecipeDetailRecord", () => {
       is_scalable: true,
       owner_id: "owner-1",
       prep_minutes: 12,
-      recipe_cook_logs: [
-        {
-          cooked_on: "2026-03-23",
-          created_at: "2026-03-23T18:00:00.000Z",
-          id: "cook-log-2",
-          notes: "Added extra lemon juice.",
-          owner_id: "owner-1",
-          photo_path: null,
-          recipe_id: "recipe-1",
-          updated_at: "2026-03-23T18:00:00.000Z",
-        },
-        {
-          cooked_on: "2026-03-25",
-          created_at: "2026-03-25T20:00:00.000Z",
-          id: "cook-log-1",
-          notes: "Finished with parmesan.",
-          owner_id: "owner-1",
-          photo_path: "owner-1/cook-log-1.jpg",
-          recipe_id: "recipe-1",
-          updated_at: "2026-03-25T20:00:00.000Z",
-        },
-        {
-          cooked_on: "2026-03-25",
-          created_at: "2026-03-25T21:30:00.000Z",
-          id: "cook-log-3",
-          notes: "Tossed in extra pasta water.",
-          owner_id: "owner-1",
-          photo_path: null,
-          recipe_id: "recipe-1",
-          updated_at: "2026-03-25T21:30:00.000Z",
-        },
-      ],
       recipe_equipment: [
         {
           created_at: "2026-03-26T10:00:00.000Z",
@@ -130,7 +98,38 @@ describe("mapRecipeDetailRecord", () => {
       updated_at: "2026-03-26T10:15:00.000Z",
       yield_quantity: 4,
       yield_unit: "servings",
-    });
+    }, [
+      {
+        cooked_on: "2026-03-23",
+        created_at: "2026-03-23T18:00:00.000Z",
+        id: "cook-log-2",
+        notes: "Added extra lemon juice.",
+        owner_id: "owner-1",
+        photo_path: null,
+        recipe_id: "recipe-1",
+        updated_at: "2026-03-23T18:00:00.000Z",
+      },
+      {
+        cooked_on: "2026-03-25",
+        created_at: "2026-03-25T20:00:00.000Z",
+        id: "cook-log-1",
+        notes: "Finished with parmesan.",
+        owner_id: "owner-1",
+        photo_path: "owner-1/cook-log-1.jpg",
+        recipe_id: "recipe-1",
+        updated_at: "2026-03-25T20:00:00.000Z",
+      },
+      {
+        cooked_on: "2026-03-25",
+        created_at: "2026-03-25T21:30:00.000Z",
+        id: "cook-log-3",
+        notes: "Tossed in extra pasta water.",
+        owner_id: "owner-1",
+        photo_path: null,
+        recipe_id: "recipe-1",
+        updated_at: "2026-03-25T21:30:00.000Z",
+      },
+    ]);
 
     expect(recipe.totalMinutes).toBe(30);
     expect(recipe.cookLogs.map((item) => item.id)).toEqual([

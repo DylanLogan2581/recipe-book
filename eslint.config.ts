@@ -12,6 +12,7 @@ import unusedImports from "eslint-plugin-unused-imports";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
+
 import type { ESLint } from "eslint";
 
 const boundariesConfig = createBoundariesConfig({

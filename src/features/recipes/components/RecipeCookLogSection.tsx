@@ -61,14 +61,14 @@ export function RecipeCookLogSection({
     sessionState.userId === recipe.ownerId;
 
   return (
-    <section className="space-y-4 border-t border-border pt-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <section className="space-y-6 border-t border-border pt-6">
+      <div className="flex items-center gap-3">
         <h2 className="text-2xl font-semibold tracking-tight text-foreground">
           Kitchen memories
         </h2>
-        <p className="text-sm text-muted-foreground">
-          {recipe.cookLogs.length} {recipe.cookLogs.length === 1 ? "entry" : "entries"}
-        </p>
+        <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
+          {recipe.cookLogs.length}
+        </span>
       </div>
 
       {feedback === null ? null : (
@@ -87,76 +87,82 @@ export function RecipeCookLogSection({
       )}
 
       {isOwner ? (
-        <form
-          className="rounded-lg border border-border bg-background p-4"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void handleCreateCookLog();
-          }}
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            <label>
-              <span className="text-sm font-medium text-foreground">Cooked on</span>
-              <input
-                className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                onChange={(event) => {
-                  setCookedOn(event.target.value);
-                }}
-                type="date"
-                value={cookedOn}
-              />
-            </label>
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-foreground">Add a cook memory</h3>
+          <form
+            className="rounded-lg border border-border bg-background p-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void handleCreateCookLog();
+            }}
+          >
+            <div className="grid gap-4 md:grid-cols-2">
+              <label>
+                <span className="text-sm font-medium text-foreground">Cooked on</span>
+                <input
+                  className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  onChange={(event) => {
+                    setCookedOn(event.target.value);
+                  }}
+                  type="date"
+                  value={cookedOn}
+                />
+              </label>
 
-            <label>
-              <span className="text-sm font-medium text-foreground">Photo</span>
-              <input
-                accept="image/jpeg,image/png,image/webp"
-                className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
-                disabled={isSubmitting}
-                onChange={(event) => {
-                  setSelectedPhoto(event.target.files?.[0] ?? null);
-                }}
-                type="file"
-              />
-            </label>
+              <label>
+                <span className="text-sm font-medium text-foreground">Photo</span>
+                <input
+                  accept="image/jpeg,image/png,image/webp"
+                  className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  disabled={isSubmitting}
+                  onChange={(event) => {
+                    setSelectedPhoto(event.target.files?.[0] ?? null);
+                  }}
+                  type="file"
+                />
+              </label>
 
-            <label className="md:col-span-2">
-              <span className="text-sm font-medium text-foreground">Notes</span>
-              <textarea
-                className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                onChange={(event) => {
-                  setNotes(event.target.value);
-                }}
-                placeholder="What changed, what worked, and what you want to remember next time."
-                value={notes}
-              />
-            </label>
-          </div>
+              <label className="md:col-span-2">
+                <span className="text-sm font-medium text-foreground">Notes</span>
+                <textarea
+                  className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  onChange={(event) => {
+                    setNotes(event.target.value);
+                  }}
+                  placeholder="What changed, what worked, and what you want to remember next time."
+                  value={notes}
+                />
+              </label>
+            </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              {selectedPhoto === null
-                ? "No memory photo selected."
-                : `Selected photo: ${selectedPhoto.name}`}
-            </p>
-            <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
-              {isSubmitting ? "Saving memory..." : "Save cook memory"}
-            </Button>
-          </div>
-        </form>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              {selectedPhoto === null ? <span /> : (
+                <p className="text-sm text-muted-foreground">
+                  Selected photo: {selectedPhoto.name}
+                </p>
+              )}
+              <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
+                {isSubmitting ? "Saving memory..." : "Save cook memory"}
+              </Button>
+            </div>
+          </form>
+        </div>
       ) : null}
 
-      {recipe.cookLogs.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
-          No cook memories were saved for this recipe yet.
-        </div>
-      ) : (
-        <ol className="space-y-4">
-          {recipe.cookLogs.map((cookLog) => (
-            <CookLogCard key={cookLog.id} cookLog={cookLog} />
-          ))}
-        </ol>
-      )}
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold text-foreground">Saved memories</h3>
+        {recipe.cookLogs.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
+            No cook memories were saved for this recipe yet.
+          </div>
+        ) : (
+          <ol className="space-y-4">
+            {recipe.cookLogs.map((cookLog) => (
+              <CookLogCard key={cookLog.id} cookLog={cookLog} />
+            ))}
+          </ol>
+        )}
+      </div>
     </section>
   );
 

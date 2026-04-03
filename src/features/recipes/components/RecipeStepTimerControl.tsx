@@ -24,17 +24,17 @@ export function RecipeStepTimerControl({
   const displaySeconds = isActive ? (remainingSeconds ?? timerSeconds) : timerSeconds;
 
   return (
-    <div className="mt-3 rounded-[1.2rem] border border-amber-300/60 bg-amber-50/75 px-3 py-3 shadow-[0_12px_28px_-24px_rgba(146,104,28,0.45)]">
+    <div className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-full bg-amber-100 text-amber-950">
+          <span className="flex size-8 items-center justify-center rounded-full bg-background text-muted-foreground">
             <BellRing className="size-4" />
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-950/80">
-              Step timer
+            <p className="text-sm font-medium text-foreground">
+              Timer
             </p>
-            <p className="text-sm font-medium text-amber-950">
+            <p className="text-sm text-muted-foreground">
               {isActive ? `${formatCountdownClock(displaySeconds)} left` : formatCountdownClock(displaySeconds)}
             </p>
           </div>

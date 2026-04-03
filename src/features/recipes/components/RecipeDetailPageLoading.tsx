@@ -1,6 +1,10 @@
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
 import type { JSX } from "react";
 
 export function RecipeDetailPageLoading(): JSX.Element {
+  useDocumentTitle("Loading Recipe");
+
   return (
     <main className="flex w-full flex-col gap-8 py-3 sm:py-4">
       <div aria-hidden="true" className="animate-pulse space-y-6">

@@ -1,6 +1,7 @@
 import { type ErrorComponentProps } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import { getRecipeLoadErrorCopy } from "../utils/recipePresentation";
 
@@ -13,6 +14,8 @@ export function RecipesPageErrorState({
   reset,
 }: ErrorComponentProps): JSX.Element {
   const copy = getRecipeLoadErrorCopy(error, "list");
+
+  useDocumentTitle("Recipes Unavailable");
 
   return (
     <main className="mx-auto flex w-full max-w-[92rem] flex-col gap-6 py-6">

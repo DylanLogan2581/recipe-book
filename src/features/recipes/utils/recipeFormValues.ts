@@ -64,7 +64,7 @@ export function createEmptyRecipeCreateFormValues(): RecipeCreateFormValues {
   return {
     cookMinutes: "",
     description: "",
-    equipment: [createEmptyRecipeEquipmentFormValue()],
+    equipment: [],
     ingredients: [createEmptyRecipeIngredientFormValue()],
     isScalable: true,
     prepMinutes: "",

@@ -15,7 +15,7 @@ export function RecipesPageErrorState({
   const copy = getRecipeLoadErrorCopy(error, "list");
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 py-6">
+    <main className="mx-auto flex w-full max-w-[92rem] flex-col gap-6 py-6">
       <RecipesPageHeader />
       <section className="rounded-[2rem] border border-destructive/20 bg-destructive/5 px-6 py-8 shadow-[0_20px_60px_-48px_rgba(120,53,15,0.45)] sm:px-8">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-destructive">

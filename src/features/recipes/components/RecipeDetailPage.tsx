@@ -29,7 +29,7 @@ export function RecipeDetailPage({
   const recipe = recipeDetailQuery.data;
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 py-6">
+    <main className="mx-auto flex w-full max-w-[84rem] flex-col gap-6 py-6">
       <RecipeDetailHero recipe={recipe} scaleFactor={scaleFactor} />
       <RecipeDetailPageSections
         isSessionLoading={sessionQuery.isLoading}

@@ -50,7 +50,7 @@ function RootShell(): JSX.Element {
         style={{ backgroundImage: "var(--app-shell-divider)" }}
       />
 
-      <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 sm:px-6">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[92rem] flex-col px-4 sm:px-6 lg:px-8">
         <AppShellHeader authSummary={authSummary} />
 
         <div className="flex-1 py-4 sm:py-6">

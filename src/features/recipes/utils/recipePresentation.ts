@@ -9,6 +9,26 @@ type RecipeLoadErrorCopy = {
   title: string;
 };
 
+export function getRecipeLoadDocumentTitle(
+  error: unknown,
+  surface: RecipeLoadSurface,
+): string {
+  if (surface === "detail" && error instanceof RecipeDataAccessError) {
+    switch (error.code) {
+      case "not-found":
+        return "Recipe Not Found";
+      case "supabase-unconfigured":
+        return "Recipe Unavailable";
+    }
+  }
+
+  if (surface === "detail") {
+    return "Recipe Unavailable";
+  }
+
+  return "Recipes Unavailable";
+}
+
 export function formatRecipeTime(recipe: {
   cookMinutes: number | null;
   prepMinutes: number | null;

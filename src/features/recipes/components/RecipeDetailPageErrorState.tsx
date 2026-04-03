@@ -3,7 +3,10 @@ import { Link, type ErrorComponentProps } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
-import { getRecipeLoadErrorCopy } from "../utils/recipePresentation";
+import {
+  getRecipeLoadDocumentTitle,
+  getRecipeLoadErrorCopy,
+} from "../utils/recipePresentation";
 
 import type { JSX } from "react";
 
@@ -12,8 +15,9 @@ export function RecipeDetailPageErrorState({
   reset,
 }: ErrorComponentProps): JSX.Element {
   const copy = getRecipeLoadErrorCopy(error, "detail");
+  const documentTitle = getRecipeLoadDocumentTitle(error, "detail");
 
-  useDocumentTitle(copy.title);
+  useDocumentTitle(documentTitle);
 
   return (
     <main className="flex w-full max-w-6xl flex-col gap-6 py-3 sm:py-4">

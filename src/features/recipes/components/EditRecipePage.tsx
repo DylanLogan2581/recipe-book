@@ -149,10 +149,6 @@ export function EditRecipePage({
             </Button>
           }
           coverPhotoInputResetKey={coverPhotoInputResetKey}
-          coverPhotoStatusMessage={getCoverPhotoStatusMessage(
-            currentCoverPhotoPath,
-            selectedCoverPhoto,
-          )}
           hasCoverPhoto={
             currentCoverPhotoPath !== null || selectedCoverPhoto !== null
           }
@@ -285,21 +281,6 @@ function RecipeEditAccessState({
       </section>
     </main>
   );
-}
-
-function getCoverPhotoStatusMessage(
-  currentCoverPhotoPath: string | null,
-  selectedCoverPhoto: File | null,
-): string {
-  if (selectedCoverPhoto !== null) {
-    return `Selected file: ${selectedCoverPhoto.name}`;
-  }
-
-  if (currentCoverPhotoPath !== null) {
-    return "Current cover photo will be kept unless you remove it.";
-  }
-
-  return "No cover photo selected.";
 }
 
 function getUpdateRecipeErrorMessage(error: unknown): string {

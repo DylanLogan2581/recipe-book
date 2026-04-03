@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { ThemePresetPicker, useThemePreset } from "@/features/theme";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import {
   signInMutationOptions,
@@ -56,6 +57,8 @@ function getHeadlineDescription(
 }
 
 export function AccountPage(): JSX.Element {
+  useDocumentTitle("Account");
+
   const queryClient = useQueryClient();
   const sessionQuery = useQuery(sessionQueryOptions);
   const signInMutation = useMutation(signInMutationOptions(queryClient));

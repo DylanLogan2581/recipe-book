@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { sessionQueryOptions } from "@/features/auth";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import { RecipeDataAccessError } from "../queries/recipeApi";
 import { isRecipeMutationAuthError } from "../queries/recipeAuth";
@@ -27,6 +28,8 @@ type FormFeedback = {
 };
 
 export function CreateRecipePage(): JSX.Element {
+  useDocumentTitle("Create Recipe");
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const sessionQuery = useQuery(sessionQueryOptions);

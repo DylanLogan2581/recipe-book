@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
 import { recipeListQueryOptions } from "../queries/recipeQueryOptions";
 
 import { RecipeDeleteSuccessBanner } from "./RecipeDeleteSuccessBanner";
@@ -16,6 +18,8 @@ type RecipesPageProps = {
 export function RecipesPage({
   showDeletedBanner = false,
 }: RecipesPageProps): JSX.Element {
+  useDocumentTitle("Recipes");
+
   const recipeListQuery = useQuery(recipeListQueryOptions());
 
   if (recipeListQuery.data === undefined) {

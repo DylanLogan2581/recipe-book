@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { sessionQueryOptions } from "@/features/auth";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import { recipeDetailQueryOptions } from "../queries/recipeQueryOptions";
 
@@ -21,6 +22,12 @@ export function RecipeDetailPage({
   const recipeDetailQuery = useQuery(recipeDetailQueryOptions(recipeId));
   const sessionQuery = useQuery(sessionQueryOptions);
   const [scaleFactor, setScaleFactor] = useState(1);
+
+  useDocumentTitle(
+    recipeDetailQuery.data === undefined
+      ? "Loading Recipe"
+      : recipeDetailQuery.data.title,
+  );
 
   if (recipeDetailQuery.data === undefined) {
     return <RecipeDetailPageLoading />;

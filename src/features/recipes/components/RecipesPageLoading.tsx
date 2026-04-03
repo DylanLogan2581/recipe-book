@@ -1,8 +1,12 @@
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+
 import { RecipesPageHeader } from "./RecipesPageHeader";
 
 import type { JSX } from "react";
 
 export function RecipesPageLoading(): JSX.Element {
+  useDocumentTitle("Recipes");
+
   return (
     <main className="flex w-full flex-col gap-6 py-3 sm:py-4">
       <RecipesPageHeader />

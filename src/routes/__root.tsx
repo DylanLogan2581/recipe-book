@@ -2,7 +2,7 @@ import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy, Suspense, type JSX } from "react";
 
-import { AppShellHeader } from "@/components/app";
+import { AppShellHeader, AppToasterProvider } from "@/components/app";
 import {
   preloadSessionState,
   sessionQueryOptions,
@@ -79,7 +79,9 @@ function RootLayout(): JSX.Element {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemePresetProvider>
-        <RootShell />
+        <AppToasterProvider>
+          <RootShell />
+        </AppToasterProvider>
       </ThemePresetProvider>
       {TanStackRouterDevtools !== null && ReactQueryDevtools !== null ? (
         <Suspense fallback={null}>

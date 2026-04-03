@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { AuthSessionState } from "@/features/auth";
+import { useAppToast } from "@/hooks/useAppToast";
 
 import { RecipeDataAccessError } from "../queries/recipeApi";
 import { isRecipeMutationAuthError } from "../queries/recipeAuth";
@@ -29,7 +30,7 @@ export function RecipeOwnerActionsPanel({
   const queryClient = useQueryClient();
   const deleteRecipeMutation = useMutation(deleteRecipeMutationOptions(queryClient));
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [feedback, setFeedback] = useState<string | null>(null);
+  const { toast } = useAppToast();
   const isOwner =
     !isSessionLoading &&
     sessionState !== undefined &&
@@ -54,12 +55,15 @@ export function RecipeOwnerActionsPanel({
           description="This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
           isPending={deleteRecipeMutation.isPending}
           onConfirm={() => {
-            setFeedback(null);
             deleteRecipeMutation.mutate(
               { recipeId: recipe.id },
               {
                 onError: (error) => {
-                  setFeedback(getDeleteErrorMessage(error));
+                  toast({
+                    description: getDeleteErrorMessage(error),
+                    tone: "error",
+                    title: "Recipe could not be deleted",
+                  });
                 },
                 onSuccess: () => {
                   setIsDeleteDialogOpen(false);
@@ -73,9 +77,6 @@ export function RecipeOwnerActionsPanel({
           }}
           onOpenChange={(open) => {
             setIsDeleteDialogOpen(open);
-            if (open) {
-              setFeedback(null);
-            }
           }}
           open={isDeleteDialogOpen}
           title="Delete this recipe?"
@@ -89,10 +90,6 @@ export function RecipeOwnerActionsPanel({
           </Button>
         </RecipeDeleteDialog>
       </div>
-
-      {feedback === null ? null : (
-        <p className="mt-3 text-sm text-destructive">{feedback}</p>
-      )}
     </section>
   );
 }

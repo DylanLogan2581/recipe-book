@@ -8,7 +8,6 @@ export { RecipeCreateAuthPrompt } from "./components/RecipeCreateAuthPrompt";
 export { RecipeCoverImage } from "./components/RecipeCoverImage";
 export { RecipeCookLogSection } from "./components/RecipeCookLogSection";
 export { RecipeDeleteDialog } from "./components/RecipeDeleteDialog";
-export { RecipeDeleteSuccessBanner } from "./components/RecipeDeleteSuccessBanner";
 export { RecipeCreateForm } from "./components/RecipeCreateForm";
 export { RecipeScalingPanel } from "./components/RecipeScalingPanel";
 export { RecipeStepTimerControl } from "./components/RecipeStepTimerControl";

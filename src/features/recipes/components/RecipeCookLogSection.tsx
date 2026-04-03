@@ -59,6 +59,9 @@ export function RecipeCookLogSection({
     sessionState !== undefined &&
     sessionState.kind === "authenticated" &&
     sessionState.userId === recipe.ownerId;
+  const savedMemoriesSectionClassName = isOwner
+    ? "space-y-4 border-t border-border/70 pt-6"
+    : "space-y-4";
 
   return (
     <section className="space-y-6 border-t border-border pt-6">
@@ -87,8 +90,15 @@ export function RecipeCookLogSection({
       )}
 
       {isOwner ? (
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-foreground">Add a cook memory</h3>
+        <section className="space-y-4" aria-labelledby="cook-memory-create-heading">
+          <div className="border-b border-border/70 pb-2">
+            <h3
+              className="text-base font-semibold tracking-tight text-foreground"
+              id="cook-memory-create-heading"
+            >
+              Add a cook memory
+            </h3>
+          </div>
           <form
             className="rounded-lg border border-border bg-background p-4"
             onSubmit={(event) => {
@@ -146,11 +156,21 @@ export function RecipeCookLogSection({
               </Button>
             </div>
           </form>
-        </div>
+        </section>
       ) : null}
 
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-foreground">Saved memories</h3>
+      <section
+        aria-labelledby="cook-memory-history-heading"
+        className={savedMemoriesSectionClassName}
+      >
+        <div className="border-b border-border/70 pb-2">
+          <h3
+            className="text-base font-semibold tracking-tight text-foreground"
+            id="cook-memory-history-heading"
+          >
+            Saved memories
+          </h3>
+        </div>
         {recipe.cookLogs.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
             No cook memories were saved for this recipe yet.
@@ -162,7 +182,7 @@ export function RecipeCookLogSection({
             ))}
           </ol>
         )}
-      </div>
+      </section>
     </section>
   );
 

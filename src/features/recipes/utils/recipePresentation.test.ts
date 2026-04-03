@@ -8,6 +8,7 @@ import {
   formatRecipeTime,
   formatRecipeYield,
   formatStepTimer,
+  getRecipeLoadDocumentTitle,
   getRecipeLoadErrorCopy,
   getRecipeSummary,
 } from "./recipePresentation";
@@ -158,6 +159,32 @@ describe("getRecipeLoadErrorCopy", () => {
         "This recipe may have been removed, or the link may no longer point to a public entry.",
       title: "That recipe could not be found.",
     });
+  });
+});
+
+describe("getRecipeLoadDocumentTitle", () => {
+  it("uses a stable not-found title for missing recipe detail routes", () => {
+    expect(
+      getRecipeLoadDocumentTitle(
+        new RecipeDataAccessError("not-found", "Recipe not found."),
+        "detail",
+      ),
+    ).toBe("Recipe Not Found");
+  });
+
+  it("uses a stable unavailable title for other detail failures", () => {
+    expect(getRecipeLoadDocumentTitle(new Error("Network"), "detail")).toBe(
+      "Recipe Unavailable",
+    );
+    expect(
+      getRecipeLoadDocumentTitle(
+        new RecipeDataAccessError(
+          "supabase-unconfigured",
+          "Supabase is not configured.",
+        ),
+        "detail",
+      ),
+    ).toBe("Recipe Unavailable");
   });
 });
 

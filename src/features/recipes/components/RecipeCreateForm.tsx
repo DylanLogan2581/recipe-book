@@ -20,7 +20,6 @@ const checkboxClassName =
 type RecipeCreateFormProps = {
   cancelButton: JSX.Element;
   coverPhotoInputResetKey: number;
-  coverPhotoStatusMessage: string;
   hasCoverPhoto: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
@@ -38,7 +37,6 @@ type RecipeCreateFormProps = {
 export function RecipeCreateForm({
   cancelButton,
   coverPhotoInputResetKey,
-  coverPhotoStatusMessage,
   hasCoverPhoto,
   isPending,
   onCoverPhotoChange,
@@ -204,8 +202,6 @@ export function RecipeCreateForm({
             }}
             type="file"
           />
-
-          <p className="text-sm text-muted-foreground">{coverPhotoStatusMessage}</p>
         </div>
       </section>
 

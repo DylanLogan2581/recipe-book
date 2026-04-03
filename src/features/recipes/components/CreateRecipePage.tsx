@@ -134,11 +134,6 @@ export function CreateRecipePage(): JSX.Element {
             </Button>
           }
           coverPhotoInputResetKey={coverPhotoInputResetKey}
-          coverPhotoStatusMessage={
-            selectedCoverPhoto === null
-              ? "No cover photo selected."
-              : `Selected file: ${selectedCoverPhoto.name}`
-          }
           hasCoverPhoto={selectedCoverPhoto !== null}
           isPending={isSubmitting}
           onCoverPhotoChange={(file) => {

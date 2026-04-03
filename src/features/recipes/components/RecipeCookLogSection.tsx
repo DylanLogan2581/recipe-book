@@ -125,12 +125,7 @@ export function RecipeCookLogSection({
               </label>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              {selectedPhoto === null ? <span /> : (
-                <p className="text-sm text-muted-foreground">
-                  Selected photo: {selectedPhoto.name}
-                </p>
-              )}
+            <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
               <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
                 {isSubmitting ? "Saving memory..." : "Save cook memory"}
               </Button>

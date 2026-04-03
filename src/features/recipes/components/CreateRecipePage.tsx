@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { sessionQueryOptions } from "@/features/auth";
+import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import { RecipeDataAccessError } from "../queries/recipeApi";
@@ -21,12 +22,6 @@ import { RecipeCreateForm } from "./RecipeCreateForm";
 
 import type { JSX } from "react";
 
-type FormFeedback = {
-  description: string;
-  tone: "error";
-  title: string;
-};
-
 export function CreateRecipePage(): JSX.Element {
   useDocumentTitle("Create Recipe");
 
@@ -34,7 +29,7 @@ export function CreateRecipePage(): JSX.Element {
   const queryClient = useQueryClient();
   const sessionQuery = useQuery(sessionQueryOptions);
   const createRecipeMutation = useMutation(createRecipeMutationOptions(queryClient));
-  const [feedback, setFeedback] = useState<FormFeedback | null>(null);
+  const { toast } = useAppToast();
   const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
   const [coverPhotoInputResetKey, setCoverPhotoInputResetKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,17 +63,15 @@ export function CreateRecipePage(): JSX.Element {
   }
 
   async function submitRecipe(): Promise<void> {
-    setFeedback(null);
-
     const parsedValues = recipeCreateFormSchema.safeParse(values);
 
     if (!parsedValues.success) {
-      setFeedback({
+      toast({
         description:
           parsedValues.error.issues[0]?.message ??
           "Review the form values and try again.",
-        title: "Recipe form needs attention",
         tone: "error",
+        title: "Recipe form needs attention",
       });
       return;
     }
@@ -106,10 +99,10 @@ export function CreateRecipePage(): JSX.Element {
         await deleteRecipeCoverPhoto(uploadedCoverPhotoPath).catch(() => undefined);
       }
 
-      setFeedback({
+      toast({
         description: getCreateRecipeErrorMessage(error),
-        title: "Recipe could not be created",
         tone: "error",
+        title: "Recipe could not be created",
       });
     } finally {
       setIsSubmitting(false);
@@ -126,15 +119,6 @@ export function CreateRecipePage(): JSX.Element {
           Add the recipe details and save when you are ready.
         </p>
       </section>
-
-      {feedback === null ? null : (
-        <section className="mt-6 rounded-lg border border-destructive/20 bg-destructive/5 px-5 py-4 text-foreground">
-          <p className="text-sm font-semibold">{feedback.title}</p>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            {feedback.description}
-          </p>
-        </section>
-      )}
 
       <div className="mt-6">
         <RecipeCreateForm

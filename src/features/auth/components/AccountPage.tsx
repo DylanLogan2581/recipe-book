@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { ThemePresetPicker, useThemePreset } from "@/features/theme";
+import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 import {
@@ -17,12 +18,6 @@ import { AuthenticatedAccountPanel } from "./AuthenticatedAccountPanel";
 import { AuthFormCard } from "./AuthFormCard";
 
 import type { JSX } from "react";
-
-type AuthFeedback = {
-  description: string;
-  tone: "error" | "success";
-  title: string;
-};
 
 type AuthActionResult = {
   message: string;
@@ -64,10 +59,10 @@ export function AccountPage(): JSX.Element {
   const signInMutation = useMutation(signInMutationOptions(queryClient));
   const signUpMutation = useMutation(signUpMutationOptions(queryClient));
   const signOutMutation = useMutation(signOutMutationOptions(queryClient));
-  const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
   const [signInValues, setSignInValues] = useState(createEmptyAuthFormValues);
   const [signUpValues, setSignUpValues] = useState(createEmptyAuthFormValues);
   const { activeThemePresetId, setActiveThemePresetId } = useThemePreset();
+  const { toast } = useAppToast();
 
   const kind = sessionQuery.isLoading
     ? "loading"
@@ -87,41 +82,25 @@ export function AccountPage(): JSX.Element {
         </p>
       </section>
 
-      {feedback !== null ? (
-        <section
-          className={
-            feedback.tone === "success"
-              ? "mt-6 rounded-lg border border-emerald-300/70 bg-emerald-50/80 px-5 py-4 text-emerald-950"
-              : "mt-6 rounded-lg border border-destructive/20 bg-destructive/5 px-5 py-4 text-foreground"
-          }
-        >
-          <p className="text-sm font-semibold">{feedback.title}</p>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            {feedback.description}
-          </p>
-        </section>
-      ) : null}
-
       <div className="mt-6 space-y-8">
         <div className="space-y-4">
           {sessionQuery.data?.kind === "authenticated" ? (
             <AuthenticatedAccountPanel
               isPending={signOutMutation.isPending}
               onSignOut={() => {
-                setFeedback(null);
                 signOutMutation.mutate(undefined, {
                   onError: (error) => {
-                    setFeedback({
+                    toast({
                       description: error.message,
-                      title: "Sign-out failed",
                       tone: "error",
+                      title: "Sign-out failed",
                     });
                   },
                   onSuccess: (result) => {
-                    setFeedback({
+                    toast({
                       description: result.message,
-                      title: "Signed out",
                       tone: "success",
+                      title: "Signed out",
                     });
                   },
                 });
@@ -149,8 +128,8 @@ export function AccountPage(): JSX.Element {
                 onSubmit={(event) => {
                   event.preventDefault();
                   submitCredentials(signInValues, signInMutation, {
-                    setFeedback,
                     setValues: setSignInValues,
+                    toast,
                     successTitle: "Signed in",
                   });
                 }}
@@ -177,8 +156,8 @@ export function AccountPage(): JSX.Element {
                 onSubmit={(event) => {
                   event.preventDefault();
                   submitCredentials(signUpValues, signUpMutation, {
-                    setFeedback,
                     setValues: setSignUpValues,
+                    toast,
                     successTitle: "Account ready",
                   });
                 }}
@@ -239,38 +218,42 @@ function submitCredentials(
   },
   mutation: CredentialMutation,
   options: {
-    setFeedback: (feedback: AuthFeedback) => void;
     setValues: (value: {
       email: string;
       password: string;
     }) => void;
     successTitle: string;
+    toast: (input: {
+      description: string;
+      title: string;
+      tone?: "error" | "info" | "success";
+    }) => void;
   },
 ): void {
   const parsed = authCredentialsSchema.safeParse(values);
 
   if (!parsed.success) {
-    options.setFeedback({
+    options.toast({
       description: parsed.error.issues[0]?.message ?? "Review the form values and try again.",
-      title: "Form validation needed",
       tone: "error",
+      title: "Form validation needed",
     });
     return;
   }
 
   mutation.mutate(parsed.data, {
     onError: (error) => {
-      options.setFeedback({
+      options.toast({
         description: error.message,
-        title: "Auth request failed",
         tone: "error",
+        title: "Auth request failed",
       });
     },
     onSuccess: (result) => {
-      options.setFeedback({
+      options.toast({
         description: result.message,
-        title: options.successTitle,
         tone: "success",
+        title: options.successTitle,
       });
       options.setValues(createEmptyAuthFormValues());
     },

@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { AuthSessionState } from "@/features/auth";
+import { useAppToast } from "@/hooks/useAppToast";
 
 import { isRecipeMutationAuthError } from "../queries/recipeAuth";
 import { createRecipeCookLog } from "../queries/recipeCookLogApi";
@@ -26,12 +27,6 @@ type RecipeCookLogSectionProps = {
   sessionState: AuthSessionState | undefined;
 };
 
-type CookLogFeedback = {
-  description: string;
-  tone: "error" | "success";
-  title: string;
-};
-
 export function RecipeCookLogSection({
   recipe,
   sessionState,
@@ -51,10 +46,10 @@ export function RecipeCookLogSection({
     },
   });
   const [cookedOn, setCookedOn] = useState("");
-  const [feedback, setFeedback] = useState<CookLogFeedback | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notes, setNotes] = useState("");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
+  const { toast } = useAppToast();
   const isOwner =
     sessionState !== undefined &&
     sessionState.kind === "authenticated" &&
@@ -73,21 +68,6 @@ export function RecipeCookLogSection({
           {recipe.cookLogs.length}
         </span>
       </div>
-
-      {feedback === null ? null : (
-        <div
-          className={
-            feedback.tone === "success"
-              ? "rounded-lg border border-emerald-300/70 bg-emerald-50/85 px-4 py-4 text-emerald-950"
-              : "rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-4 text-foreground"
-          }
-        >
-          <p className="text-sm font-semibold">{feedback.title}</p>
-          <p className="mt-1 text-sm leading-6 text-muted-foreground">
-            {feedback.description}
-          </p>
-        </div>
-      )}
 
       {isOwner ? (
         <section className="space-y-4" aria-labelledby="cook-memory-create-heading">
@@ -187,7 +167,6 @@ export function RecipeCookLogSection({
   );
 
   async function handleCreateCookLog(): Promise<void> {
-    setFeedback(null);
     setIsSubmitting(true);
 
     let uploadedPhotoPath: string | null = null;
@@ -207,20 +186,20 @@ export function RecipeCookLogSection({
       setCookedOn("");
       setNotes("");
       setSelectedPhoto(null);
-      setFeedback({
+      toast({
         description: "The cook log history has been refreshed with your latest entry.",
-        title: "Cook memory saved",
         tone: "success",
+        title: "Cook memory saved",
       });
     } catch (error) {
       if (uploadedPhotoPath !== null) {
         await deleteRecipeCookLogPhoto(uploadedPhotoPath).catch(() => undefined);
       }
 
-      setFeedback({
+      toast({
         description: getCookLogErrorMessage(error),
-        title: "Cook memory could not be saved",
         tone: "error",
+        title: "Cook memory could not be saved",
       });
     } finally {
       setIsSubmitting(false);

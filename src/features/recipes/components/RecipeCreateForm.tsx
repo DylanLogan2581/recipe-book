@@ -207,9 +207,7 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add ingredient"
-        itemLabel="Ingredient"
         items={values.ingredients}
-        minimumItems={1}
         onAdd={() => {
           setValues((current) => ({
             ...current,
@@ -245,9 +243,7 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add equipment"
-        itemLabel="Equipment"
         items={values.equipment}
-        minimumItems={0}
         onAdd={() => {
           setValues((current) => ({
             ...current,
@@ -280,9 +276,8 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add step"
-        itemLabel="Step"
+        getItemHeading={(index) => `Step ${index + 1}`}
         items={values.steps}
-        minimumItems={1}
         onAdd={() => {
           setValues((current) => ({
             ...current,
@@ -326,9 +321,8 @@ export function RecipeCreateForm({
 
 type RecipeCreateCollectionSectionProps<TItem> = {
   addLabel: string;
-  itemLabel: string;
+  getItemHeading?: (index: number) => string | null;
   items: TItem[];
-  minimumItems: number;
   onAdd: () => void;
   onRemove: (index: number) => void;
   renderItem: (item: TItem, index: number) => JSX.Element;
@@ -337,9 +331,8 @@ type RecipeCreateCollectionSectionProps<TItem> = {
 
 function RecipeCreateCollectionSection<TItem>({
   addLabel,
-  itemLabel,
+  getItemHeading,
   items,
-  minimumItems,
   onAdd,
   onRemove,
   renderItem,
@@ -362,30 +355,41 @@ function RecipeCreateCollectionSection<TItem>({
       </div>
 
       <div className="space-y-4">
-        {items.map((item, index) => (
-          <article
-            key={`${title}-${index + 1}`}
-            className="rounded-lg border border-border bg-background p-4"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-foreground">
-                {itemLabel} {index + 1}
-              </p>
-              <Button
-                disabled={items.length <= minimumItems}
-                onClick={() => {
-                  onRemove(index);
-                }}
-                size="sm"
-                type="button"
-                variant="ghost"
+        {items.map((item, index) => {
+          const itemHeading = getItemHeading?.(index) ?? null;
+
+          return (
+            <article
+              key={`${title}-${index + 1}`}
+              className="rounded-lg border border-border bg-background p-4"
+            >
+              <div
+                className={
+                  itemHeading === null
+                    ? "flex justify-end gap-3"
+                    : "flex items-center justify-between gap-3"
+                }
               >
-                Remove
-              </Button>
-            </div>
-            <div className="mt-4">{renderItem(item, index)}</div>
-          </article>
-        ))}
+                {itemHeading !== null ? (
+                  <p className="text-sm font-semibold text-foreground">
+                    {itemHeading}
+                  </p>
+                ) : null}
+                <Button
+                  onClick={() => {
+                    onRemove(index);
+                  }}
+                  size="sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  Remove
+                </Button>
+              </div>
+              <div className="mt-4">{renderItem(item, index)}</div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );

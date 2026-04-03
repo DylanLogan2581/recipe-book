@@ -2,12 +2,14 @@ import type { AuthSessionState } from "@/features/auth";
 
 import { RecipeCookLogSection } from "./RecipeCookLogSection";
 import { RecipeDetailCollectionSection } from "./RecipeDetailCollectionSection";
+import { RecipeOwnerActionsPanel } from "./RecipeOwnerActionsPanel";
 import { RecipeScalingPanel } from "./RecipeScalingPanel";
 
 import type { RecipeDetail } from "../types/recipes";
 import type { JSX } from "react";
 
 type RecipeDetailPageSectionsProps = {
+  isSessionLoading: boolean;
   onScaleChange: (scaleFactor: number) => void;
   recipe: RecipeDetail;
   scaleFactor: number;
@@ -15,6 +17,7 @@ type RecipeDetailPageSectionsProps = {
 };
 
 export function RecipeDetailPageSections({
+  isSessionLoading,
   onScaleChange,
   recipe,
   scaleFactor,
@@ -48,6 +51,11 @@ export function RecipeDetailPageSections({
         title="Method"
       />
       <RecipeCookLogSection recipe={recipe} sessionState={sessionState} />
+      <RecipeOwnerActionsPanel
+        isSessionLoading={isSessionLoading}
+        recipe={recipe}
+        sessionState={sessionState}
+      />
     </div>
   );
 }

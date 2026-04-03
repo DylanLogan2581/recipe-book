@@ -30,13 +30,9 @@ export function RecipeDetailPage({
 
   return (
     <main className="flex w-full flex-col gap-8 py-3 sm:py-4">
-      <RecipeDetailHero
-        isSessionLoading={sessionQuery.isLoading}
-        recipe={recipe}
-        scaleFactor={scaleFactor}
-        sessionState={sessionQuery.data}
-      />
+      <RecipeDetailHero recipe={recipe} scaleFactor={scaleFactor} />
       <RecipeDetailPageSections
+        isSessionLoading={sessionQuery.isLoading}
         onScaleChange={setScaleFactor}
         recipe={recipe}
         scaleFactor={scaleFactor}

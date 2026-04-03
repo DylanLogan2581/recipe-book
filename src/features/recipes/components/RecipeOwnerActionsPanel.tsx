@@ -41,46 +41,56 @@ export function RecipeOwnerActionsPanel({
   }
 
   return (
-    <div className="flex flex-col items-start gap-2 lg:items-end">
-      <RecipeDeleteDialog
-        description="This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
-        isPending={deleteRecipeMutation.isPending}
-        onConfirm={() => {
-          setFeedback(null);
-          deleteRecipeMutation.mutate(
-            { recipeId: recipe.id },
-            {
-              onError: (error) => {
-                setFeedback(getDeleteErrorMessage(error));
-              },
-              onSuccess: () => {
-                setIsDeleteDialogOpen(false);
-                void navigate({
-                  search: { deleted: "1" },
-                  to: "/recipes",
-                });
-              },
-            },
-          );
-        }}
-        onOpenChange={(open) => {
-          setIsDeleteDialogOpen(open);
-          if (open) {
+    <section className="rounded-lg border border-destructive/20 bg-destructive/5 px-4 py-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="max-w-2xl">
+          <h2 className="text-sm font-semibold text-foreground">Danger zone</h2>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">
+            Delete this recipe if you no longer want it on the shelf. This
+            removes the detail, ingredients, equipment, and method steps.
+          </p>
+        </div>
+
+        <RecipeDeleteDialog
+          description="This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
+          isPending={deleteRecipeMutation.isPending}
+          onConfirm={() => {
             setFeedback(null);
-          }
-        }}
-        open={isDeleteDialogOpen}
-        title="Delete this recipe?"
-      >
-        <Button className="rounded-md px-4" size="lg" variant="destructive">
-          Delete
-        </Button>
-      </RecipeDeleteDialog>
+            deleteRecipeMutation.mutate(
+              { recipeId: recipe.id },
+              {
+                onError: (error) => {
+                  setFeedback(getDeleteErrorMessage(error));
+                },
+                onSuccess: () => {
+                  setIsDeleteDialogOpen(false);
+                  void navigate({
+                    search: { deleted: "1" },
+                    to: "/recipes",
+                  });
+                },
+              },
+            );
+          }}
+          onOpenChange={(open) => {
+            setIsDeleteDialogOpen(open);
+            if (open) {
+              setFeedback(null);
+            }
+          }}
+          open={isDeleteDialogOpen}
+          title="Delete this recipe?"
+        >
+          <Button className="rounded-md px-4" size="lg" variant="destructive">
+            Delete recipe
+          </Button>
+        </RecipeDeleteDialog>
+      </div>
 
       {feedback === null ? null : (
-        <p className="text-sm text-destructive">{feedback}</p>
+        <p className="mt-3 text-sm text-destructive">{feedback}</p>
       )}
-    </div>
+    </section>
   );
 }
 

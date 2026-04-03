@@ -19,6 +19,7 @@ import type {
   DeleteRecipeResult,
   RecipeDetail,
   RecipeListItem,
+  UpdateRecipeInput,
 } from "../types/recipes";
 
 type RecipeApiClient = NonNullable<typeof supabase>;
@@ -162,6 +163,36 @@ export async function deleteRecipe(
   };
 }
 
+export async function updateRecipe(
+  input: UpdateRecipeInput,
+  client: RecipeApiClient | null = supabase,
+): Promise<RecipeDetail> {
+  const recipeClient = await requireRecipeMutationAuth(client);
+  const recipeId = input.recipeId.trim();
+  const { data, error } = await recipeClient
+    .from("recipes")
+    .update(buildRecipeInsert(input))
+    .eq("id", recipeId)
+    .select("id")
+    .maybeSingle()
+    .overrideTypes<CreatedRecipeRecord, { merge: false }>();
+
+  if (error !== null) {
+    throw error;
+  }
+
+  if (data === null) {
+    throw new RecipeDataAccessError(
+      "not-found",
+      `Recipe ${recipeId} was not found or could not be updated.`,
+    );
+  }
+
+  await replaceRecipeRelations(recipeClient, recipeId, input);
+
+  return getRecipeDetail(recipeId, recipeClient);
+}
+
 export async function getRecipeDetail(
   recipeId: string,
   client: RecipeApiClient | null = supabase,
@@ -253,4 +284,39 @@ async function insertRecipeRelations(
       throw error;
     }
   }
+}
+
+async function replaceRecipeRelations(
+  client: RecipeApiClient,
+  recipeId: string,
+  input: CreateRecipeInput,
+): Promise<void> {
+  const ingredientDelete = await client
+    .from("recipe_ingredients")
+    .delete()
+    .eq("recipe_id", recipeId);
+
+  if (ingredientDelete.error !== null) {
+    throw ingredientDelete.error;
+  }
+
+  const equipmentDelete = await client
+    .from("recipe_equipment")
+    .delete()
+    .eq("recipe_id", recipeId);
+
+  if (equipmentDelete.error !== null) {
+    throw equipmentDelete.error;
+  }
+
+  const stepDelete = await client
+    .from("recipe_steps")
+    .delete()
+    .eq("recipe_id", recipeId);
+
+  if (stepDelete.error !== null) {
+    throw stepDelete.error;
+  }
+
+  await insertRecipeRelations(client, recipeId, input);
 }

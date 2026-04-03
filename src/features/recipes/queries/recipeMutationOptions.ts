@@ -1,6 +1,6 @@
 import { mutationOptions } from "@tanstack/react-query";
 
-import { createRecipe, deleteRecipe } from "./recipeApi";
+import { createRecipe, deleteRecipe, updateRecipe } from "./recipeApi";
 import { recipeMutationKeys, recipeQueryKeys } from "./recipeKeys";
 
 import type {
@@ -8,6 +8,7 @@ import type {
   DeleteRecipeInput,
   DeleteRecipeResult,
   RecipeDetail,
+  UpdateRecipeInput,
 } from "../types/recipes";
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -16,6 +17,9 @@ type CreateRecipeMutationOptions = ReturnType<
 >;
 type DeleteRecipeMutationOptions = ReturnType<
   typeof mutationOptions<DeleteRecipeResult, Error, DeleteRecipeInput>
+>;
+type UpdateRecipeMutationOptions = ReturnType<
+  typeof mutationOptions<RecipeDetail, Error, UpdateRecipeInput>
 >;
 
 export function createRecipeMutationOptions(
@@ -39,6 +43,19 @@ export function deleteRecipeMutationOptions(
     mutationKey: recipeMutationKeys.delete(),
     onSuccess: async ({ recipeId }): Promise<void> => {
       queryClient.removeQueries({ queryKey: recipeQueryKeys.detail(recipeId) });
+      await queryClient.invalidateQueries({ queryKey: recipeQueryKeys.lists() });
+    },
+  });
+}
+
+export function updateRecipeMutationOptions(
+  queryClient: QueryClient,
+): UpdateRecipeMutationOptions {
+  return mutationOptions<RecipeDetail, Error, UpdateRecipeInput>({
+    mutationFn: (input): Promise<RecipeDetail> => updateRecipe(input),
+    mutationKey: recipeMutationKeys.update(),
+    onSuccess: async (recipe): Promise<void> => {
+      queryClient.setQueryData(recipeQueryKeys.detail(recipe.id), recipe);
       await queryClient.invalidateQueries({ queryKey: recipeQueryKeys.lists() });
     },
   });

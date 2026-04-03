@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -122,10 +123,24 @@ export function CreateRecipePage(): JSX.Element {
 
       <div className="mt-6">
         <RecipeCreateForm
-          coverPhotoName={selectedCoverPhoto?.name ?? null}
+          cancelButton={
+            <Button
+              asChild
+              className="rounded-md px-5"
+              size="lg"
+              variant="outline"
+            >
+              <Link to="/recipes">Cancel</Link>
+            </Button>
+          }
           coverPhotoInputResetKey={coverPhotoInputResetKey}
+          coverPhotoStatusMessage={
+            selectedCoverPhoto === null
+              ? "No cover photo selected."
+              : `Selected file: ${selectedCoverPhoto.name}`
+          }
+          hasCoverPhoto={selectedCoverPhoto !== null}
           isPending={isSubmitting}
-          isPhotoAttached={selectedCoverPhoto !== null}
           onCoverPhotoChange={(file) => {
             setSelectedCoverPhoto(file);
           }}
@@ -137,7 +152,10 @@ export function CreateRecipePage(): JSX.Element {
             event.preventDefault();
             handleSubmitRecipe();
           }}
+          removeCoverPhotoLabel="Remove photo"
           setValues={setValues}
+          submitLabel="Create recipe"
+          submitPendingLabel="Saving recipe..."
           values={values}
         />
       </div>

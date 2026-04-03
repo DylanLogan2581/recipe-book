@@ -9,4 +9,5 @@ export const recipeQueryKeys = {
 export const recipeMutationKeys = {
   create: () => [...recipeQueryKeys.all, "create"] as const,
   delete: () => [...recipeQueryKeys.all, "delete"] as const,
+  update: () => [...recipeQueryKeys.all, "update"] as const,
 };

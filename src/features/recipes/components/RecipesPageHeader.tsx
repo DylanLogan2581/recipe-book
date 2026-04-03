@@ -17,66 +17,29 @@ export function RecipesPageHeader({
       : `${recipeCount} ${recipeCount === 1 ? "recipe" : "recipes"}`;
 
   return (
-    <section className="grid gap-4 2xl:grid-cols-[minmax(0,1.5fr)_minmax(24rem,0.75fr)]">
-      <div className="rounded-[2rem] border border-border/70 bg-card/95 px-6 py-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
-          Recipe Shelf
-        </p>
-        <h1 className="mt-3 font-display text-4xl tracking-[-0.04em] text-foreground sm:text-5xl">
-          Recipes
-        </h1>
-        <p className="mt-4 max-w-4xl text-sm leading-7 text-muted-foreground sm:text-base">
-          Browse recipes and open the ones you want to cook.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-2">
+    <section className="border-b border-border/70 pb-5">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="max-w-3xl">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+            Recipe Shelf
+          </p>
+          <h1 className="mt-2 font-display text-4xl tracking-[-0.04em] text-foreground sm:text-5xl">
+            Recipes
+          </h1>
+          <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
+            Browse recipes and open the ones you want to cook.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-primary">
             {countLabel}
           </span>
-          <span className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
-            No sign-in required
-          </span>
-          <span className="rounded-full border border-border/70 bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground">
-            Mobile-friendly reading
-          </span>
-        </div>
-        <div className="mt-6">
-          <Button asChild size="lg" className="rounded-full px-5">
-            <Link to="/recipes/new">Create a recipe</Link>
+          <Button asChild size="lg" className="rounded-md px-4">
+            <Link to="/recipes/new">Create recipe</Link>
           </Button>
         </div>
       </div>
-
-      <aside className="rounded-[2rem] border border-border/70 bg-background/85 p-6 shadow-[0_20px_60px_-44px_rgba(69,52,35,0.5)]">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-          Quick Notes
-        </p>
-        <div className="mt-4 space-y-4">
-          <div>
-            <p className="text-sm font-semibold text-foreground">
-              Public recipes
-            </p>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Browse without signing in.
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">
-              Create recipes
-            </p>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Available from the same shelf.
-            </p>
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-foreground">
-              Read on any screen
-            </p>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Works on desktop and mobile.
-            </p>
-          </div>
-        </div>
-      </aside>
     </section>
   );
 }

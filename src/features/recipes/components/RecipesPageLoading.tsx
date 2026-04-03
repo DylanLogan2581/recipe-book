@@ -6,7 +6,7 @@ export function RecipesPageLoading(): JSX.Element {
   return (
     <main className="flex w-full flex-col gap-6 py-3 sm:py-4">
       <RecipesPageHeader />
-      <section aria-hidden="true" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <section aria-hidden="true" className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
         {Array.from({ length: 6 }, (_, index) => (
           <div
             key={`loading-recipe-${index}`}

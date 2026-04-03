@@ -26,12 +26,7 @@ export function AppShellHeader({
 
           <nav className="flex items-center gap-1">
             <Button asChild className="rounded-md px-3" size="sm" variant="ghost">
-              <Link
-                activeProps={{
-                  className: "bg-accent text-accent-foreground",
-                }}
-                to="/recipes"
-              >
+              <Link to="/recipes">
                 Recipes
               </Link>
             </Button>

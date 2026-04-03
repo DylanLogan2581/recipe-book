@@ -230,7 +230,6 @@ export function RecipeCreateForm({
         renderItem={(ingredient, index) => (
           <IngredientFields
             ingredient={ingredient}
-            index={index}
             onChange={(nextIngredient) => {
               setValues((current) => ({
                 ...current,
@@ -266,7 +265,6 @@ export function RecipeCreateForm({
         renderItem={(equipment, index) => (
           <EquipmentFields
             equipment={equipment}
-            index={index}
             onChange={(nextEquipment) => {
               setValues((current) => ({
                 ...current,
@@ -398,13 +396,11 @@ function RecipeCreateCollectionSection<TItem>({
 }
 
 type IngredientFieldsProps = {
-  index: number;
   ingredient: RecipeCreateIngredientFormValue;
   onChange: (ingredient: RecipeCreateIngredientFormValue) => void;
 };
 
 function IngredientFields({
-  index,
   ingredient,
   onChange,
 }: IngredientFieldsProps): JSX.Element {
@@ -480,7 +476,7 @@ function IngredientFields({
           }}
           type="checkbox"
         />
-        Optional ingredient {index + 1}
+        Optional
       </label>
     </div>
   );
@@ -488,13 +484,11 @@ function IngredientFields({
 
 type EquipmentFieldsProps = {
   equipment: RecipeCreateEquipmentFormValue;
-  index: number;
   onChange: (equipment: RecipeCreateEquipmentFormValue) => void;
 };
 
 function EquipmentFields({
   equipment,
-  index,
   onChange,
 }: EquipmentFieldsProps): JSX.Element {
   return (
@@ -532,7 +526,7 @@ function EquipmentFields({
           }}
           type="checkbox"
         />
-        Optional equipment {index + 1}
+        Optional
       </label>
     </div>
   );

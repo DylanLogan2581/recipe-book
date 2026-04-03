@@ -33,6 +33,7 @@ export function CreateRecipePage(): JSX.Element {
   const createRecipeMutation = useMutation(createRecipeMutationOptions(queryClient));
   const [feedback, setFeedback] = useState<FormFeedback | null>(null);
   const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
+  const [coverPhotoInputResetKey, setCoverPhotoInputResetKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [values, setValues] = useState(createEmptyRecipeCreateFormValues);
 
@@ -141,6 +142,7 @@ export function CreateRecipePage(): JSX.Element {
       <div className="mt-6">
         <RecipeCreateForm
           coverPhotoName={selectedCoverPhoto?.name ?? null}
+          coverPhotoInputResetKey={coverPhotoInputResetKey}
           isPending={isSubmitting}
           isPhotoAttached={selectedCoverPhoto !== null}
           onCoverPhotoChange={(file) => {
@@ -148,6 +150,7 @@ export function CreateRecipePage(): JSX.Element {
           }}
           onRemoveCoverPhoto={() => {
             setSelectedCoverPhoto(null);
+            setCoverPhotoInputResetKey((current) => current + 1);
           }}
           onSubmit={(event) => {
             event.preventDefault();

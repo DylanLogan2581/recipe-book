@@ -21,6 +21,7 @@ const checkboxClassName =
 
 type RecipeCreateFormProps = {
   coverPhotoName: string | null;
+  coverPhotoInputResetKey: number;
   isPhotoAttached: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
@@ -34,6 +35,7 @@ type RecipeCreateFormProps = {
 
 export function RecipeCreateForm({
   coverPhotoName,
+  coverPhotoInputResetKey,
   isPhotoAttached,
   isPending,
   onCoverPhotoChange,
@@ -204,6 +206,7 @@ export function RecipeCreateForm({
               accept="image/jpeg,image/png,image/webp"
               className={`${inputClassName} file:mr-3 file:rounded-full file:border-0 file:bg-primary/10 file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary`}
               disabled={isPending}
+              key={coverPhotoInputResetKey}
               onChange={(event) => {
                 onCoverPhotoChange(event.target.files?.[0] ?? null);
               }}

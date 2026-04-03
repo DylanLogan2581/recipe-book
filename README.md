@@ -79,6 +79,17 @@ npx supabase status
 Use the local API URL and anon key from `npx supabase status` in `.env`. The
 default local API URL for this config is `http://127.0.0.1:54321`.
 
+After the stack is running, apply the checked-in migrations to your local
+database:
+
+```bash
+npx supabase db reset
+```
+
+This repo includes schema and storage migrations. If your local database is
+behind, recipe flows can fail with errors such as `Bucket not found` for the
+`recipe-cover-photos` bucket until you reset and replay the migrations.
+
 Useful local endpoints from the current config:
 
 - App dev server: `http://localhost:5173`
@@ -94,10 +105,9 @@ npx supabase migration new <name>
 npx supabase db reset
 ```
 
-The checked-in template does not yet include any migrations, and it also does
-not currently commit `supabase/seed.sql` even though seeding is enabled in
-`supabase/config.toml`. Add the migration files and seed file alongside schema
-work before relying on reset-driven local setup.
+This repo does not currently commit `supabase/seed.sql` even though seeding is
+enabled in `supabase/config.toml`. Add the seed file alongside schema work
+before relying on reset-driven local setup.
 
 Stop the local stack when you are done:
 

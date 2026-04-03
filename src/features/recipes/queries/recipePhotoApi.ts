@@ -15,6 +15,7 @@ const allowedRecipeCoverPhotoTypes = new Set([
 
 export type RecipePhotoUploadErrorCode =
   | "invalid-file-type"
+  | "storage-bucket-missing"
   | "storage-delete-failed"
   | "storage-unconfigured"
   | "upload-too-large";
@@ -85,6 +86,14 @@ export async function uploadRecipeCoverPhoto(
     });
 
   if (error !== null) {
+    if (isRecipeCoverPhotoBucketMissingError(error)) {
+      throw new RecipePhotoUploadError(
+        "storage-bucket-missing",
+        "Recipe cover photo uploads need the latest local Supabase migrations. Run `npx supabase db reset` to recreate the `recipe-cover-photos` bucket.",
+        { cause: error },
+      );
+    }
+
     throw error;
   }
 
@@ -148,4 +157,22 @@ function getRecipeCoverPhotoExtension(fileName: string): string {
   const extension = fileName.split(".").at(-1)?.toLowerCase() ?? "jpg";
 
   return extension === "" ? "jpg" : extension;
+}
+
+function isRecipeCoverPhotoBucketMissingError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) {
+    return false;
+  }
+
+  const storageError = error as {
+    error?: string;
+    message?: string;
+    statusCode?: string;
+  };
+
+  return (
+    storageError.statusCode === "404" &&
+    storageError.error === "Bucket not found" &&
+    storageError.message === "Bucket not found"
+  );
 }

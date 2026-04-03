@@ -4,7 +4,7 @@ import type { JSX } from "react";
 
 export function RecipesPageLoading(): JSX.Element {
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 py-6">
+    <main className="mx-auto flex w-full max-w-[92rem] flex-col gap-6 py-6">
       <RecipesPageHeader />
       <section aria-hidden="true" className="grid gap-4">
         {Array.from({ length: 3 }, (_, index) => (

@@ -17,7 +17,7 @@ export function RecipesPageHeader({
       : `${recipeCount} ${recipeCount === 1 ? "recipe" : "recipes"}`;
 
   return (
-    <section className="grid gap-4 xl:grid-cols-[1.3fr_0.7fr]">
+    <section className="grid gap-4 2xl:grid-cols-[minmax(0,1.5fr)_minmax(24rem,0.75fr)]">
       <div className="rounded-[2rem] border border-border/70 bg-card/95 px-6 py-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
         <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
           Recipe Shelf
@@ -25,7 +25,7 @@ export function RecipesPageHeader({
         <h1 className="mt-3 font-display text-4xl tracking-[-0.04em] text-foreground sm:text-5xl">
           Recipes
         </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+        <p className="mt-4 max-w-4xl text-sm leading-7 text-muted-foreground sm:text-base">
           Browse recipes and open the ones you want to cook.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">

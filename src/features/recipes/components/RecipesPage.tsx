@@ -25,7 +25,7 @@ export function RecipesPage({
   const recipes = recipeListQuery.data;
 
   return (
-    <main className="mx-auto flex max-w-6xl flex-col gap-6 py-6">
+    <main className="mx-auto flex w-full max-w-[92rem] flex-col gap-6 py-6">
       <RecipesPageHeader recipeCount={recipes.length} />
       {showDeletedBanner ? <RecipeDeleteSuccessBanner /> : null}
       <RecipesPageContent recipes={recipes} />

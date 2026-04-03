@@ -13,7 +13,7 @@ export function RecipeDetailPageErrorState({
   const copy = getRecipeLoadErrorCopy(error, "detail");
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 py-6">
+    <main className="mx-auto flex w-full max-w-[84rem] flex-col gap-6 py-6">
       <div className="flex flex-wrap items-center gap-3">
         <Button asChild variant="ghost" size="lg" className="rounded-full px-4">
           <Link to="/recipes">Back to recipe shelf</Link>

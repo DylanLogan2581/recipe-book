@@ -15,7 +15,7 @@ export function RecipeCreateAuthPrompt({
   const copy = getAuthPromptCopy(sessionState);
 
   return (
-    <main className="mx-auto max-w-4xl py-6">
+    <main className="mx-auto w-full max-w-[84rem] py-6">
       <section className="rounded-[2rem] border border-border/80 bg-[radial-gradient(circle_at_top_left,rgba(217,170,93,0.18),transparent_24%),linear-gradient(180deg,rgba(255,253,249,0.96),rgba(246,238,226,0.92))] px-6 py-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)] sm:px-8">
         <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
           Recipe Authoring

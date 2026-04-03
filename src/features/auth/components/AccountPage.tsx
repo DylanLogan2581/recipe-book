@@ -97,7 +97,7 @@ export function AccountPage(): JSX.Element {
   const isConfigured = sessionQuery.data?.kind !== "unconfigured";
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-4 py-4 sm:py-6">
+    <main className="mx-auto flex w-full max-w-[76rem] flex-col gap-4 py-4 sm:py-6">
       <section className="rounded-[1.75rem] border border-border/80 bg-card/95 px-5 py-6 shadow-[0_20px_60px_-46px_rgba(69,52,35,0.45)] sm:px-6">
         <p className="text-xs font-semibold uppercase tracking-[0.32em] text-muted-foreground">
           Account

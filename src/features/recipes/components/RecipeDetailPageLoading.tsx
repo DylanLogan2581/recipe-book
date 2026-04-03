@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 export function RecipeDetailPageLoading(): JSX.Element {
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-6 py-6">
+    <main className="mx-auto flex w-full max-w-[84rem] flex-col gap-6 py-6">
       <div aria-hidden="true" className="animate-pulse space-y-6">
         <div className="h-10 w-44 rounded-full bg-muted" />
         <div className="rounded-[2rem] border border-border/70 bg-card/90 p-8 shadow-[0_24px_80px_-50px_rgba(69,52,35,0.45)]">

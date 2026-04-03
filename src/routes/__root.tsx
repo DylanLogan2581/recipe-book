@@ -9,9 +9,7 @@ import {
   type AuthSessionState,
 } from "@/features/auth";
 import {
-  ThemePresetPicker,
   ThemePresetProvider,
-  useThemePreset,
 } from "@/features/theme";
 import { type AppRouterContext } from "@/lib/queryClient";
 
@@ -36,7 +34,6 @@ const ReactQueryDevtools = isDev
 function RootShell(): JSX.Element {
   const sessionQuery = useQuery(sessionQueryOptions);
   const authSummary = getAuthSummary(sessionQuery.isLoading, sessionQuery.data);
-  const { activeThemePresetId, setActiveThemePresetId } = useThemePreset();
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -54,15 +51,7 @@ function RootShell(): JSX.Element {
       />
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 sm:px-6">
-        <AppShellHeader
-          authSummary={authSummary}
-          themePresetPicker={
-            <ThemePresetPicker
-              activeThemePresetId={activeThemePresetId}
-              onThemePresetChange={setActiveThemePresetId}
-            />
-          }
-        />
+        <AppShellHeader authSummary={authSummary} />
 
         <div className="flex-1 py-4 sm:py-6">
           <Outlet />

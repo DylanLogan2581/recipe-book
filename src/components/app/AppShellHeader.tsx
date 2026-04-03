@@ -4,7 +4,7 @@ import { BookOpenText, ChefHat, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import type { JSX, ReactNode } from "react";
+import type { JSX } from "react";
 
 type AppShellHeaderProps = {
   authSummary: {
@@ -13,12 +13,10 @@ type AppShellHeaderProps = {
     ctaLabel: string;
     supportingText: string;
   };
-  themePresetPicker: ReactNode;
 };
 
 export function AppShellHeader({
   authSummary,
-  themePresetPicker,
 }: AppShellHeaderProps): JSX.Element {
   return (
     <header className="sticky top-0 z-20 pt-4 sm:pt-6">
@@ -100,8 +98,6 @@ export function AppShellHeader({
                 {authSummary.supportingText}
               </p>
             </div>
-
-            {themePresetPicker}
 
             <Button asChild size="lg" className="rounded-full px-4 shadow-sm">
               <Link to="/account">

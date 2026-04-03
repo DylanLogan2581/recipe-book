@@ -9,30 +9,48 @@ import type { JSX } from "react";
 type ThemePresetPickerProps = {
   activeThemePresetId: ThemePresetId;
   onThemePresetChange: (themePresetId: ThemePresetId) => void;
+  variant?: "compact" | "default";
 };
 
 export function ThemePresetPicker({
   activeThemePresetId,
   onThemePresetChange,
+  variant = "default",
 }: ThemePresetPickerProps): JSX.Element {
+  const isCompact = variant === "compact";
+
   return (
-    <section className="rounded-[1.75rem] border border-border/70 bg-background/72 p-4 shadow-[0_18px_48px_-36px_rgba(69,52,35,0.5)]">
+    <section
+      className={
+        isCompact
+          ? "rounded-[1.5rem] border border-border/70 bg-background/80 p-4"
+          : "rounded-[1.75rem] border border-border/70 bg-background/72 p-4 shadow-[0_18px_48px_-36px_rgba(69,52,35,0.5)]"
+      }
+    >
       <div className="flex items-start gap-3">
-        <div className="mt-0.5 flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <div
+          className={
+            isCompact
+              ? "mt-0.5 flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary"
+              : "mt-0.5 flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary"
+          }
+        >
           <Sparkles className="size-4" />
         </div>
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">
-            Color mood
+            Theme
           </p>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Swap preset token sets without changing the recipe layout or focus
-            states.
-          </p>
+          {isCompact ? null : (
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Swap preset token sets without changing the recipe layout or focus
+              states.
+            </p>
+          )}
         </div>
       </div>
 
-      <div className="mt-4 grid gap-2">
+      <div className={isCompact ? "mt-3 grid gap-2" : "mt-4 grid gap-2"}>
         {themePresets.map((themePreset) => {
           const isActive = themePreset.id === activeThemePresetId;
 
@@ -41,7 +59,9 @@ export function ThemePresetPicker({
               key={themePreset.id}
               aria-pressed={isActive}
               className={cn(
-                "rounded-[1.35rem] border px-3 py-3 text-left transition outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30",
+                isCompact
+                  ? "rounded-[1rem] border px-3 py-2.5 text-left transition outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
+                  : "rounded-[1.35rem] border px-3 py-3 text-left transition outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30",
                 isActive
                   ? "border-primary/35 bg-primary/8 shadow-[0_14px_36px_-28px_rgba(69,52,35,0.45)]"
                   : "border-border/70 bg-background/78 hover:border-primary/20 hover:bg-background",
@@ -56,9 +76,11 @@ export function ThemePresetPicker({
                   <p className="text-sm font-semibold text-foreground">
                     {themePreset.label}
                   </p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {themePreset.description}
-                  </p>
+                  {isCompact ? null : (
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      {themePreset.description}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center gap-1.5">
                   {themePreset.swatches.map((swatch) => (

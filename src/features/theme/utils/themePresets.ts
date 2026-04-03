@@ -1,6 +1,7 @@
-export type ThemePresetId = "pantry" | "garden" | "citrus";
+export type ThemePresetId = "pantry" | "light" | "dark";
 
 export type ThemePreset = {
+  colorScheme: "dark" | "light";
   description: string;
   id: ThemePresetId;
   label: string;
@@ -14,19 +15,22 @@ export const themePresets: ThemePreset[] = [
     id: "pantry",
     label: "Pantry",
     description: "Warm herbs and parchment tones that keep the recipe shell calm.",
+    colorScheme: "light",
     swatches: ["#5f7b49", "#d9aa5d", "#f4ecde"],
   },
   {
-    id: "garden",
-    label: "Garden",
-    description: "Soft sage and fresh greens for a lighter counter-side mood.",
-    swatches: ["#4e826f", "#acc75c", "#e7f4ed"],
+    id: "light",
+    label: "Light",
+    description: "A neutral light theme with standard white surfaces and dark text.",
+    colorScheme: "light",
+    swatches: ["#ffffff", "#e5e7eb", "#111111"],
   },
   {
-    id: "citrus",
-    label: "Citrus",
-    description: "Terracotta and preserved lemon accents with clear contrast.",
-    swatches: ["#cf7843", "#e4b851", "#f8ebdc"],
+    id: "dark",
+    label: "Dark",
+    description: "A neutral dark theme with dark surfaces and light text.",
+    colorScheme: "dark",
+    swatches: ["#09090b", "#27272a", "#fafafa"],
   },
 ] as const;
 
@@ -49,6 +53,12 @@ export function getThemePreset(themePresetId: string): ThemePreset {
   }
 
   return themePresetsById.get(themePresetId) ?? fallbackThemePreset;
+}
+
+export function getThemePresetColorScheme(
+  themePresetId: string,
+): "dark" | "light" {
+  return getThemePreset(themePresetId).colorScheme;
 }
 
 export function isThemePresetId(value: string): value is ThemePresetId {

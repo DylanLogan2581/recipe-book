@@ -11,6 +11,7 @@ import {
   type RecipeListRecord,
 } from "./recipeAdapters";
 import { requireRecipeMutationAuth } from "./recipeAuth";
+import { listRecipeCookLogs } from "./recipeCookLogApi";
 
 import type {
   CreateRecipeInput,
@@ -72,16 +73,6 @@ const recipeDetailSelect = `
   cover_image_path,
   created_at,
   updated_at,
-  recipe_cook_logs (
-    id,
-    recipe_id,
-    owner_id,
-    cooked_on,
-    notes,
-    photo_path,
-    created_at,
-    updated_at
-  ),
   recipe_ingredients (
     id,
     position,
@@ -194,7 +185,9 @@ export async function getRecipeDetail(
     );
   }
 
-  return mapRecipeDetailRecord(data);
+  const cookLogs = await listRecipeCookLogs(recipeId, recipeClient);
+
+  return mapRecipeDetailRecord(data, cookLogs);
 }
 
 export async function listRecipes(

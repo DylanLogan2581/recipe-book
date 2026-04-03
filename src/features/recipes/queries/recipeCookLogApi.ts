@@ -14,6 +14,12 @@ import type {
 
 type RecipeCookLogApiClient = NonNullable<typeof supabase>;
 
+type RecipeCookLogReadError = {
+  code?: string;
+  details?: string | null;
+  message?: string;
+};
+
 export async function createRecipeCookLog(
   input: CreateRecipeCookLogInput,
   client: RecipeCookLogApiClient | null = supabase,
@@ -31,4 +37,48 @@ export async function createRecipeCookLog(
   }
 
   return mapRecipeCookLogRow(data);
+}
+
+export async function listRecipeCookLogs(
+  recipeId: string,
+  client: RecipeCookLogApiClient | null = supabase,
+): Promise<RecipeCookLogRow[]> {
+  if (client === null) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("recipe_cook_logs")
+    .select("id, recipe_id, owner_id, cooked_on, notes, photo_path, created_at, updated_at")
+    .eq("recipe_id", recipeId)
+    .overrideTypes<RecipeCookLogRow[], { merge: false }>();
+
+  if (error !== null) {
+    if (isRecipeCookLogSchemaUnavailableError(error)) {
+      return [];
+    }
+
+    throw error;
+  }
+
+  return data ?? [];
+}
+
+export function isRecipeCookLogSchemaUnavailableError(error: unknown): boolean {
+  if (
+    typeof error !== "object" ||
+    error === null ||
+    !("code" in error) ||
+    !("message" in error)
+  ) {
+    return false;
+  }
+
+  const { code, details, message } = error as RecipeCookLogReadError;
+  const combinedText = `${details ?? ""} ${message ?? ""}`;
+
+  return (
+    (code === "PGRST200" || code === "PGRST205") &&
+    combinedText.includes("recipe_cook_logs")
+  );
 }

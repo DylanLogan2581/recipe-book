@@ -31,7 +31,6 @@ export type RecipeCookLogRow = Database["public"]["Tables"]["recipe_cook_logs"][
 export type RecipeListRecord = RecipeRow;
 
 export type RecipeDetailRecord = RecipeRow & {
-  recipe_cook_logs: RecipeCookLogRow[] | null;
   recipe_equipment: RecipeEquipmentRow[] | null;
   recipe_ingredients: RecipeIngredientRow[] | null;
   recipe_steps: RecipeStepRow[] | null;
@@ -104,10 +103,13 @@ export function buildRecipeCookLogInsert(
   };
 }
 
-export function mapRecipeDetailRecord(record: RecipeDetailRecord): RecipeDetail {
+export function mapRecipeDetailRecord(
+  record: RecipeDetailRecord,
+  cookLogs: RecipeCookLogRow[] = [],
+): RecipeDetail {
   return {
     ...mapRecipeListRecord(record),
-    cookLogs: sortCookLogs(record.recipe_cook_logs ?? []).map(mapRecipeCookLogRow),
+    cookLogs: sortCookLogs(cookLogs).map(mapRecipeCookLogRow),
     equipment: sortByPosition(record.recipe_equipment ?? []).map(
       mapRecipeEquipmentRow,
     ),

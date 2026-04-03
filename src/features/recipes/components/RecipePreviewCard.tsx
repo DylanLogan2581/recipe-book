@@ -68,10 +68,7 @@ export function RecipePreviewCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-4">
-          <p className="text-sm leading-6 text-muted-foreground">
-            Open the detail route for the fuller read while cooking.
-          </p>
+        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border/70 pt-4">
           <Button asChild variant="outline" size="lg" className="rounded-full px-4">
             <Link to="/recipes/$recipeId" params={{ recipeId: recipe.id }}>
               Open recipe

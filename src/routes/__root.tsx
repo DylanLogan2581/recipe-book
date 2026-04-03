@@ -2,7 +2,7 @@ import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy, Suspense, type JSX } from "react";
 
-import { AppShellFooter, AppShellHeader } from "@/components/app";
+import { AppShellHeader } from "@/components/app";
 import {
   preloadSessionState,
   sessionQueryOptions,
@@ -36,7 +36,7 @@ function RootShell(): JSX.Element {
   const authSummary = getAuthSummary(sessionQuery.isLoading, sessionQuery.data);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-background">
       <div
         className="pointer-events-none absolute inset-0"
         style={{ backgroundImage: "var(--app-shell-overlay)" }}
@@ -56,8 +56,6 @@ function RootShell(): JSX.Element {
         <div className="flex-1 py-4 sm:py-6">
           <Outlet />
         </div>
-
-        <AppShellFooter />
       </div>
     </div>
   );

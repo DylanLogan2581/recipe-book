@@ -301,7 +301,6 @@ export function RecipeCreateForm({
         }}
         renderItem={(step, index) => (
           <StepFields
-            index={index}
             onChange={(nextStep) => {
               setValues((current) => ({
                 ...current,
@@ -540,12 +539,11 @@ function EquipmentFields({
 }
 
 type StepFieldsProps = {
-  index: number;
   onChange: (step: RecipeCreateStepFormValue) => void;
   step: RecipeCreateStepFormValue;
 };
 
-function StepFields({ index, onChange, step }: StepFieldsProps): JSX.Element {
+function StepFields({ onChange, step }: StepFieldsProps): JSX.Element {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <label className="md:col-span-2">
@@ -573,7 +571,9 @@ function StepFields({ index, onChange, step }: StepFieldsProps): JSX.Element {
       </label>
 
       <label>
-        <span className="text-sm font-medium text-foreground">Timer seconds</span>
+        <span className="text-sm font-medium text-foreground">
+          Timer duration (seconds)
+        </span>
         <input
           className={inputClassName}
           inputMode="numeric"
@@ -584,10 +584,6 @@ function StepFields({ index, onChange, step }: StepFieldsProps): JSX.Element {
           value={step.timerSeconds}
         />
       </label>
-
-      <p className="md:col-span-2 text-sm text-muted-foreground">
-        Step {index + 1}
-      </p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ export function RecipeCookLogSection({
     },
   });
   const [cookedOn, setCookedOn] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [notes, setNotes] = useState("");
   const [selectedPhoto, setSelectedPhoto] = useState<File | null>(null);
@@ -57,107 +59,126 @@ export function RecipeCookLogSection({
   const savedMemoriesSectionClassName = isOwner
     ? "space-y-4 border-t border-border/70 pt-6"
     : "space-y-4";
+  const contentId = `recipe-cook-log-content-${recipe.id}`;
 
   return (
     <section className="space-y-6 border-t border-border pt-6">
-      <div className="flex items-center gap-3">
-        <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-          Kitchen memories
-        </h2>
-        <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
-          {recipe.cookLogs.length}
-        </span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+            Kitchen memories
+          </h2>
+          <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
+            {recipe.cookLogs.length}
+          </span>
+        </div>
+        <Button
+          aria-controls={contentId}
+          aria-expanded={isExpanded}
+          className="rounded-md px-3"
+          onClick={() => {
+            setIsExpanded((current) => !current);
+          }}
+          size="sm"
+          type="button"
+          variant="outline"
+        >
+          {isExpanded ? <ChevronUp /> : <ChevronDown />}
+          {isExpanded ? "Hide" : "Show"}
+        </Button>
       </div>
 
-      {isOwner ? (
-        <section className="space-y-4" aria-labelledby="cook-memory-create-heading">
-          <div className="border-b border-border/70 pb-2">
-            <h3
-              className="text-base font-semibold tracking-tight text-foreground"
-              id="cook-memory-create-heading"
-            >
-              Add a cook memory
-            </h3>
-          </div>
-          <form
-            className="rounded-lg border border-border bg-background p-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void handleCreateCookLog();
-            }}
+      <div className={isExpanded ? "space-y-6" : "hidden"} hidden={!isExpanded} id={contentId}>
+          {isOwner ? (
+            <section className="space-y-4" aria-labelledby="cook-memory-create-heading">
+              <div className="border-b border-border/70 pb-2">
+                <h3
+                  className="text-base font-semibold tracking-tight text-foreground"
+                  id="cook-memory-create-heading"
+                >
+                  Add a cook memory
+                </h3>
+              </div>
+              <form
+                className="rounded-lg border border-border bg-background p-4"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void handleCreateCookLog();
+                }}
+              >
+                <div className="grid gap-4 md:grid-cols-2">
+                  <label>
+                    <span className="text-sm font-medium text-foreground">Cooked on</span>
+                    <input
+                      className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      onChange={(event) => {
+                        setCookedOn(event.target.value);
+                      }}
+                      type="date"
+                      value={cookedOn}
+                    />
+                  </label>
+
+                  <label>
+                    <span className="text-sm font-medium text-foreground">Photo</span>
+                    <input
+                      accept="image/jpeg,image/png,image/webp"
+                      className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      disabled={isSubmitting}
+                      onChange={(event) => {
+                        setSelectedPhoto(event.target.files?.[0] ?? null);
+                      }}
+                      type="file"
+                    />
+                  </label>
+
+                  <label className="md:col-span-2">
+                    <span className="text-sm font-medium text-foreground">Notes</span>
+                    <textarea
+                      className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      onChange={(event) => {
+                        setNotes(event.target.value);
+                      }}
+                      placeholder="What changed, what worked, and what you want to remember next time."
+                      value={notes}
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+                  <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
+                    {isSubmitting ? "Saving memory..." : "Save cook memory"}
+                  </Button>
+                </div>
+              </form>
+            </section>
+          ) : null}
+
+          <section
+            aria-labelledby="cook-memory-history-heading"
+            className={savedMemoriesSectionClassName}
           >
-            <div className="grid gap-4 md:grid-cols-2">
-              <label>
-                <span className="text-sm font-medium text-foreground">Cooked on</span>
-                <input
-                  className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  onChange={(event) => {
-                    setCookedOn(event.target.value);
-                  }}
-                  type="date"
-                  value={cookedOn}
-                />
-              </label>
-
-              <label>
-                <span className="text-sm font-medium text-foreground">Photo</span>
-                <input
-                  accept="image/jpeg,image/png,image/webp"
-                  className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  disabled={isSubmitting}
-                  onChange={(event) => {
-                    setSelectedPhoto(event.target.files?.[0] ?? null);
-                  }}
-                  type="file"
-                />
-              </label>
-
-              <label className="md:col-span-2">
-                <span className="text-sm font-medium text-foreground">Notes</span>
-                <textarea
-                  className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  onChange={(event) => {
-                    setNotes(event.target.value);
-                  }}
-                  placeholder="What changed, what worked, and what you want to remember next time."
-                  value={notes}
-                />
-              </label>
+            <div className="border-b border-border/70 pb-2">
+              <h3
+                className="text-base font-semibold tracking-tight text-foreground"
+                id="cook-memory-history-heading"
+              >
+                Saved memories
+              </h3>
             </div>
-
-            <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
-              <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
-                {isSubmitting ? "Saving memory..." : "Save cook memory"}
-              </Button>
-            </div>
-          </form>
-        </section>
-      ) : null}
-
-      <section
-        aria-labelledby="cook-memory-history-heading"
-        className={savedMemoriesSectionClassName}
-      >
-        <div className="border-b border-border/70 pb-2">
-          <h3
-            className="text-base font-semibold tracking-tight text-foreground"
-            id="cook-memory-history-heading"
-          >
-            Saved memories
-          </h3>
-        </div>
-        {recipe.cookLogs.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
-            No cook memories were saved for this recipe yet.
-          </div>
-        ) : (
-          <ol className="space-y-4">
-            {recipe.cookLogs.map((cookLog) => (
-              <CookLogCard key={cookLog.id} cookLog={cookLog} />
-            ))}
-          </ol>
-        )}
-      </section>
+            {recipe.cookLogs.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
+                No cook memories were saved for this recipe yet.
+              </div>
+            ) : (
+              <ol className="space-y-4">
+                {recipe.cookLogs.map((cookLog) => (
+                  <CookLogCard key={cookLog.id} cookLog={cookLog} />
+                ))}
+              </ol>
+            )}
+          </section>
+      </div>
     </section>
   );
 

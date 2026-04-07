@@ -1,33 +1,104 @@
 import { useEffect, useEffectEvent, useState } from "react";
 
+export type StepTimerStatus = "idle" | "paused" | "running";
+
+type StepTimerState = {
+  activeStepId: string | null;
+  remainingSeconds: number | null;
+  status: StepTimerStatus;
+};
+
 type UseStepTimerReturn = {
   activeStepId: string | null;
   remainingSeconds: number | null;
+  pauseTimer: () => void;
+  resetTimer: () => void;
+  resumeTimer: () => void;
   startTimer: (stepId: string, seconds: number) => void;
-  stopTimer: () => void;
+  status: StepTimerStatus;
 };
 
+export function createRunningStepTimerState(
+  stepId: string,
+  seconds: number,
+): StepTimerState {
+  return {
+    activeStepId: stepId,
+    remainingSeconds: seconds,
+    status: "running",
+  };
+}
+
+export function pauseStepTimerState(state: StepTimerState): StepTimerState {
+  if (
+    state.status !== "running" ||
+    state.activeStepId === null ||
+    state.remainingSeconds === null
+  ) {
+    return state;
+  }
+
+  return {
+    ...state,
+    status: "paused",
+  };
+}
+
+export function resetStepTimerState(): StepTimerState {
+  return {
+    activeStepId: null,
+    remainingSeconds: null,
+    status: "idle",
+  };
+}
+
+export function resumeStepTimerState(state: StepTimerState): StepTimerState {
+  if (
+    state.status !== "paused" ||
+    state.activeStepId === null ||
+    state.remainingSeconds === null
+  ) {
+    return state;
+  }
+
+  return {
+    ...state,
+    status: "running",
+  };
+}
+
+export function tickStepTimerState(state: StepTimerState): StepTimerState {
+  if (
+    state.status !== "running" ||
+    state.activeStepId === null ||
+    state.remainingSeconds === null
+  ) {
+    return state;
+  }
+
+  if (state.remainingSeconds <= 1) {
+    return resetStepTimerState();
+  }
+
+  return {
+    ...state,
+    remainingSeconds: state.remainingSeconds - 1,
+  };
+}
+
 export function useStepTimer(): UseStepTimerReturn {
-  const [activeStepId, setActiveStepId] = useState<string | null>(null);
-  const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  const [timerState, setTimerState] = useState<StepTimerState>(resetStepTimerState);
 
   const tick = useEffectEvent(() => {
-    setRemainingSeconds((currentRemainingSeconds) => {
-      if (currentRemainingSeconds === null) {
-        return null;
-      }
-
-      if (currentRemainingSeconds <= 1) {
-        setActiveStepId(null);
-        return null;
-      }
-
-      return currentRemainingSeconds - 1;
-    });
+    setTimerState((currentState) => tickStepTimerState(currentState));
   });
 
   useEffect(() => {
-    if (activeStepId === null || remainingSeconds === null) {
+    if (
+      timerState.status !== "running" ||
+      timerState.activeStepId === null ||
+      timerState.remainingSeconds === null
+    ) {
       return undefined;
     }
 
@@ -38,18 +109,23 @@ export function useStepTimer(): UseStepTimerReturn {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [activeStepId, remainingSeconds]);
+  }, [timerState.activeStepId, timerState.remainingSeconds, timerState.status]);
 
   return {
-    activeStepId,
-    remainingSeconds,
+    activeStepId: timerState.activeStepId,
+    pauseTimer: () => {
+      setTimerState((currentState) => pauseStepTimerState(currentState));
+    },
+    remainingSeconds: timerState.remainingSeconds,
+    resetTimer: () => {
+      setTimerState(resetStepTimerState);
+    },
+    resumeTimer: () => {
+      setTimerState((currentState) => resumeStepTimerState(currentState));
+    },
     startTimer: (stepId: string, seconds: number) => {
-      setActiveStepId(stepId);
-      setRemainingSeconds(seconds);
+      setTimerState(createRunningStepTimerState(stepId, seconds));
     },
-    stopTimer: () => {
-      setActiveStepId(null);
-      setRemainingSeconds(null);
-    },
+    status: timerState.status,
   };
 }

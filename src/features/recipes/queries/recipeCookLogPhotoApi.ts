@@ -16,6 +16,7 @@ const allowedRecipeCookLogPhotoTypes = new Set([
 export class RecipeCookLogPhotoError extends Error {
   readonly code:
     | "invalid-file-type"
+    | "storage-bucket-missing"
     | "storage-delete-failed"
     | "storage-unconfigured"
     | "upload-too-large";
@@ -23,6 +24,7 @@ export class RecipeCookLogPhotoError extends Error {
   constructor(
     code:
       | "invalid-file-type"
+      | "storage-bucket-missing"
       | "storage-delete-failed"
       | "storage-unconfigured"
       | "upload-too-large",
@@ -87,6 +89,14 @@ export async function uploadRecipeCookLogPhoto(
     });
 
   if (error !== null) {
+    if (isRecipeCookLogPhotoBucketMissingError(error)) {
+      throw new RecipeCookLogPhotoError(
+        "storage-bucket-missing",
+        "Cook memory photo uploads need the latest local Supabase migrations. Run `npx supabase db reset` to recreate the `recipe-cook-log-photos` bucket.",
+        { cause: error },
+      );
+    }
+
     throw error;
   }
 
@@ -152,4 +162,18 @@ function getRecipeCookLogPhotoExtension(fileName: string): string {
   const extension = fileName.split(".").at(-1)?.toLowerCase() ?? "jpg";
 
   return extension === "" ? "jpg" : extension;
+}
+
+function isRecipeCookLogPhotoBucketMissingError(candidate: unknown): boolean {
+  if (candidate === null || typeof candidate !== "object") {
+    return false;
+  }
+
+  const storageError = candidate as Record<string, unknown>;
+
+  return (
+    storageError.statusCode === "404" &&
+    storageError.error === "Bucket not found" &&
+    storageError.message === "Bucket not found"
+  );
 }

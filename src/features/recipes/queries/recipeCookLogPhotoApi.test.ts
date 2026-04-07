@@ -5,6 +5,7 @@ import {
   getRecipeCookLogPhotoUrl,
   recipeCookLogPhotoBucket,
   RecipeCookLogPhotoError,
+  uploadRecipeCookLogPhoto,
   validateRecipeCookLogPhoto,
 } from "./recipeCookLogPhotoApi";
 
@@ -83,5 +84,88 @@ describe("getRecipeCookLogPhotoUrl", () => {
 
   it("returns null when the path or client is missing", () => {
     expect(getRecipeCookLogPhotoUrl(null, null)).toBeNull();
+  });
+});
+
+describe("uploadRecipeCookLogPhoto", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("uploads the file to the cook log photo bucket", async () => {
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(
+      "00000000-0000-4000-8000-000000000789",
+    );
+
+    const upload = vi.fn().mockResolvedValue({
+      error: null,
+    });
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "user-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      storage: {
+        from: vi.fn().mockReturnValue({
+          upload,
+        }),
+      },
+    };
+
+    await expect(
+      uploadRecipeCookLogPhoto(
+        new File(["photo"], "Dinner Memory.PNG", {
+          type: "image/png",
+        }),
+        client as never,
+      ),
+    ).resolves.toBe(
+      "user-1/00000000-0000-4000-8000-000000000789-dinner-memory.png",
+    );
+    expect(client.storage.from).toHaveBeenCalledWith(recipeCookLogPhotoBucket);
+  });
+
+  it("maps a missing bucket error to a guided upload error", async () => {
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "user-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      storage: {
+        from: vi.fn().mockReturnValue({
+          upload: vi.fn().mockResolvedValue({
+            error: {
+              statusCode: "404",
+              error: "Bucket not found",
+              message: "Bucket not found",
+            },
+          }),
+        }),
+      },
+    };
+
+    await expect(
+      uploadRecipeCookLogPhoto(
+        new File(["photo"], "memory.png", {
+          type: "image/png",
+        }),
+        client as never,
+      ),
+    ).rejects.toMatchObject({
+      code: "storage-bucket-missing",
+      name: "RecipeCookLogPhotoError",
+    });
   });
 });

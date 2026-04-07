@@ -42,65 +42,54 @@ export function RecipeOwnerActionsPanel({
   }
 
   return (
-    <div className="space-y-8">
-      <section>
+    <section aria-label="Recipe actions" className="border-t border-border pt-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button asChild className="rounded-md px-4" size="sm" variant="outline">
           <Link params={{ recipeId: recipe.id }} to="/recipes/$recipeId/edit">
             Edit recipe
           </Link>
         </Button>
-      </section>
 
-      <section className="border-t border-destructive/25 pt-6">
-        <div className="max-w-2xl">
-          <h3 className="text-sm font-semibold tracking-tight text-destructive/85">
-            Danger zone
-          </h3>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Delete this recipe if you no longer want it on the shelf. This removes
-            the detail, ingredients, equipment, and method steps.
-          </p>
-          <RecipeDeleteDialog
-            description="This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
-            isPending={deleteRecipeMutation.isPending}
-            onConfirm={() => {
-              deleteRecipeMutation.mutate(
-                { recipeId: recipe.id },
-                {
-                  onError: (error) => {
-                    toast({
-                      description: getDeleteErrorMessage(error),
-                      tone: "error",
-                      title: "Recipe could not be deleted",
-                    });
-                  },
-                  onSuccess: () => {
-                    setIsDeleteDialogOpen(false);
-                    void navigate({
-                      search: { deleted: "1" },
-                      to: "/recipes",
-                    });
-                  },
+        <RecipeDeleteDialog
+          description="This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
+          isPending={deleteRecipeMutation.isPending}
+          onConfirm={() => {
+            deleteRecipeMutation.mutate(
+              { recipeId: recipe.id },
+              {
+                onError: (error) => {
+                  toast({
+                    description: getDeleteErrorMessage(error),
+                    tone: "error",
+                    title: "Recipe could not be deleted",
+                  });
                 },
-              );
-            }}
-            onOpenChange={(open) => {
-              setIsDeleteDialogOpen(open);
-            }}
-            open={isDeleteDialogOpen}
-            title="Delete this recipe?"
+                onSuccess: () => {
+                  setIsDeleteDialogOpen(false);
+                  void navigate({
+                    search: { deleted: "1" },
+                    to: "/recipes",
+                  });
+                },
+              },
+            );
+          }}
+          onOpenChange={(open) => {
+            setIsDeleteDialogOpen(open);
+          }}
+          open={isDeleteDialogOpen}
+          title="Delete this recipe?"
+        >
+          <Button
+            className="h-auto self-start px-0 py-0 text-destructive hover:text-destructive/80 sm:self-auto"
+            size="sm"
+            variant="link"
           >
-            <Button
-              className="mt-3 h-auto px-0 py-0 text-destructive hover:text-destructive/80"
-              size="sm"
-              variant="link"
-            >
-              Delete recipe
-            </Button>
-          </RecipeDeleteDialog>
-        </div>
-      </section>
-    </div>
+            Delete recipe
+          </Button>
+        </RecipeDeleteDialog>
+      </div>
+    </section>
   );
 }
 

@@ -91,6 +91,12 @@ export function CreateRecipePage(): JSX.Element {
         coverImagePath: uploadedCoverPhotoPath,
       });
 
+      toast({
+        description: "Your recipe is live on the recipe page.",
+        title: "Recipe created",
+        tone: "success",
+      });
+
       void navigate({
         params: { recipeId: recipe.id },
         to: "/recipes/$recipeId",

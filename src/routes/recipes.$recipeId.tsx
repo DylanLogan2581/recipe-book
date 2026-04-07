@@ -1,8 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import {
   preloadRecipeDetail,
-  RecipeDetailPage,
   RecipeDetailPageErrorState,
   RecipeDetailPageLoading,
 } from "@/features/recipes";
@@ -10,9 +9,7 @@ import {
 import type { JSX } from "react";
 
 function RecipeDetailRoute(): JSX.Element {
-  const { recipeId } = Route.useParams();
-
-  return <RecipeDetailPage recipeId={recipeId} />;
+  return <Outlet />;
 }
 
 export const Route = createFileRoute("/recipes/$recipeId")({

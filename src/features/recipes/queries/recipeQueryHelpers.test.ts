@@ -57,12 +57,15 @@ function createTestQueryClient(): QueryClient {
   });
 }
 
-function buildRecipeDetail(overrides: Partial<RecipeDetail> = {}): RecipeDetail {
+function buildRecipeDetail(
+  overrides: Partial<RecipeDetail> = {},
+): RecipeDetail {
   return {
     cookMinutes: 20,
     cookLogs: [],
     coverImagePath: null,
     createdAt: "2026-03-27T10:00:00.000Z",
+    creatorName: null,
     description: "Silky lemon pasta with parmesan.",
     equipment: [],
     id: "recipe-1",
@@ -162,9 +165,9 @@ describe("recipe query options", () => {
     await preloadRecipeDetail(queryClient, "recipe-1");
 
     expect(getRecipeDetailMock).toHaveBeenCalledWith("recipe-1");
-    expect(queryClient.getQueryData(recipeQueryKeys.detail("recipe-1"))).toEqual(
-      recipe,
-    );
+    expect(
+      queryClient.getQueryData(recipeQueryKeys.detail("recipe-1")),
+    ).toEqual(recipe);
   });
 
   it("preloads the recipe list into the query client cache", async () => {
@@ -204,12 +207,10 @@ describe("recipe mutation options", () => {
     const mutationFn = options.mutationFn as (
       variables: CreateRecipeInput,
     ) => Promise<RecipeDetail>;
-    const mutationKey = (options as { mutationKey?: readonly string[] }).mutationKey;
+    const mutationKey = (options as { mutationKey?: readonly string[] })
+      .mutationKey;
     const onSuccess = options.onSuccess as
-      | ((
-          recipe: RecipeDetail,
-          variables: CreateRecipeInput,
-        ) => Promise<void>)
+      | ((recipe: RecipeDetail, variables: CreateRecipeInput) => Promise<void>)
       | undefined;
 
     expect(mutationKey).toEqual(recipeMutationKeys.create());
@@ -245,7 +246,8 @@ describe("recipe mutation options", () => {
     ) => Promise<{
       recipeId: string;
     }>;
-    const mutationKey = (options as { mutationKey?: readonly string[] }).mutationKey;
+    const mutationKey = (options as { mutationKey?: readonly string[] })
+      .mutationKey;
     const onSuccess = options.onSuccess as
       | ((
           result: {

@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
+  formatRecipeDate,
   formatRecipeTime,
   formatRecipeYield,
   getRecipeScalingLabel,
@@ -32,6 +33,9 @@ export function RecipeDetailHero({
     formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor),
     getRecipeScalingLabel(recipe.isScalable),
   ];
+
+  const createdLabel = `Created ${formatRecipeDate(recipe.createdAt)}`;
+  const updatedLabel = `Updated ${formatRecipeDate(recipe.updatedAt)}`;
 
   return (
     <section className="space-y-6">
@@ -64,6 +68,15 @@ export function RecipeDetailHero({
                 {description}
               </p>
             ) : null}
+            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground/70">
+              {recipe.creatorName !== null ? (
+                <span>By {recipe.creatorName}</span>
+              ) : null}
+              <span>{createdLabel}</span>
+              {recipe.createdAt !== recipe.updatedAt ? (
+                <span>{updatedLabel}</span>
+              ) : null}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">

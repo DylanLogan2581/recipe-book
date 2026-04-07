@@ -6,130 +6,131 @@ import {
   buildRecipeStepInsertRows,
   mapRecipeDetailRecord,
 } from "./recipeAdapters";
-import {
-  requireRecipeMutationAuth,
-} from "./recipeAuth";
+import { requireRecipeMutationAuth } from "./recipeAuth";
 
 describe("mapRecipeDetailRecord", () => {
   it("sorts nested relations and computes total minutes", () => {
-    const recipe = mapRecipeDetailRecord({
-      cook_minutes: 18,
-      cover_image_path: null,
-      created_at: "2026-03-26T10:00:00.000Z",
-      description: "Bring everything together.",
-      id: "recipe-1",
-      is_scalable: true,
-      owner_id: "owner-1",
-      prep_minutes: 12,
-      recipe_equipment: [
+    const recipe = mapRecipeDetailRecord(
+      {
+        cook_minutes: 18,
+        cover_image_path: null,
+        created_at: "2026-03-26T10:00:00.000Z",
+        description: "Bring everything together.",
+        id: "recipe-1",
+        is_scalable: true,
+        owner_id: "owner-1",
+        prep_minutes: 12,
+        recipe_equipment: [
+          {
+            created_at: "2026-03-26T10:00:00.000Z",
+            details: null,
+            id: "equipment-2",
+            is_optional: false,
+            name: "Mixing bowl",
+            position: 2,
+            recipe_id: "recipe-1",
+            updated_at: "2026-03-26T10:00:00.000Z",
+          },
+          {
+            created_at: "2026-03-26T10:00:00.000Z",
+            details: "for finishing",
+            id: "equipment-1",
+            is_optional: true,
+            name: "Microplane",
+            position: 1,
+            recipe_id: "recipe-1",
+            updated_at: "2026-03-26T10:00:00.000Z",
+          },
+        ],
+        recipe_ingredients: [
+          {
+            amount: 2,
+            created_at: "2026-03-26T10:00:00.000Z",
+            id: "ingredient-2",
+            is_optional: true,
+            item: "Lemon zest",
+            notes: null,
+            position: 2,
+            preparation: null,
+            recipe_id: "recipe-1",
+            unit: "teaspoons",
+            updated_at: "2026-03-26T10:00:00.000Z",
+          },
+          {
+            amount: 500,
+            created_at: "2026-03-26T10:00:00.000Z",
+            id: "ingredient-1",
+            is_optional: false,
+            item: "Pasta",
+            notes: null,
+            position: 1,
+            preparation: null,
+            recipe_id: "recipe-1",
+            unit: "grams",
+            updated_at: "2026-03-26T10:00:00.000Z",
+          },
+        ],
+        recipe_steps: [
+          {
+            created_at: "2026-03-26T10:00:00.000Z",
+            id: "step-2",
+            instruction: "Finish with lemon zest.",
+            notes: null,
+            position: 2,
+            recipe_id: "recipe-1",
+            timer_seconds: null,
+            updated_at: "2026-03-26T10:00:00.000Z",
+          },
+          {
+            created_at: "2026-03-26T10:00:00.000Z",
+            id: "step-1",
+            instruction: "Boil the pasta.",
+            notes: "Salt the water well.",
+            position: 1,
+            recipe_id: "recipe-1",
+            timer_seconds: 600,
+            updated_at: "2026-03-26T10:00:00.000Z",
+          },
+        ],
+        summary: "Fast weeknight dinner",
+        title: "Lemon Pasta",
+        updated_at: "2026-03-26T10:15:00.000Z",
+        yield_quantity: 4,
+        yield_unit: "servings",
+      },
+      [
         {
-          created_at: "2026-03-26T10:00:00.000Z",
-          details: null,
-          id: "equipment-2",
-          is_optional: false,
-          name: "Mixing bowl",
-          position: 2,
+          cooked_on: "2026-03-23",
+          created_at: "2026-03-23T18:00:00.000Z",
+          id: "cook-log-2",
+          notes: "Added extra lemon juice.",
+          owner_id: "owner-1",
+          photo_path: null,
           recipe_id: "recipe-1",
-          updated_at: "2026-03-26T10:00:00.000Z",
+          updated_at: "2026-03-23T18:00:00.000Z",
         },
         {
-          created_at: "2026-03-26T10:00:00.000Z",
-          details: "for finishing",
-          id: "equipment-1",
-          is_optional: true,
-          name: "Microplane",
-          position: 1,
+          cooked_on: "2026-03-25",
+          created_at: "2026-03-25T20:00:00.000Z",
+          id: "cook-log-1",
+          notes: "Finished with parmesan.",
+          owner_id: "owner-1",
+          photo_path: "owner-1/cook-log-1.jpg",
           recipe_id: "recipe-1",
-          updated_at: "2026-03-26T10:00:00.000Z",
+          updated_at: "2026-03-25T20:00:00.000Z",
+        },
+        {
+          cooked_on: "2026-03-25",
+          created_at: "2026-03-25T21:30:00.000Z",
+          id: "cook-log-3",
+          notes: "Tossed in extra pasta water.",
+          owner_id: "owner-1",
+          photo_path: null,
+          recipe_id: "recipe-1",
+          updated_at: "2026-03-25T21:30:00.000Z",
         },
       ],
-      recipe_ingredients: [
-        {
-          amount: 2,
-          created_at: "2026-03-26T10:00:00.000Z",
-          id: "ingredient-2",
-          is_optional: true,
-          item: "Lemon zest",
-          notes: null,
-          position: 2,
-          preparation: null,
-          recipe_id: "recipe-1",
-          unit: "teaspoons",
-          updated_at: "2026-03-26T10:00:00.000Z",
-        },
-        {
-          amount: 500,
-          created_at: "2026-03-26T10:00:00.000Z",
-          id: "ingredient-1",
-          is_optional: false,
-          item: "Pasta",
-          notes: null,
-          position: 1,
-          preparation: null,
-          recipe_id: "recipe-1",
-          unit: "grams",
-          updated_at: "2026-03-26T10:00:00.000Z",
-        },
-      ],
-      recipe_steps: [
-        {
-          created_at: "2026-03-26T10:00:00.000Z",
-          id: "step-2",
-          instruction: "Finish with lemon zest.",
-          notes: null,
-          position: 2,
-          recipe_id: "recipe-1",
-          timer_seconds: null,
-          updated_at: "2026-03-26T10:00:00.000Z",
-        },
-        {
-          created_at: "2026-03-26T10:00:00.000Z",
-          id: "step-1",
-          instruction: "Boil the pasta.",
-          notes: "Salt the water well.",
-          position: 1,
-          recipe_id: "recipe-1",
-          timer_seconds: 600,
-          updated_at: "2026-03-26T10:00:00.000Z",
-        },
-      ],
-      summary: "Fast weeknight dinner",
-      title: "Lemon Pasta",
-      updated_at: "2026-03-26T10:15:00.000Z",
-      yield_quantity: 4,
-      yield_unit: "servings",
-    }, [
-      {
-        cooked_on: "2026-03-23",
-        created_at: "2026-03-23T18:00:00.000Z",
-        id: "cook-log-2",
-        notes: "Added extra lemon juice.",
-        owner_id: "owner-1",
-        photo_path: null,
-        recipe_id: "recipe-1",
-        updated_at: "2026-03-23T18:00:00.000Z",
-      },
-      {
-        cooked_on: "2026-03-25",
-        created_at: "2026-03-25T20:00:00.000Z",
-        id: "cook-log-1",
-        notes: "Finished with parmesan.",
-        owner_id: "owner-1",
-        photo_path: "owner-1/cook-log-1.jpg",
-        recipe_id: "recipe-1",
-        updated_at: "2026-03-25T20:00:00.000Z",
-      },
-      {
-        cooked_on: "2026-03-25",
-        created_at: "2026-03-25T21:30:00.000Z",
-        id: "cook-log-3",
-        notes: "Tossed in extra pasta water.",
-        owner_id: "owner-1",
-        photo_path: null,
-        recipe_id: "recipe-1",
-        updated_at: "2026-03-25T21:30:00.000Z",
-      },
-    ]);
+    );
 
     expect(recipe.totalMinutes).toBe(30);
     expect(recipe.cookLogs.map((item) => item.id)).toEqual([
@@ -140,6 +141,34 @@ describe("mapRecipeDetailRecord", () => {
     expect(recipe.ingredients.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.equipment.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.steps.map((item) => item.position)).toEqual([1, 2]);
+    expect(recipe.creatorName).toBeNull();
+  });
+
+  it("passes through creator name when provided", () => {
+    const recipe = mapRecipeDetailRecord(
+      {
+        cook_minutes: null,
+        cover_image_path: null,
+        created_at: "2026-03-26T10:00:00.000Z",
+        description: "",
+        id: "recipe-2",
+        is_scalable: false,
+        owner_id: "owner-2",
+        prep_minutes: null,
+        recipe_equipment: [],
+        recipe_ingredients: [],
+        recipe_steps: [],
+        summary: "Simple recipe",
+        title: "Test Recipe",
+        updated_at: "2026-03-26T10:00:00.000Z",
+        yield_quantity: null,
+        yield_unit: null,
+      },
+      [],
+      "Jane Smith",
+    );
+
+    expect(recipe.creatorName).toBe("Jane Smith");
   });
 });
 

@@ -9,6 +9,35 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      user_profiles: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          id: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            columns: ["id"];
+            foreignKeyName: "user_profiles_id_fkey";
+            isOneToOne: true;
+            referencedColumns: ["id"];
+            referencedRelation: "users";
+          },
+        ];
+      };
       recipe_cook_logs: {
         Row: {
           cooked_on: string;

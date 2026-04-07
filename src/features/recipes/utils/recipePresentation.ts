@@ -71,12 +71,15 @@ export function formatRecipeYield(
   return `${scaledYieldQuantity} ${yieldUnit}`;
 }
 
-export function formatIngredientText(ingredient: {
-  amount: number | null;
-  item: string;
-  preparation: string | null;
-  unit: string | null;
-}, scaleFactor = 1): string {
+export function formatIngredientText(
+  ingredient: {
+    amount: number | null;
+    item: string;
+    preparation: string | null;
+    unit: string | null;
+  },
+  scaleFactor = 1,
+): string {
   const scaledAmount = scaleIngredientAmount(ingredient.amount, scaleFactor);
   const amountText = scaledAmount === null ? null : `${scaledAmount}`;
   const unitText = ingredient.unit;
@@ -163,10 +166,7 @@ export function getRecipeScalingLabel(isScalable: boolean): string {
   return isScalable ? "Scales cleanly" : "Fixed yield";
 }
 
-export function getRecipeSummary(
-  summary: string,
-  description: string,
-): string {
+export function getRecipeSummary(summary: string, description: string): string {
   const trimmedSummary = summary.trim();
 
   if (trimmedSummary !== "") {
@@ -180,4 +180,12 @@ export function getRecipeSummary(
   }
 
   return "A public recipe is ready to open in the detail route.";
+}
+
+export function formatRecipeDate(isoString: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(isoString));
 }

@@ -55,6 +55,7 @@ export type RecipeCookLogEntry = {
 
 export type RecipeDetail = RecipeListItem & {
   cookLogs: RecipeCookLogEntry[];
+  creatorName: string | null;
   equipment: RecipeEquipment[];
   ingredients: RecipeIngredient[];
   steps: RecipeStep[];

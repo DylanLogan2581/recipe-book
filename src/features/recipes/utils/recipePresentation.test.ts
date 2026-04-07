@@ -5,6 +5,7 @@ import { RecipeDataAccessError } from "../queries/recipeApi";
 import {
   formatIngredientText,
   formatCountdownClock,
+  formatRecipeDate,
   formatRecipeTime,
   formatRecipeYield,
   formatStepTimer,
@@ -199,5 +200,17 @@ describe("getRecipeSummary", () => {
     expect(getRecipeSummary(" ", " ")).toBe(
       "A public recipe is ready to open in the detail route.",
     );
+  });
+});
+
+describe("formatRecipeDate", () => {
+  it("formats an ISO timestamp as a long-form date string", () => {
+    expect(formatRecipeDate("2026-03-26T10:00:00.000Z")).toMatch(
+      /March 26, 2026/,
+    );
+  });
+
+  it("handles a midnight UTC timestamp", () => {
+    expect(formatRecipeDate("2026-01-01T00:00:00.000Z")).toMatch(/2026/);
   });
 });

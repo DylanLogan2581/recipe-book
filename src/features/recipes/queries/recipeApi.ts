@@ -216,9 +216,12 @@ export async function getRecipeDetail(
     );
   }
 
-  const cookLogs = await listRecipeCookLogs(recipeId, recipeClient);
+  const [cookLogs, creatorName] = await Promise.all([
+    listRecipeCookLogs(recipeId, recipeClient),
+    getCreatorDisplayName(data.owner_id, recipeClient),
+  ]);
 
-  return mapRecipeDetailRecord(data, cookLogs);
+  return mapRecipeDetailRecord(data, cookLogs, creatorName);
 }
 
 export async function listRecipes(
@@ -249,6 +252,19 @@ function getRecipeApiClient(client: RecipeApiClient | null): RecipeApiClient {
   return client;
 }
 
+async function getCreatorDisplayName(
+  ownerId: string,
+  client: RecipeApiClient,
+): Promise<string | null> {
+  const { data } = await client
+    .from("user_profiles")
+    .select("display_name")
+    .eq("id", ownerId)
+    .maybeSingle();
+
+  return data?.display_name ?? null;
+}
+
 async function insertRecipeRelations(
   client: RecipeApiClient,
   recipeId: string,
@@ -258,11 +274,16 @@ async function insertRecipeRelations(
     recipeId,
     input.ingredients,
   );
-  const equipmentRows = buildRecipeEquipmentInsertRows(recipeId, input.equipment);
+  const equipmentRows = buildRecipeEquipmentInsertRows(
+    recipeId,
+    input.equipment,
+  );
   const stepRows = buildRecipeStepInsertRows(recipeId, input.steps);
 
   if (ingredientRows.length > 0) {
-    const { error } = await client.from("recipe_ingredients").insert(ingredientRows);
+    const { error } = await client
+      .from("recipe_ingredients")
+      .insert(ingredientRows);
 
     if (error !== null) {
       throw error;
@@ -270,7 +291,9 @@ async function insertRecipeRelations(
   }
 
   if (equipmentRows.length > 0) {
-    const { error } = await client.from("recipe_equipment").insert(equipmentRows);
+    const { error } = await client
+      .from("recipe_equipment")
+      .insert(equipmentRows);
 
     if (error !== null) {
       throw error;

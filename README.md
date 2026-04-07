@@ -87,8 +87,9 @@ npx supabase db reset
 ```
 
 This repo includes schema and storage migrations. If your local database is
-behind, recipe flows can fail with errors such as `Bucket not found` for the
-`recipe-cover-photos` bucket until you reset and replay the migrations.
+behind, recipe photo flows can fail with errors such as `Bucket not found` for
+the `recipe-cover-photos` and `recipe-cook-log-photos` buckets until you reset
+and replay the migrations.
 
 Useful local endpoints from the current config:
 

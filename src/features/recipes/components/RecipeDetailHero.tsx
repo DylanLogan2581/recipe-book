@@ -68,7 +68,7 @@ export function RecipeDetailHero({
                 {description}
               </p>
             ) : null}
-            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground/70">
+            <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
               {recipe.creatorName !== null ? (
                 <span>By {recipe.creatorName}</span>
               ) : null}

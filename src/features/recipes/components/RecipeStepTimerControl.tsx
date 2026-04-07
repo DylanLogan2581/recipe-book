@@ -1,27 +1,32 @@
-import { BellRing, PauseCircle, PlayCircle } from "lucide-react";
+import { BellRing, PauseCircle, PlayCircle, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
 import { formatCountdownClock } from "../utils/recipePresentation";
 
+import type { StepTimerStatus } from "../hooks/useStepTimer";
 import type { JSX } from "react";
 
 type RecipeStepTimerControlProps = {
-  isActive: boolean;
+  onPause: () => void;
+  onReset: () => void;
+  onResume: () => void;
   onStart: () => void;
-  onStop: () => void;
   remainingSeconds: number | null;
+  status: StepTimerStatus;
   timerSeconds: number;
 };
 
 export function RecipeStepTimerControl({
-  isActive,
+  onPause,
+  onReset,
+  onResume,
   onStart,
-  onStop,
   remainingSeconds,
+  status,
   timerSeconds,
 }: RecipeStepTimerControlProps): JSX.Element {
-  const displaySeconds = isActive ? (remainingSeconds ?? timerSeconds) : timerSeconds;
+  const displaySeconds = status === "idle" ? timerSeconds : (remainingSeconds ?? timerSeconds);
 
   return (
     <div className="mt-3 rounded-lg border border-border bg-muted/40 px-3 py-3">
@@ -35,35 +40,81 @@ export function RecipeStepTimerControl({
               Timer
             </p>
             <p className="text-sm text-muted-foreground">
-              {isActive ? `${formatCountdownClock(displaySeconds)} left` : formatCountdownClock(displaySeconds)}
+              {getTimerStatusText(status, displaySeconds)}
             </p>
           </div>
         </div>
 
-        {isActive ? (
-          <Button
-            className="rounded-full px-4"
-            onClick={onStop}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            <PauseCircle />
-            Stop timer
-          </Button>
-        ) : (
-          <Button
-            className="rounded-full px-4"
-            onClick={onStart}
-            size="sm"
-            type="button"
-            variant="outline"
-          >
-            <PlayCircle />
-            Start timer
-          </Button>
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {status === "running" ? (
+            <Button
+              className="rounded-full px-4"
+              onClick={onPause}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <PauseCircle />
+              Pause timer
+            </Button>
+          ) : null}
+
+          {status === "paused" ? (
+            <Button
+              className="rounded-full px-4"
+              onClick={onResume}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <PlayCircle />
+              Resume timer
+            </Button>
+          ) : null}
+
+          {status === "idle" ? (
+            <Button
+              className="rounded-full px-4"
+              onClick={onStart}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <PlayCircle />
+              Start timer
+            </Button>
+          ) : null}
+
+          {status !== "idle" ? (
+            <Button
+              className="rounded-full px-4"
+              onClick={onReset}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              <RotateCcw />
+              Reset
+            </Button>
+          ) : null}
+        </div>
       </div>
     </div>
   );
+}
+
+function getTimerStatusText(
+  status: StepTimerStatus,
+  displaySeconds: number,
+): string {
+  const countdownClock = formatCountdownClock(displaySeconds);
+
+  switch (status) {
+    case "running":
+      return `${countdownClock} left`;
+    case "paused":
+      return `Paused at ${countdownClock}`;
+    case "idle":
+      return countdownClock;
+  }
 }

@@ -131,10 +131,7 @@ export function RecipeDetailCollectionSection(
                     </p>
                     {step.timerSeconds !== null ? (
                       <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
-                        {stepTimer.activeStepId === step.id &&
-                        stepTimer.remainingSeconds !== null
-                          ? `${formatCountdownClock(stepTimer.remainingSeconds)} left`
-                          : formatStepTimer(step.timerSeconds)}
+                        {getStepTimerBadgeText(step, stepTimer)}
                       </span>
                     ) : null}
                   </div>
@@ -145,15 +142,21 @@ export function RecipeDetailCollectionSection(
                   ) : null}
                   {step.timerSeconds !== null ? (
                     <RecipeStepTimerControl
-                      isActive={stepTimer.activeStepId === step.id}
+                      onPause={stepTimer.pauseTimer}
+                      onReset={stepTimer.resetTimer}
+                      onResume={stepTimer.resumeTimer}
                       onStart={() => {
                         stepTimer.startTimer(step.id, step.timerSeconds ?? 0);
                       }}
-                      onStop={stepTimer.stopTimer}
                       remainingSeconds={
                         stepTimer.activeStepId === step.id
                           ? stepTimer.remainingSeconds
                           : null
+                      }
+                      status={
+                        stepTimer.activeStepId === step.id
+                          ? stepTimer.status
+                          : "idle"
                       }
                       timerSeconds={step.timerSeconds}
                     />
@@ -177,4 +180,25 @@ function getEmptyText(kind: RecipeDetailCollectionSectionProps["kind"]): string 
     case "steps":
       return "No cooking steps were captured for this recipe yet.";
   }
+}
+
+function getStepTimerBadgeText(
+  step: RecipeStep,
+  stepTimer: ReturnType<typeof useStepTimer>,
+): string {
+  if (
+    step.timerSeconds === null ||
+    stepTimer.activeStepId !== step.id ||
+    stepTimer.remainingSeconds === null
+  ) {
+    return formatStepTimer(step.timerSeconds ?? 0);
+  }
+
+  const countdownClock = formatCountdownClock(stepTimer.remainingSeconds);
+
+  if (stepTimer.status === "paused") {
+    return `${countdownClock} paused`;
+  }
+
+  return `${countdownClock} left`;
 }

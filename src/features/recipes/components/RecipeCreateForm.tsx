@@ -1,5 +1,3 @@
-import { useEffect, useMemo } from "react";
-
 import { Button } from "@/components/ui/button";
 
 import { getIngredientUnitGroups } from "../utils/ingredientUnits";
@@ -233,15 +231,23 @@ export function RecipeCreateForm({
               ) : null}
 
               {selectedCoverPhoto !== null ? (
-                <SelectedCoverPhotoPreviewCard
+                <CoverPhotoPreviewCard
                   description={
                     currentCoverPhotoPath === null
                       ? "This photo will be attached when you save the recipe."
                       : "This photo will replace the current one when you save the recipe."
                   }
-                  file={selectedCoverPhoto}
                   label="New photo"
-                />
+                >
+                  <div className="rounded-xl border border-dashed border-border bg-muted/40 px-4 py-5">
+                    <p className="text-sm font-medium text-foreground">
+                      {selectedCoverPhoto.name}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Ready to save with this recipe.
+                    </p>
+                  </div>
+                </CoverPhotoPreviewCard>
               ) : null}
             </div>
           ) : null}
@@ -399,63 +405,6 @@ function CoverPhotoPreviewCard({
       </div>
       {children}
     </div>
-  );
-}
-
-type SelectedCoverPhotoPreviewCardProps = {
-  description: string;
-  file: File;
-  label: string;
-};
-
-function SelectedCoverPhotoPreviewCard({
-  description,
-  file,
-  label,
-}: SelectedCoverPhotoPreviewCardProps): JSX.Element {
-  const previewUrl = useObjectUrl(
-    canPreviewSelectedCoverPhoto(file) ? file : null,
-  );
-
-  return (
-    <CoverPhotoPreviewCard description={description} label={label}>
-      <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted">
-        {previewUrl !== null ? (
-          <img
-            alt={`${label} preview`}
-            className="h-full w-full object-cover"
-            src={previewUrl}
-          />
-        ) : null}
-      </div>
-    </CoverPhotoPreviewCard>
-  );
-}
-
-function useObjectUrl(file: File | null): string | null {
-  const objectUrl = useMemo(
-    () => (file === null ? null : URL.createObjectURL(file)),
-    [file],
-  );
-
-  useEffect(() => {
-    if (objectUrl === null) {
-      return;
-    }
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [objectUrl]);
-
-  return objectUrl;
-}
-
-function canPreviewSelectedCoverPhoto(file: File): boolean {
-  return (
-    file.type === "image/jpeg" ||
-    file.type === "image/png" ||
-    file.type === "image/webp"
   );
 }
 

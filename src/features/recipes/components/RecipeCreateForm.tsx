@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 
+import { getIngredientUnitGroups } from "../utils/ingredientUnits";
 import {
   createEmptyRecipeEquipmentFormValue,
   createEmptyRecipeIngredientFormValue,
@@ -404,6 +405,8 @@ function IngredientFields({
   ingredient,
   onChange,
 }: IngredientFieldsProps): JSX.Element {
+  const ingredientUnitGroups = getIngredientUnitGroups(ingredient.unit);
+
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <label className="md:col-span-2">
@@ -433,14 +436,24 @@ function IngredientFields({
 
       <label>
         <span className="text-sm font-medium text-foreground">Unit</span>
-        <input
+        <select
           className={inputClassName}
           onChange={(event) => {
             onChange({ ...ingredient, unit: event.target.value });
           }}
-          placeholder="tbsp"
           value={ingredient.unit}
-        />
+        >
+          <option value="">No unit</option>
+          {ingredientUnitGroups.map((group) => (
+            <optgroup key={group.label} label={group.label}>
+              {group.options.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
       </label>
 
       <label>

@@ -78,7 +78,7 @@ export function multiplyScaleFactor(
   scaleFactor: number,
   multiplier: number,
 ): number {
-  return normalizeScaledNumber(scaleFactor * multiplier);
+  return scaleFactor * multiplier;
 }
 
 export function parseScaleFactorInput(value: string): number | null {

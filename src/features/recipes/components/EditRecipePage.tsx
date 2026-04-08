@@ -175,7 +175,7 @@ export function EditRecipePage({
             void submitRecipe();
           }}
           removeCoverPhotoLabel={
-            selectedCoverPhoto !== null && recipe.coverImagePath !== null
+            selectedCoverPhoto !== null && currentCoverPhotoPath !== null
               ? "Keep current photo instead"
               : selectedCoverPhoto !== null
                 ? "Remove new photo"

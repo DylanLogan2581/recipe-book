@@ -86,7 +86,9 @@ export function RecipeCreateForm({
           </label>
 
           <label className="md:col-span-2">
-            <span className="text-sm font-medium text-foreground">Description</span>
+            <span className="text-sm font-medium text-foreground">
+              Description
+            </span>
             <textarea
               className={`${inputClassName} min-h-32 resize-y`}
               name="description"
@@ -100,7 +102,9 @@ export function RecipeCreateForm({
           </label>
 
           <label>
-            <span className="text-sm font-medium text-foreground">Yield quantity</span>
+            <span className="text-sm font-medium text-foreground">
+              Yield quantity
+            </span>
             <input
               className={inputClassName}
               inputMode="decimal"
@@ -115,7 +119,9 @@ export function RecipeCreateForm({
           </label>
 
           <label>
-            <span className="text-sm font-medium text-foreground">Yield unit</span>
+            <span className="text-sm font-medium text-foreground">
+              Yield unit
+            </span>
             <input
               className={inputClassName}
               name="yieldUnit"
@@ -129,7 +135,9 @@ export function RecipeCreateForm({
           </label>
 
           <label>
-            <span className="text-sm font-medium text-foreground">Prep minutes</span>
+            <span className="text-sm font-medium text-foreground">
+              Prep minutes
+            </span>
             <input
               className={inputClassName}
               inputMode="numeric"
@@ -144,7 +152,9 @@ export function RecipeCreateForm({
           </label>
 
           <label>
-            <span className="text-sm font-medium text-foreground">Cook minutes</span>
+            <span className="text-sm font-medium text-foreground">
+              Cook minutes
+            </span>
             <input
               className={inputClassName}
               inputMode="numeric"
@@ -175,7 +185,9 @@ export function RecipeCreateForm({
         <div className="space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="text-sm font-semibold text-foreground">Cover photo</h3>
+              <h3 className="text-sm font-semibold text-foreground">
+                Cover photo
+              </h3>
               <p className="text-sm text-muted-foreground">
                 JPG, PNG, or WebP up to 5 MB.
               </p>
@@ -221,7 +233,9 @@ export function RecipeCreateForm({
         onRemove={(index) => {
           setValues((current) => ({
             ...current,
-            ingredients: current.ingredients.filter((_, itemIndex) => itemIndex !== index),
+            ingredients: current.ingredients.filter(
+              (_, itemIndex) => itemIndex !== index,
+            ),
           }));
         }}
         renderItem={(ingredient, index) => (
@@ -248,13 +262,18 @@ export function RecipeCreateForm({
         onAdd={() => {
           setValues((current) => ({
             ...current,
-            equipment: [...current.equipment, createEmptyRecipeEquipmentFormValue()],
+            equipment: [
+              ...current.equipment,
+              createEmptyRecipeEquipmentFormValue(),
+            ],
           }));
         }}
         onRemove={(index) => {
           setValues((current) => ({
             ...current,
-            equipment: current.equipment.filter((_, itemIndex) => itemIndex !== index),
+            equipment: current.equipment.filter(
+              (_, itemIndex) => itemIndex !== index,
+            ),
           }));
         }}
         renderItem={(equipment, index) => (
@@ -405,7 +424,7 @@ function IngredientFields({
   ingredient,
   onChange,
 }: IngredientFieldsProps): JSX.Element {
-  const ingredientUnitGroups = getIngredientUnitGroups(ingredient.unit);
+  const unitGroups = getIngredientUnitGroups(ingredient.unit);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -444,7 +463,7 @@ function IngredientFields({
           value={ingredient.unit}
         >
           <option value="">No unit</option>
-          {ingredientUnitGroups.map((group) => (
+          {unitGroups.map((group) => (
             <optgroup key={group.label} label={group.label}>
               {group.options.map((option) => (
                 <option key={option} value={option}>
@@ -600,5 +619,7 @@ function updateCollectionItem<TItem>(
   index: number,
   nextItem: TItem,
 ): TItem[] {
-  return items.map((item, itemIndex) => (itemIndex === index ? nextItem : item));
+  return items.map((item, itemIndex) =>
+    itemIndex === index ? nextItem : item,
+  );
 }

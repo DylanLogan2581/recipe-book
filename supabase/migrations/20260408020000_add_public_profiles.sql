@@ -26,7 +26,7 @@ create or replace function public.derive_profile_display_name (
       ),
       ''
     ),
-    'Recipe Author'
+    'Recipe author'
   );
 $$;
 
@@ -65,13 +65,22 @@ execute function public.handle_profile_for_auth_user ();
 
 alter table public.profiles enable row level security;
 
+grant
+select
+  on public.profiles to anon,
+  authenticated;
+
+grant
+update on public.profiles to authenticated;
+
 create policy "profiles are viewable by everyone" on public.profiles for
 select
-  using (true);
+  to anon,
+  authenticated using (true);
 
 create policy "users can update their own profile" on public.profiles
 for update
-  using (
+  to authenticated using (
     (
       select
         auth.uid ()

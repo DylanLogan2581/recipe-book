@@ -129,7 +129,7 @@ describe("mapRecipeDetailRecord", () => {
         recipe_id: "recipe-1",
         updated_at: "2026-03-25T21:30:00.000Z",
       },
-    ]);
+    ], "Dylan Logan");
 
     expect(recipe.totalMinutes).toBe(30);
     expect(recipe.cookLogs.map((item) => item.id)).toEqual([
@@ -140,6 +140,7 @@ describe("mapRecipeDetailRecord", () => {
     expect(recipe.ingredients.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.equipment.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.steps.map((item) => item.position)).toEqual([1, 2]);
+    expect(recipe.creatorName).toBe("Dylan Logan");
   });
 });
 

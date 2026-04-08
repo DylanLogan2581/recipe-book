@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
+  formatRecipeAttributionLabel,
   formatRecipeTime,
   formatRecipeYield,
   getRecipeScalingLabel,
@@ -32,6 +33,7 @@ export function RecipeDetailHero({
     formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor),
     getRecipeScalingLabel(recipe.isScalable),
   ];
+  const attributionLabel = formatRecipeAttributionLabel(recipe);
 
   return (
     <section className="space-y-6">
@@ -64,6 +66,9 @@ export function RecipeDetailHero({
                 {description}
               </p>
             ) : null}
+            <p className="mt-4 max-w-3xl text-xs leading-5 text-muted-foreground">
+              {attributionLabel}
+            </p>
           </div>
 
           <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">

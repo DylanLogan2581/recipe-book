@@ -12,6 +12,7 @@ import {
 } from "./recipeAdapters";
 import { requireRecipeMutationAuth } from "./recipeAuth";
 import { listRecipeCookLogs } from "./recipeCookLogApi";
+import { getRecipeCreatorName } from "./recipeProfileApi";
 
 import type {
   CreateRecipeInput,
@@ -216,9 +217,12 @@ export async function getRecipeDetail(
     );
   }
 
-  const cookLogs = await listRecipeCookLogs(recipeId, recipeClient);
+  const [cookLogs, creatorName] = await Promise.all([
+    listRecipeCookLogs(recipeId, recipeClient),
+    getRecipeCreatorName(data.owner_id, recipeClient),
+  ]);
 
-  return mapRecipeDetailRecord(data, cookLogs);
+  return mapRecipeDetailRecord(data, cookLogs, creatorName);
 }
 
 export async function listRecipes(

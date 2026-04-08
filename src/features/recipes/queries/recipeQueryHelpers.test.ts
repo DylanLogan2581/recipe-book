@@ -63,6 +63,7 @@ function buildRecipeDetail(overrides: Partial<RecipeDetail> = {}): RecipeDetail 
     cookLogs: [],
     coverImagePath: null,
     createdAt: "2026-03-27T10:00:00.000Z",
+    creatorName: "Dylan Logan",
     description: "Silky lemon pasta with parmesan.",
     equipment: [],
     id: "recipe-1",

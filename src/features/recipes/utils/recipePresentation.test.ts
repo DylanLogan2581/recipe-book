@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
 import {
+  formatRecipeAttributionLabel,
+  formatRecipeMetadataDate,
   formatIngredientText,
   formatCountdownClock,
   formatRecipeTime,
@@ -128,6 +130,31 @@ describe("formatCountdownClock", () => {
     expect(formatCountdownClock(45)).toBe("0:45");
     expect(formatCountdownClock(125)).toBe("2:05");
     expect(formatCountdownClock(600)).toBe("10:00");
+  });
+});
+
+describe("recipe attribution formatting", () => {
+  it("formats metadata dates in a readable style", () => {
+    expect(formatRecipeMetadataDate("2026-04-03T10:00:00.000Z")).toBe(
+      "Apr 3, 2026",
+    );
+  });
+
+  it("builds a compact attribution label", () => {
+    expect(
+      formatRecipeAttributionLabel({
+        createdAt: "2026-04-03T10:00:00.000Z",
+        creatorName: "Dylan Logan",
+        updatedAt: "2026-04-04T11:00:00.000Z",
+      }),
+    ).toBe("By Dylan Logan · Created Apr 3, 2026 · Updated Apr 4, 2026");
+    expect(
+      formatRecipeAttributionLabel({
+        createdAt: "2026-04-03T10:00:00.000Z",
+        creatorName: null,
+        updatedAt: "2026-04-04T11:00:00.000Z",
+      }),
+    ).toBe("By Recipe author · Created Apr 3, 2026 · Updated Apr 4, 2026");
   });
 });
 

@@ -106,10 +106,12 @@ export function buildRecipeCookLogInsert(
 export function mapRecipeDetailRecord(
   record: RecipeDetailRecord,
   cookLogs: RecipeCookLogRow[] = [],
+  creatorName: string | null = null,
 ): RecipeDetail {
   return {
     ...mapRecipeListRecord(record),
     cookLogs: sortCookLogs(cookLogs).map(mapRecipeCookLogRow),
+    creatorName,
     equipment: sortByPosition(record.recipe_equipment ?? []).map(
       mapRecipeEquipmentRow,
     ),

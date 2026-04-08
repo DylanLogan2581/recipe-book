@@ -115,6 +115,23 @@ export function formatCountdownClock(timerSeconds: number): string {
   return `${wholeMinutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
+export function formatRecipeMetadataDate(isoTimestamp: string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  }).format(new Date(isoTimestamp));
+}
+
+export function formatRecipeAttributionLabel(recipe: {
+  createdAt: string;
+  creatorName: string | null;
+  updatedAt: string;
+}): string {
+  const creatorLabel = recipe.creatorName ?? "Recipe author";
+
+  return `By ${creatorLabel} · Created ${formatRecipeMetadataDate(recipe.createdAt)} · Updated ${formatRecipeMetadataDate(recipe.updatedAt)}`;
+}
+
 export function getRecipeCountLabel(
   count: number,
   singular: string,

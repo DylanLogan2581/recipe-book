@@ -32,6 +32,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       cookMinutes: 25,
       coverImagePath: "recipe-cover-photos/owner/cover.png",
       createdAt: "2026-04-03T00:00:00.000Z",
+      creatorName: "Dylan Logan",
       description: "A rich tomato sauce.",
       equipment: [
         {
@@ -118,6 +119,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       cookMinutes: null,
       coverImagePath: null,
       createdAt: "2026-04-03T00:00:00.000Z",
+      creatorName: null,
       description: "",
       equipment: [],
       id: "recipe-2",
@@ -148,6 +150,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       cookMinutes: null,
       coverImagePath: null,
       createdAt: "2026-04-03T00:00:00.000Z",
+      creatorName: null,
       description: "",
       equipment: [],
       id: "recipe-3",

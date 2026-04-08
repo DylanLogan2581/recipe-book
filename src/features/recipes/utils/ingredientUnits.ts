@@ -63,9 +63,10 @@ const baseIngredientUnitGroups = [
     label: "Recipe",
     options: ["serving", "servings", "batch", "batches"],
   },
-] satisfies readonly IngredientUnitOptionGroup[];
+] as const satisfies readonly IngredientUnitOptionGroup[];
 
-export const ingredientUnitGroups = baseIngredientUnitGroups;
+export const ingredientUnitGroups: readonly IngredientUnitOptionGroup[] =
+  baseIngredientUnitGroups;
 
 export function getIngredientUnitGroups(
   currentUnit: string,

@@ -1,4 +1,5 @@
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { AlertTriangle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -27,27 +28,32 @@ export function RecipeDeleteDialog({
     <AlertDialog.Root onOpenChange={onOpenChange} open={open}>
       <AlertDialog.Trigger asChild>{children}</AlertDialog.Trigger>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-40 bg-[rgba(38,28,19,0.58)] backdrop-blur-sm" />
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 rounded-[1.75rem] border border-border/80 bg-[linear-gradient(180deg,rgba(255,253,249,0.98),rgba(244,236,222,0.96))] p-6 shadow-[0_28px_90px_-50px_rgba(69,52,35,0.65)] outline-none">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-destructive/80">
-            Destructive action
-          </p>
-          <AlertDialog.Title className="mt-3 font-display text-3xl tracking-[-0.03em] text-foreground">
-            {title}
-          </AlertDialog.Title>
-          <AlertDialog.Description className="mt-3 text-sm leading-7 text-muted-foreground">
-            {description}
-          </AlertDialog.Description>
-          <div className="mt-6 flex flex-wrap justify-end gap-3">
+        <AlertDialog.Overlay className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm" />
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[min(92vw,30rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 shadow-lg outline-none">
+          <div className="flex items-start gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+              <AlertTriangle className="size-5" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-destructive">Delete recipe</p>
+              <AlertDialog.Title className="mt-2 text-xl font-semibold tracking-tight text-foreground">
+                {title}
+              </AlertDialog.Title>
+              <AlertDialog.Description className="mt-3 text-sm leading-6 text-muted-foreground">
+                {description}
+              </AlertDialog.Description>
+            </div>
+          </div>
+          <div className="mt-6 flex flex-wrap justify-end gap-2 border-t border-border pt-4">
             <AlertDialog.Cancel asChild>
-              <Button className="rounded-full px-5" variant="outline">
+              <Button size="lg" variant="outline">
                 Keep recipe
               </Button>
             </AlertDialog.Cancel>
             <Button
-              className="rounded-full px-5"
               disabled={isPending}
               onClick={onConfirm}
+              size="lg"
               type="button"
               variant="destructive"
             >

@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   canScaleRecipe,
+  formatScaleFactorInputValue,
   formatScaleLabel,
   isScaleFactorSelected,
+  multiplyScaleFactor,
   parseScaleFactorInput,
   scaleIngredientAmount,
   scaleRecipeYield,
@@ -45,11 +47,29 @@ describe("formatScaleLabel", () => {
   });
 });
 
+describe("formatScaleFactorInputValue", () => {
+  it("formats the editable batch size value without multiplier suffixes", () => {
+    expect(formatScaleFactorInputValue(1)).toBe("1");
+    expect(formatScaleFactorInputValue(0.5)).toBe("0.5");
+    expect(formatScaleFactorInputValue(2)).toBe("2");
+    expect(formatScaleFactorInputValue(1.25)).toBe("1.25");
+  });
+});
+
 describe("isScaleFactorSelected", () => {
   it("matches preset options with a small tolerance", () => {
     expect(isScaleFactorSelected(1 / 3, 1 / 3)).toBe(true);
     expect(isScaleFactorSelected(0.333, 1 / 3)).toBe(true);
     expect(isScaleFactorSelected(0.4, 1 / 3)).toBe(false);
+  });
+});
+
+describe("multiplyScaleFactor", () => {
+  it("applies multipliers and keeps the result rounded for display", () => {
+    expect(multiplyScaleFactor(1, 2)).toBe(2);
+    expect(multiplyScaleFactor(2, 2)).toBe(4);
+    expect(multiplyScaleFactor(1, 0.5)).toBe(0.5);
+    expect(multiplyScaleFactor(1 / 3, 2)).toBe(0.67);
   });
 });
 

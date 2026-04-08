@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
+import { formatRecipeYield } from "../utils/recipePresentation";
 import {
   canScaleRecipe,
+  formatScaleFactorInputValue,
   formatScaleLabel,
-  isScaleFactorSelected,
+  multiplyScaleFactor,
   parseScaleFactorInput,
-  recipeScaleOptions,
 } from "../utils/recipeScaling";
 
 import type { RecipeDetail } from "../types/recipes";
@@ -25,15 +26,21 @@ export function RecipeScalingPanel({
   scaleFactor,
 }: RecipeScalingPanelProps): JSX.Element {
   const isScalable = canScaleRecipe(recipe);
-  const [customBatchSize, setCustomBatchSize] = useState("");
+  const [customBatchSize, setCustomBatchSize] = useState(
+    formatScaleFactorInputValue(scaleFactor),
+  );
   const [customBatchSizeError, setCustomBatchSizeError] = useState<string | null>(
     null,
   );
   const customBatchSizeInputId = `recipe-batch-size-${recipe.id}`;
 
+  useEffect(() => {
+    setCustomBatchSize(formatScaleFactorInputValue(scaleFactor));
+  }, [scaleFactor]);
+
   function applyScaleFactor(nextScaleFactor: number): void {
     onScaleChange(nextScaleFactor);
-    setCustomBatchSize(formatScaleLabel(nextScaleFactor));
+    setCustomBatchSize(formatScaleFactorInputValue(nextScaleFactor));
     setCustomBatchSizeError(null);
   }
 
@@ -41,66 +48,81 @@ export function RecipeScalingPanel({
     const parsedScaleFactor = parseScaleFactorInput(customBatchSize);
 
     if (parsedScaleFactor === null) {
-      setCustomBatchSizeError("Enter a batch size like 1/3, 1/2, 2x, or 4.");
+      setCustomBatchSizeError("Enter a positive batch size like 1, 2, or 0.5.");
       return;
     }
 
     applyScaleFactor(parsedScaleFactor);
   }
 
+  function handleScaleFactorMultiplier(multiplier: number): void {
+    const nextScaleFactor = multiplyScaleFactor(
+      parseScaleFactorInput(customBatchSize) ?? scaleFactor,
+      multiplier,
+    );
+
+    applyScaleFactor(nextScaleFactor);
+  }
+
   return (
-    <section className="flex flex-col gap-4 border-t border-border pt-6 lg:flex-row lg:items-start lg:justify-between">
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
+    <section className="border-t border-border pt-6">
+      {!isScalable ? (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-lg font-semibold tracking-tight text-foreground">
             Batch size
           </h2>
-          {isScalable ? (
-            <span className="rounded-full border border-border bg-background px-3 py-1 text-sm text-muted-foreground">
-              Current: {formatScaleLabel(scaleFactor)}
-            </span>
-          ) : null}
-        </div>
-        {!isScalable ? (
           <p className="text-sm text-muted-foreground">
             {getScalingPanelStatus(recipe)}
           </p>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       {isScalable ? (
-        <div className="space-y-3 lg:max-w-xl lg:text-right">
-          <div className="flex flex-wrap gap-2 lg:justify-end">
-            {recipeScaleOptions.map((option) => (
-              <Button
-                key={option.label}
-                className="rounded-md px-4"
-                onClick={() => {
-                  applyScaleFactor(option.value);
-                }}
-                size="sm"
-                type="button"
-                variant={
-                  isScaleFactorSelected(scaleFactor, option.value)
-                    ? "default"
-                    : "outline"
-                }
-              >
-                {option.label}
-              </Button>
-            ))}
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Batch size
+            </h2>
+            <span className="rounded-full border border-border bg-background px-3 py-1 text-sm text-muted-foreground">
+              Current: {formatScaleLabel(scaleFactor)}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              Makes {formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor)}
+            </span>
           </div>
 
           <form
-            className="flex flex-col gap-2 sm:flex-row sm:justify-end"
+            className="flex flex-wrap items-center gap-2 xl:justify-end"
             onSubmit={(event) => {
               event.preventDefault();
               handleCustomBatchSizeSubmit();
             }}
           >
             <label className="sr-only" htmlFor={customBatchSizeInputId}>
-              Custom batch size
+              Batch size
             </label>
+            <Button
+              className="rounded-md px-3"
+              onClick={() => {
+                handleScaleFactorMultiplier(0.5);
+              }}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              1/2
+            </Button>
+            <Button
+              className="rounded-md px-3"
+              onClick={() => {
+                handleScaleFactorMultiplier(2);
+              }}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              2x
+            </Button>
             <input
               aria-describedby={`${customBatchSizeInputId}-message`}
               aria-invalid={customBatchSizeError !== null}
@@ -111,26 +133,28 @@ export function RecipeScalingPanel({
                 setCustomBatchSize(event.target.value);
                 setCustomBatchSizeError(null);
               }}
-              placeholder="1/3, 1/2, 2x, or 4"
+              placeholder="1, 2, or 0.5"
               value={customBatchSize}
             />
             <Button className="rounded-md px-4" size="sm" type="submit" variant="outline">
-              Apply
+              Set
             </Button>
           </form>
-
-          <p
-            aria-live="polite"
-            className={
-              customBatchSizeError === null
-                ? "text-sm text-muted-foreground lg:text-right"
-                : "text-sm text-destructive lg:text-right"
-            }
-            id={`${customBatchSizeInputId}-message`}
-          >
-            {customBatchSizeError ?? "Use fractions or multipliers for custom batch sizes."}
-          </p>
         </div>
+      ) : null}
+
+      {isScalable ? (
+        <p
+          aria-live="polite"
+          className={
+            customBatchSizeError === null
+              ? "sr-only"
+              : "mt-2 text-sm text-destructive xl:text-right"
+          }
+          id={`${customBatchSizeInputId}-message`}
+        >
+          {customBatchSizeError ?? ""}
+        </p>
       ) : null}
     </section>
   );

@@ -63,11 +63,22 @@ export function formatScaleLabel(scaleFactor: number): string {
   return `${normalizeScaledNumber(scaleFactor)}x`;
 }
 
+export function formatScaleFactorInputValue(scaleFactor: number): string {
+  return `${normalizeScaledNumber(scaleFactor)}`;
+}
+
 export function isScaleFactorSelected(
   currentScaleFactor: number,
   expectedScaleFactor: number,
 ): boolean {
   return Math.abs(currentScaleFactor - expectedScaleFactor) < scaleFactorTolerance;
+}
+
+export function multiplyScaleFactor(
+  scaleFactor: number,
+  multiplier: number,
+): number {
+  return normalizeScaledNumber(scaleFactor * multiplier);
 }
 
 export function parseScaleFactorInput(value: string): number | null {

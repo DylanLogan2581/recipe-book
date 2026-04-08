@@ -74,7 +74,7 @@ export function RecipeCreateForm({
           <label className="md:col-span-2">
             <span className="text-sm font-medium text-foreground">Summary</span>
             <textarea
-              className={`${inputClassName} min-h-24 resize-y`}
+              className={`${inputClassName} min-h-18 resize-y`}
               name="summary"
               onChange={(event) => {
                 const summary = event.target.value;
@@ -90,7 +90,7 @@ export function RecipeCreateForm({
               Description
             </span>
             <textarea
-              className={`${inputClassName} min-h-32 resize-y`}
+              className={`${inputClassName} min-h-40 resize-y`}
               name="description"
               onChange={(event) => {
                 const description = event.target.value;

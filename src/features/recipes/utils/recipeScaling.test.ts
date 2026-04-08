@@ -65,11 +65,11 @@ describe("isScaleFactorSelected", () => {
 });
 
 describe("multiplyScaleFactor", () => {
-  it("applies multipliers and keeps the result rounded for display", () => {
+  it("applies multipliers while preserving numeric precision", () => {
     expect(multiplyScaleFactor(1, 2)).toBe(2);
     expect(multiplyScaleFactor(2, 2)).toBe(4);
     expect(multiplyScaleFactor(1, 0.5)).toBe(0.5);
-    expect(multiplyScaleFactor(1 / 3, 2)).toBe(0.67);
+    expect(multiplyScaleFactor(1 / 3, 2)).toBeCloseTo(2 / 3);
   });
 });
 

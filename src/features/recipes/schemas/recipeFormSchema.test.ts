@@ -30,7 +30,8 @@ describe("recipeCreateFormSchema", () => {
         {
           instruction: "Whisk everything together.",
           notes: "",
-          timerSeconds: "120",
+          timerUnit: "minutes",
+          timerValue: "2",
         },
       ],
       summary: "Simple loaf",
@@ -126,7 +127,8 @@ describe("recipeCreateFormSchema", () => {
         {
           instruction: "Season the dish.",
           notes: "",
-          timerSeconds: "2.5",
+          timerUnit: "minutes",
+          timerValue: "2.5",
         },
       ],
       summary: "",
@@ -147,5 +149,48 @@ describe("recipeCreateFormSchema", () => {
         "Use zero or a positive whole number.",
       ]),
     );
+  });
+
+  it("supports seconds and hours authoring units", () => {
+    const result = recipeCreateFormSchema.parse({
+      cookMinutes: "",
+      description: "",
+      equipment: [],
+      ingredients: [
+        {
+          amount: "1",
+          isOptional: false,
+          item: "Beans",
+          notes: "",
+          preparation: "",
+          unit: "cup",
+        },
+      ],
+      isScalable: false,
+      prepMinutes: "",
+      steps: [
+        {
+          instruction: "Toast the spices.",
+          notes: "",
+          timerUnit: "seconds",
+          timerValue: "45",
+        },
+        {
+          instruction: "Let the broth simmer.",
+          notes: "",
+          timerUnit: "hours",
+          timerValue: "2",
+        },
+      ],
+      summary: "",
+      title: "Chili",
+      yieldQuantity: "",
+      yieldUnit: "",
+    });
+
+    expect(result.steps).toEqual([
+      expect.objectContaining({ timerSeconds: 45 }),
+      expect.objectContaining({ timerSeconds: 7200 }),
+    ]);
   });
 });

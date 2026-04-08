@@ -10,6 +10,7 @@ import {
   type RecipeCreateIngredientFormValue,
   type RecipeCreateStepFormValue,
 } from "../utils/recipeFormValues";
+import { recipeTimerUnits, type RecipeTimerUnit } from "../utils/recipeTimerUnits";
 
 import { RecipeCoverImage } from "./RecipeCoverImage";
 
@@ -17,6 +18,7 @@ import type { FormEvent, JSX } from "react";
 
 const inputClassName =
   "mt-2 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20";
+const inputControlClassName = inputClassName.replace("mt-2 ", "");
 const checkboxClassName =
   "size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20";
 
@@ -667,18 +669,35 @@ function StepFields({ onChange, step }: StepFieldsProps): JSX.Element {
       </label>
 
       <label>
-        <span className="text-sm font-medium text-foreground">
-          Timer duration (seconds)
-        </span>
-        <input
-          className={inputClassName}
-          inputMode="numeric"
-          onChange={(event) => {
-            onChange({ ...step, timerSeconds: event.target.value });
-          }}
-          placeholder="300"
-          value={step.timerSeconds}
-        />
+        <span className="text-sm font-medium text-foreground">Timer</span>
+        <div className="mt-2 grid gap-3 sm:grid-cols-[minmax(0,1fr)_10rem]">
+          <input
+            className={inputControlClassName}
+            inputMode="numeric"
+            onChange={(event) => {
+              onChange({ ...step, timerValue: event.target.value });
+            }}
+            placeholder="35"
+            value={step.timerValue}
+          />
+
+          <select
+            className={inputControlClassName}
+            onChange={(event) => {
+              onChange({
+                ...step,
+                timerUnit: event.target.value as RecipeTimerUnit,
+              });
+            }}
+            value={step.timerUnit}
+          >
+            {recipeTimerUnits.map((unit) => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </div>
       </label>
     </div>
   );

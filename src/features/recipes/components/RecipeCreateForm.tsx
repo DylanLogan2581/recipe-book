@@ -424,7 +424,8 @@ function IngredientFields({
   ingredient,
   onChange,
 }: IngredientFieldsProps): JSX.Element {
-  const unitGroups = getIngredientUnitGroups(ingredient.unit);
+  const normalizedUnit = ingredient.unit.trim();
+  const unitGroups = getIngredientUnitGroups(normalizedUnit);
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -458,9 +459,9 @@ function IngredientFields({
         <select
           className={inputClassName}
           onChange={(event) => {
-            onChange({ ...ingredient, unit: event.target.value });
+            onChange({ ...ingredient, unit: event.target.value.trim() });
           }}
-          value={ingredient.unit}
+          value={normalizedUnit}
         >
           <option value="">No unit</option>
           {unitGroups.map((group) => (

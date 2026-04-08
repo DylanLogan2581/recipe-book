@@ -140,6 +140,7 @@ export function CreateRecipePage(): JSX.Element {
             </Button>
           }
           coverPhotoInputResetKey={coverPhotoInputResetKey}
+          currentCoverPhotoPath={null}
           hasCoverPhoto={selectedCoverPhoto !== null}
           isPending={isSubmitting}
           onCoverPhotoChange={(file) => {
@@ -154,6 +155,7 @@ export function CreateRecipePage(): JSX.Element {
             handleSubmitRecipe();
           }}
           removeCoverPhotoLabel="Remove photo"
+          selectedCoverPhoto={selectedCoverPhoto}
           setValues={setValues}
           submitLabel="Create recipe"
           submitPendingLabel="Saving recipe..."

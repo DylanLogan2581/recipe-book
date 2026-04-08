@@ -11,6 +11,8 @@ import {
   type RecipeCreateStepFormValue,
 } from "../utils/recipeFormValues";
 
+import { RecipeCoverImage } from "./RecipeCoverImage";
+
 import type { FormEvent, JSX } from "react";
 
 const inputClassName =
@@ -21,12 +23,14 @@ const checkboxClassName =
 type RecipeCreateFormProps = {
   cancelButton: JSX.Element;
   coverPhotoInputResetKey: number;
+  currentCoverPhotoPath: string | null;
   hasCoverPhoto: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
   onRemoveCoverPhoto: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   removeCoverPhotoLabel: string;
+  selectedCoverPhoto: File | null;
   setValues: (
     updater: (current: RecipeCreateFormValues) => RecipeCreateFormValues,
   ) => void;
@@ -38,12 +42,14 @@ type RecipeCreateFormProps = {
 export function RecipeCreateForm({
   cancelButton,
   coverPhotoInputResetKey,
+  currentCoverPhotoPath,
   hasCoverPhoto,
   isPending,
   onCoverPhotoChange,
   onRemoveCoverPhoto,
   onSubmit,
   removeCoverPhotoLabel,
+  selectedCoverPhoto,
   setValues,
   submitLabel,
   submitPendingLabel,
@@ -205,6 +211,47 @@ export function RecipeCreateForm({
             ) : null}
           </div>
 
+          {(currentCoverPhotoPath !== null || selectedCoverPhoto !== null) ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              {currentCoverPhotoPath !== null ? (
+                <CoverPhotoPreviewCard
+                  description={
+                    selectedCoverPhoto === null
+                      ? "This photo is currently attached to the recipe."
+                      : "This photo stays attached unless you save the new one instead."
+                  }
+                  label="Current photo"
+                >
+                  <RecipeCoverImage
+                    coverImagePath={currentCoverPhotoPath}
+                    title={values.title === "" ? "Recipe" : values.title}
+                    variant="detail"
+                  />
+                </CoverPhotoPreviewCard>
+              ) : null}
+
+              {selectedCoverPhoto !== null ? (
+                <CoverPhotoPreviewCard
+                  description={
+                    currentCoverPhotoPath === null
+                      ? "This photo will be attached when you save the recipe."
+                      : "This photo will replace the current one when you save the recipe."
+                  }
+                  label="New photo"
+                >
+                  <div className="rounded-xl border border-dashed border-border bg-muted/40 px-4 py-5">
+                    <p className="text-sm font-medium text-foreground">
+                      {selectedCoverPhoto.name}
+                    </p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Ready to save with this recipe.
+                    </p>
+                  </div>
+                </CoverPhotoPreviewCard>
+              ) : null}
+            </div>
+          ) : null}
+
           <input
             accept="image/jpeg,image/png,image/webp"
             className={`${inputClassName} file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground`}
@@ -336,6 +383,28 @@ export function RecipeCreateForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+type CoverPhotoPreviewCardProps = {
+  children: JSX.Element | null;
+  description: string;
+  label: string;
+};
+
+function CoverPhotoPreviewCard({
+  children,
+  description,
+  label,
+}: CoverPhotoPreviewCardProps): JSX.Element {
+  return (
+    <div className="space-y-3 rounded-lg border border-border bg-background p-3">
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-foreground">{label}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+      </div>
+      {children}
+    </div>
   );
 }
 

@@ -413,7 +413,9 @@ function SelectedCoverPhotoPreviewCard({
   file,
   label,
 }: SelectedCoverPhotoPreviewCardProps): JSX.Element {
-  const previewUrl = useObjectUrl(file);
+  const previewUrl = useObjectUrl(
+    canPreviewSelectedCoverPhoto(file) ? file : null,
+  );
 
   return (
     <CoverPhotoPreviewCard description={description} label={label}>
@@ -430,16 +432,31 @@ function SelectedCoverPhotoPreviewCard({
   );
 }
 
-function useObjectUrl(file: File): string {
-  const objectUrl = useMemo(() => URL.createObjectURL(file), [file]);
+function useObjectUrl(file: File | null): string | null {
+  const objectUrl = useMemo(
+    () => (file === null ? null : URL.createObjectURL(file)),
+    [file],
+  );
 
   useEffect(() => {
+    if (objectUrl === null) {
+      return;
+    }
+
     return () => {
       URL.revokeObjectURL(objectUrl);
     };
   }, [objectUrl]);
 
   return objectUrl;
+}
+
+function canPreviewSelectedCoverPhoto(file: File): boolean {
+  return (
+    file.type === "image/jpeg" ||
+    file.type === "image/png" ||
+    file.type === "image/webp"
+  );
 }
 
 type RecipeCreateCollectionSectionProps<TItem> = {

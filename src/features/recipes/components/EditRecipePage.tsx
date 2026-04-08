@@ -149,6 +149,7 @@ export function EditRecipePage({
             </Button>
           }
           coverPhotoInputResetKey={coverPhotoInputResetKey}
+          currentCoverPhotoPath={currentCoverPhotoPath}
           hasCoverPhoto={
             currentCoverPhotoPath !== null || selectedCoverPhoto !== null
           }
@@ -175,11 +176,12 @@ export function EditRecipePage({
           }}
           removeCoverPhotoLabel={
             selectedCoverPhoto !== null && recipe.coverImagePath !== null
-              ? "Use current photo"
+              ? "Keep current photo instead"
               : selectedCoverPhoto !== null
-                ? "Remove photo"
+                ? "Remove new photo"
                 : "Remove current photo"
           }
+          selectedCoverPhoto={selectedCoverPhoto}
           setValues={setValues}
           submitLabel="Save changes"
           submitPendingLabel="Saving changes..."

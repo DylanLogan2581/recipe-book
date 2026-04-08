@@ -1,3 +1,5 @@
+import { useEffect, useMemo } from "react";
+
 import { Button } from "@/components/ui/button";
 
 import { getIngredientUnitGroups } from "../utils/ingredientUnits";
@@ -11,6 +13,8 @@ import {
   type RecipeCreateStepFormValue,
 } from "../utils/recipeFormValues";
 
+import { RecipeCoverImage } from "./RecipeCoverImage";
+
 import type { FormEvent, JSX } from "react";
 
 const inputClassName =
@@ -21,12 +25,14 @@ const checkboxClassName =
 type RecipeCreateFormProps = {
   cancelButton: JSX.Element;
   coverPhotoInputResetKey: number;
+  currentCoverPhotoPath: string | null;
   hasCoverPhoto: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
   onRemoveCoverPhoto: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   removeCoverPhotoLabel: string;
+  selectedCoverPhoto: File | null;
   setValues: (
     updater: (current: RecipeCreateFormValues) => RecipeCreateFormValues,
   ) => void;
@@ -38,12 +44,14 @@ type RecipeCreateFormProps = {
 export function RecipeCreateForm({
   cancelButton,
   coverPhotoInputResetKey,
+  currentCoverPhotoPath,
   hasCoverPhoto,
   isPending,
   onCoverPhotoChange,
   onRemoveCoverPhoto,
   onSubmit,
   removeCoverPhotoLabel,
+  selectedCoverPhoto,
   setValues,
   submitLabel,
   submitPendingLabel,
@@ -205,6 +213,39 @@ export function RecipeCreateForm({
             ) : null}
           </div>
 
+          {(currentCoverPhotoPath !== null || selectedCoverPhoto !== null) ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              {currentCoverPhotoPath !== null ? (
+                <CoverPhotoPreviewCard
+                  description={
+                    selectedCoverPhoto === null
+                      ? "This photo is currently attached to the recipe."
+                      : "This photo stays attached unless you save the new one instead."
+                  }
+                  label="Current photo"
+                >
+                  <RecipeCoverImage
+                    coverImagePath={currentCoverPhotoPath}
+                    title={values.title === "" ? "Recipe" : values.title}
+                    variant="detail"
+                  />
+                </CoverPhotoPreviewCard>
+              ) : null}
+
+              {selectedCoverPhoto !== null ? (
+                <SelectedCoverPhotoPreviewCard
+                  description={
+                    currentCoverPhotoPath === null
+                      ? "This photo will be attached when you save the recipe."
+                      : "This photo will replace the current one when you save the recipe."
+                  }
+                  file={selectedCoverPhoto}
+                  label="New photo"
+                />
+              ) : null}
+            </div>
+          ) : null}
+
           <input
             accept="image/jpeg,image/png,image/webp"
             className={`${inputClassName} file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground`}
@@ -337,6 +378,68 @@ export function RecipeCreateForm({
       </div>
     </form>
   );
+}
+
+type CoverPhotoPreviewCardProps = {
+  children: JSX.Element | null;
+  description: string;
+  label: string;
+};
+
+function CoverPhotoPreviewCard({
+  children,
+  description,
+  label,
+}: CoverPhotoPreviewCardProps): JSX.Element {
+  return (
+    <div className="space-y-3 rounded-lg border border-border bg-background p-3">
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-foreground">{label}</p>
+        <p className="text-sm leading-6 text-muted-foreground">{description}</p>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+type SelectedCoverPhotoPreviewCardProps = {
+  description: string;
+  file: File;
+  label: string;
+};
+
+function SelectedCoverPhotoPreviewCard({
+  description,
+  file,
+  label,
+}: SelectedCoverPhotoPreviewCardProps): JSX.Element {
+  const previewUrl = useObjectUrl(file);
+
+  return (
+    <CoverPhotoPreviewCard description={description} label={label}>
+      <div className="aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted">
+        {previewUrl !== null ? (
+          <img
+            alt={`${label} preview`}
+            className="h-full w-full object-cover"
+            src={previewUrl}
+          />
+        ) : null}
+      </div>
+    </CoverPhotoPreviewCard>
+  );
+}
+
+function useObjectUrl(file: File): string {
+  const objectUrl = useMemo(() => URL.createObjectURL(file), [file]);
+
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [objectUrl]);
+
+  return objectUrl;
 }
 
 type RecipeCreateCollectionSectionProps<TItem> = {

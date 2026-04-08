@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { convertRecipeTimerToSeconds, recipeTimerUnits } from "../utils/recipeTimerUnits";
+
 import type { CreateRecipeInput } from "../types/recipes";
 
 const optionalTrimmedTextSchema = z.string().transform((value) => value.trim());
@@ -66,7 +68,8 @@ const recipeEquipmentSchema = z.object({
 const recipeStepSchema = z.object({
   instruction: z.string().trim().min(1, "Add a step instruction."),
   notes: optionalTrimmedTextSchema,
-  timerSeconds: optionalIntegerStringSchema,
+  timerUnit: z.enum(recipeTimerUnits),
+  timerValue: optionalIntegerStringSchema,
 });
 
 export const recipeCreateFormSchema = z
@@ -119,7 +122,10 @@ export const recipeCreateFormSchema = z
       steps: steps.map((step) => ({
         instruction: step.instruction,
         notes: normalizeOptionalText(step.notes),
-        timerSeconds: step.timerSeconds,
+        timerSeconds: convertRecipeTimerToSeconds(
+          step.timerValue,
+          step.timerUnit,
+        ),
       })),
       summary,
       title,

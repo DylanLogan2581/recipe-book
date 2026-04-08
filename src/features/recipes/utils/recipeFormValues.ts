@@ -1,3 +1,5 @@
+import { createRecipeTimerAuthoringValue, type RecipeTimerUnit } from "./recipeTimerUnits";
+
 import type { RecipeDetail } from "../types/recipes";
 
 export type RecipeCreateIngredientFormValue = {
@@ -18,7 +20,8 @@ export type RecipeCreateEquipmentFormValue = {
 export type RecipeCreateStepFormValue = {
   instruction: string;
   notes: string;
-  timerSeconds: string;
+  timerUnit: RecipeTimerUnit;
+  timerValue: string;
 };
 
 export type RecipeCreateFormValues = {
@@ -58,7 +61,8 @@ export function createEmptyRecipeStepFormValue(): RecipeCreateStepFormValue {
   return {
     instruction: "",
     notes: "",
-    timerSeconds: "",
+    timerUnit: "minutes",
+    timerValue: "",
   };
 }
 
@@ -102,7 +106,7 @@ export function createRecipeFormValuesFromRecipe(
     steps: recipe.steps.map((step) => ({
       instruction: step.instruction,
       notes: step.notes ?? "",
-      timerSeconds: formatOptionalNumber(step.timerSeconds),
+      ...createRecipeTimerAuthoringValue(step.timerSeconds),
     })),
     summary: recipe.summary,
     title: recipe.title,

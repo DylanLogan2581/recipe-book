@@ -101,7 +101,8 @@ describe("createRecipeFormValuesFromRecipe", () => {
         {
           instruction: "Warm the oil.",
           notes: "Keep the heat medium.",
-          timerSeconds: "180",
+          timerUnit: "minutes",
+          timerValue: "3",
         },
       ],
       summary: "Simple red sauce",
@@ -139,5 +140,45 @@ describe("createRecipeFormValuesFromRecipe", () => {
       steps: [],
       title: "Plain Rice",
     });
+  });
+
+  it("keeps odd timer values in seconds when editing", () => {
+    const recipe: RecipeDetail = {
+      cookLogs: [],
+      cookMinutes: null,
+      coverImagePath: null,
+      createdAt: "2026-04-03T00:00:00.000Z",
+      description: "",
+      equipment: [],
+      id: "recipe-3",
+      ingredients: [],
+      isScalable: false,
+      ownerId: "user-1",
+      prepMinutes: null,
+      steps: [
+        {
+          id: "step-1",
+          instruction: "Rest the dough.",
+          notes: null,
+          position: 1,
+          timerSeconds: 90,
+        },
+      ],
+      summary: "",
+      title: "Flatbread",
+      totalMinutes: null,
+      updatedAt: "2026-04-03T00:00:00.000Z",
+      yieldQuantity: null,
+      yieldUnit: null,
+    };
+
+    expect(createRecipeFormValuesFromRecipe(recipe).steps).toEqual([
+      {
+        instruction: "Rest the dough.",
+        notes: "",
+        timerUnit: "seconds",
+        timerValue: "90",
+      },
+    ]);
   });
 });

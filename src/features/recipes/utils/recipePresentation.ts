@@ -12,6 +12,8 @@ type RecipeLoadErrorCopy = {
   title: string;
 };
 
+export const recipeAllergenEmptyStateLabel = "No major allergens listed.";
+
 export function getRecipeLoadDocumentTitle(
   error: unknown,
   surface: RecipeLoadSurface,
@@ -78,7 +80,7 @@ export function formatRecipeAllergenSummary(
   allergens: readonly RecipeAllergen[],
 ): string {
   if (allergens.length === 0) {
-    return "No major allergens listed";
+    return recipeAllergenEmptyStateLabel;
   }
 
   return sortRecipeAllergens(allergens).map(getRecipeAllergenLabel).join(" · ");

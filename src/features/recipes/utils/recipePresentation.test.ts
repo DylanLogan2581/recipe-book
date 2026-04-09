@@ -7,6 +7,7 @@ import {
   formatRecipeAttributionLabel,
   formatRecipeMetadataDate,
   formatRecipeAllergenSummary,
+  recipeAllergenEmptyStateLabel,
   formatIngredientText,
   formatCountdownClock,
   formatRecipeTime,
@@ -76,7 +77,8 @@ describe("formatRecipeYield", () => {
 
 describe("formatRecipeAllergenSummary", () => {
   it("formats allergens with a stable fallback and label ordering", () => {
-    expect(formatRecipeAllergenSummary([])).toBe("No major allergens listed");
+    expect(recipeAllergenEmptyStateLabel).toBe("No major allergens listed.");
+    expect(formatRecipeAllergenSummary([])).toBe(recipeAllergenEmptyStateLabel);
     expect(formatRecipeAllergenSummary(["sesame", "milk"])).toBe(
       "Milk · Sesame",
     );

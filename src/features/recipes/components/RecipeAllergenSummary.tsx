@@ -2,6 +2,7 @@ import {
   getRecipeAllergenLabel,
   sortRecipeAllergens,
 } from "../utils/recipeAllergens";
+import { recipeAllergenEmptyStateLabel } from "../utils/recipePresentation";
 
 import type { RecipeAllergen } from "../types/recipes";
 import type { JSX } from "react";
@@ -21,7 +22,7 @@ export function RecipeAllergenSummary({
         <h2 className="text-sm font-semibold text-foreground">Allergens</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {sortedAllergens.length === 0
-            ? "No major allergens listed."
+            ? recipeAllergenEmptyStateLabel
             : "Review these before cooking or sharing."}
         </p>
       </div>

@@ -16,6 +16,7 @@ type ProfileRecord = {
   updated_at: string;
   user_id: string;
 };
+type ProfileListRecord = Pick<ProfileRecord, "display_name" | "user_id">;
 
 export type ProfileDataAccessErrorCode =
   | "authentication-required"
@@ -43,6 +44,10 @@ const profileSelect = `
   avatar_path,
   created_at,
   updated_at
+`;
+const profileListSelect = `
+  user_id,
+  display_name
 `;
 
 export async function getPublicProfile(
@@ -77,9 +82,9 @@ export async function listPublicProfiles(
   const profileClient = getProfileApiClient(client);
   const { data, error } = await profileClient
     .from("profiles")
-    .select(profileSelect)
+    .select(profileListSelect)
     .order("display_name", { ascending: true })
-    .overrideTypes<ProfileRecord[], { merge: false }>();
+    .overrideTypes<ProfileListRecord[], { merge: false }>();
 
   if (error !== null) {
     throw error;

@@ -42,14 +42,14 @@ export type RecipeDetailRecord = RecipeRow & {
 export function buildRecipeInsert(
   input: CreateRecipeInput & { ownerId?: string },
 ): RecipeInsert {
-  const ownerId = input.ownerId?.trim();
+  const ownerId = normalizeOptionalText(input.ownerId);
 
   return {
     cook_minutes: input.cookMinutes ?? null,
     cover_image_path: normalizeOptionalText(input.coverImagePath),
     description: normalizeRecipeBodyText(input.description),
     is_scalable: input.isScalable ?? true,
-    ...(ownerId === undefined ? {} : { owner_id: ownerId }),
+    ...(ownerId === null ? {} : { owner_id: ownerId }),
     prep_minutes: input.prepMinutes ?? null,
     summary: normalizeRecipeBodyText(input.summary),
     title: input.title.trim(),

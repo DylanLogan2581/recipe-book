@@ -12,6 +12,7 @@ import {
   getRecipeSummary,
 } from "../utils/recipePresentation";
 
+import { RecipeAllergenSummary } from "./RecipeAllergenSummary";
 import { RecipeCoverImage } from "./RecipeCoverImage";
 
 import type { RecipeDetail } from "../types/recipes";
@@ -91,6 +92,8 @@ export function RecipeDetailHero({
               </span>
             ))}
           </div>
+
+          <RecipeAllergenSummary allergens={recipe.allergens} />
         </div>
 
         {recipe.coverImagePath !== null ? (

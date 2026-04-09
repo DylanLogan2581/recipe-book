@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { convertRecipeTimerToSeconds, recipeTimerUnits } from "../utils/recipeTimerUnits";
+import { recipeAllergens } from "../utils/recipeAllergens";
+import {
+  convertRecipeTimerToSeconds,
+  recipeTimerUnits,
+} from "../utils/recipeTimerUnits";
 
 import type { CreateRecipeInput } from "../types/recipes";
 
@@ -74,6 +78,7 @@ const recipeStepSchema = z.object({
 
 export const recipeCreateFormSchema = z
   .object({
+    allergens: z.array(z.enum(recipeAllergens)),
     cookMinutes: optionalIntegerStringSchema,
     description: optionalTrimmedTextSchema,
     equipment: z.array(recipeEquipmentSchema),
@@ -90,6 +95,7 @@ export const recipeCreateFormSchema = z
   })
   .transform(
     ({
+      allergens,
       cookMinutes,
       description,
       equipment,
@@ -102,6 +108,7 @@ export const recipeCreateFormSchema = z
       yieldQuantity,
       yieldUnit,
     }): CreateRecipeInput => ({
+      allergens,
       cookMinutes,
       description,
       equipment: equipment.map((item) => ({

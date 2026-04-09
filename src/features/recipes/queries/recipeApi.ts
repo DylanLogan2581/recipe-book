@@ -48,6 +48,7 @@ export class RecipeDataAccessError extends Error {
 const recipeListSelect = `
   id,
   owner_id,
+  allergens,
   title,
   summary,
   description,
@@ -64,6 +65,7 @@ const recipeListSelect = `
 const recipeDetailSelect = `
   id,
   owner_id,
+  allergens,
   title,
   summary,
   description,

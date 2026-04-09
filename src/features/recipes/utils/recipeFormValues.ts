@@ -1,6 +1,9 @@
-import { createRecipeTimerAuthoringValue, type RecipeTimerUnit } from "./recipeTimerUnits";
+import {
+  createRecipeTimerAuthoringValue,
+  type RecipeTimerUnit,
+} from "./recipeTimerUnits";
 
-import type { RecipeDetail } from "../types/recipes";
+import type { RecipeAllergen, RecipeDetail } from "../types/recipes";
 
 export type RecipeCreateIngredientFormValue = {
   amount: string;
@@ -25,6 +28,7 @@ export type RecipeCreateStepFormValue = {
 };
 
 export type RecipeCreateFormValues = {
+  allergens: RecipeAllergen[];
   cookMinutes: string;
   description: string;
   equipment: RecipeCreateEquipmentFormValue[];
@@ -68,6 +72,7 @@ export function createEmptyRecipeStepFormValue(): RecipeCreateStepFormValue {
 
 export function createEmptyRecipeCreateFormValues(): RecipeCreateFormValues {
   return {
+    allergens: [],
     cookMinutes: "",
     description: "",
     equipment: [],
@@ -86,6 +91,7 @@ export function createRecipeFormValuesFromRecipe(
   recipe: RecipeDetail,
 ): RecipeCreateFormValues {
   return {
+    allergens: recipe.allergens,
     cookMinutes: formatOptionalNumber(recipe.cookMinutes),
     description: recipe.description,
     equipment: recipe.equipment.map((item) => ({

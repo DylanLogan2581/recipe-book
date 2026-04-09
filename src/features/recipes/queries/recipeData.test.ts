@@ -13,6 +13,7 @@ describe("mapRecipeDetailRecord", () => {
   it("sorts nested relations and computes total minutes", () => {
     const recipe = mapRecipeDetailRecord(
       {
+        allergens: ["milk", "wheat"],
         cook_minutes: 18,
         cover_image_path: null,
         created_at: "2026-03-26T10:00:00.000Z",
@@ -144,6 +145,7 @@ describe("mapRecipeDetailRecord", () => {
     expect(recipe.equipment.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.steps.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.creatorName).toBe("Dylan Logan");
+    expect(recipe.allergens).toEqual(["milk", "wheat"]);
   });
 });
 
@@ -172,6 +174,7 @@ describe("recipe insert builders", () => {
     ]);
 
     expect(recipe).toEqual({
+      allergens: [],
       cook_minutes: null,
       cover_image_path: null,
       description: "",

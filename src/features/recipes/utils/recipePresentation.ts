@@ -1,6 +1,9 @@
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
+import { getRecipeAllergenLabel, sortRecipeAllergens } from "./recipeAllergens";
 import { scaleIngredientAmount, scaleRecipeYield } from "./recipeScaling";
+
+import type { RecipeAllergen } from "../types/recipes";
 
 type RecipeLoadSurface = "detail" | "list";
 
@@ -69,6 +72,16 @@ export function formatRecipeYield(
   }
 
   return `${scaledYieldQuantity} ${yieldUnit}`;
+}
+
+export function formatRecipeAllergenSummary(
+  allergens: readonly RecipeAllergen[],
+): string {
+  if (allergens.length === 0) {
+    return "No major allergens listed";
+  }
+
+  return sortRecipeAllergens(allergens).map(getRecipeAllergenLabel).join(" · ");
 }
 
 export function formatIngredientText(

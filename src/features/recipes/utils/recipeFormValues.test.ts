@@ -10,6 +10,7 @@ import type { RecipeDetail } from "../types/recipes";
 describe("createEmptyRecipeCreateFormValues", () => {
   it("starts ingredient, equipment, and step collections empty", () => {
     expect(createEmptyRecipeCreateFormValues()).toEqual({
+      allergens: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -34,6 +35,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       createdAt: "2026-04-03T00:00:00.000Z",
       creatorName: "Dylan Logan",
       description: "A rich tomato sauce.",
+      allergens: ["milk", "wheat"],
       equipment: [
         {
           details: "large pot",
@@ -77,6 +79,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
     };
 
     expect(createRecipeFormValuesFromRecipe(recipe)).toEqual({
+      allergens: ["milk", "wheat"],
       cookMinutes: "25",
       description: "A rich tomato sauce.",
       equipment: [
@@ -121,6 +124,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       createdAt: "2026-04-03T00:00:00.000Z",
       creatorName: null,
       description: "",
+      allergens: [],
       equipment: [],
       id: "recipe-2",
       ingredients: [],
@@ -152,6 +156,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       createdAt: "2026-04-03T00:00:00.000Z",
       creatorName: null,
       description: "",
+      allergens: [],
       equipment: [],
       id: "recipe-3",
       ingredients: [],

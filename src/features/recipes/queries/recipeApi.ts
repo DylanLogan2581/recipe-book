@@ -1,3 +1,7 @@
+import {
+  listRecipeCategoriesByRecipeIds,
+  replaceRecipeCategoryAssignments,
+} from "@/features/categories";
 import { supabase } from "@/lib/supabase";
 
 import {
@@ -223,8 +227,13 @@ export async function getRecipeDetail(
     listRecipeCookLogs(recipeId, recipeClient),
     getRecipeCreatorName(data.owner_id, recipeClient),
   ]);
+  const categoryMap = await listRecipeCategoriesByRecipeIds(
+    [recipeId],
+    recipeClient,
+  );
+  const recipeCategories = categoryMap.get(recipeId) ?? [];
 
-  return mapRecipeDetailRecord(data, cookLogs, creatorName);
+  return mapRecipeDetailRecord(data, cookLogs, recipeCategories, creatorName);
 }
 
 export async function listRecipes(
@@ -265,7 +274,15 @@ async function listRecipeRecords(
     throw error;
   }
 
-  return (data ?? []).map(mapRecipeListRecord);
+  const rows = data ?? [];
+  const categoryMap = await listRecipeCategoriesByRecipeIds(
+    rows.map((row) => row.id),
+    recipeClient,
+  );
+
+  return rows.map((row) =>
+    mapRecipeListRecord(row, categoryMap.get(row.id) ?? []),
+  );
 }
 
 function getRecipeApiClient(client: RecipeApiClient | null): RecipeApiClient {
@@ -293,6 +310,7 @@ async function insertRecipeRelations(
     input.equipment,
   );
   const stepRows = buildRecipeStepInsertRows(recipeId, input.steps);
+  await replaceRecipeCategoryAssignments(recipeId, input.categoryIds, client);
 
   if (ingredientRows.length > 0) {
     const { error } = await client

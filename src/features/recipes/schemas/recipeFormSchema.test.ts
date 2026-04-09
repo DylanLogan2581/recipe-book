@@ -6,6 +6,7 @@ describe("recipeCreateFormSchema", () => {
   it("parses authoring form values into create recipe input", () => {
     const result = recipeCreateFormSchema.parse({
       allergens: ["milk", "wheat"],
+      categoryIds: ["11111111-1111-4111-8111-111111111111"],
       cookMinutes: "15",
       description: "Roast until golden.",
       equipment: [
@@ -43,6 +44,7 @@ describe("recipeCreateFormSchema", () => {
 
     expect(result).toEqual({
       allergens: ["milk", "wheat"],
+      categoryIds: ["11111111-1111-4111-8111-111111111111"],
       cookMinutes: 15,
       description: "Roast until golden.",
       equipment: [
@@ -81,6 +83,7 @@ describe("recipeCreateFormSchema", () => {
   it("rejects missing title, ingredients, or steps", () => {
     const result = recipeCreateFormSchema.safeParse({
       allergens: [],
+      categoryIds: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -112,6 +115,7 @@ describe("recipeCreateFormSchema", () => {
   it("rejects negative and non-integer timer values", () => {
     const result = recipeCreateFormSchema.safeParse({
       allergens: [],
+      categoryIds: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -158,6 +162,7 @@ describe("recipeCreateFormSchema", () => {
   it("supports seconds and hours authoring units", () => {
     const result = recipeCreateFormSchema.parse({
       allergens: [],
+      categoryIds: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -202,6 +207,43 @@ describe("recipeCreateFormSchema", () => {
   it("rejects allergens outside the hardcoded FDA list", () => {
     const result = recipeCreateFormSchema.safeParse({
       allergens: ["dairy"],
+      categoryIds: [],
+      cookMinutes: "",
+      description: "",
+      equipment: [],
+      ingredients: [
+        {
+          amount: "1",
+          isOptional: false,
+          item: "Milk",
+          notes: "",
+          preparation: "",
+          unit: "cups",
+        },
+      ],
+      isScalable: false,
+      prepMinutes: "",
+      steps: [
+        {
+          instruction: "Pour the milk.",
+          notes: "",
+          timerUnit: "minutes",
+          timerValue: "",
+        },
+      ],
+      summary: "",
+      title: "Milk",
+      yieldQuantity: "",
+      yieldUnit: "",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects malformed category ids", () => {
+    const result = recipeCreateFormSchema.safeParse({
+      allergens: [],
+      categoryIds: ["not-a-uuid"],
       cookMinutes: "",
       description: "",
       equipment: [],

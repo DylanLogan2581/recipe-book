@@ -1,3 +1,4 @@
+import type { RecipeCategorySummary } from "@/features/categories";
 import type { Database } from "@/types/supabase";
 
 import {
@@ -120,10 +121,11 @@ export function buildRecipeCookLogInsert(
 export function mapRecipeDetailRecord(
   record: RecipeDetailRecord,
   cookLogs: RecipeCookLogRow[] = [],
+  categories: RecipeCategorySummary[] = [],
   creatorName: string | null = null,
 ): RecipeDetail {
   return {
-    ...mapRecipeListRecord(record),
+    ...mapRecipeListRecord(record, categories),
     cookLogs: sortCookLogs(cookLogs).map(mapRecipeCookLogRow),
     creatorName,
     equipment: sortByPosition(record.recipe_equipment ?? []).map(
@@ -136,9 +138,13 @@ export function mapRecipeDetailRecord(
   };
 }
 
-export function mapRecipeListRecord(record: RecipeListRecord): RecipeListItem {
+export function mapRecipeListRecord(
+  record: RecipeListRecord,
+  categories: RecipeCategorySummary[] = [],
+): RecipeListItem {
   return {
     allergens: normalizeRecipeAllergens(record.allergens),
+    categories,
     cookMinutes: record.cook_minutes,
     coverImagePath: record.cover_image_path,
     createdAt: record.created_at,

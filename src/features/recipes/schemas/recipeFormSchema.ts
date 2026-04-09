@@ -79,6 +79,7 @@ const recipeStepSchema = z.object({
 export const recipeCreateFormSchema = z
   .object({
     allergens: z.array(z.enum(recipeAllergens)),
+    categoryIds: z.array(z.string().uuid()),
     cookMinutes: optionalIntegerStringSchema,
     description: optionalTrimmedTextSchema,
     equipment: z.array(recipeEquipmentSchema),
@@ -96,6 +97,7 @@ export const recipeCreateFormSchema = z
   .transform(
     ({
       allergens,
+      categoryIds,
       cookMinutes,
       description,
       equipment,
@@ -109,6 +111,7 @@ export const recipeCreateFormSchema = z
       yieldUnit,
     }): CreateRecipeInput => ({
       allergens,
+      categoryIds,
       cookMinutes,
       description,
       equipment: equipment.map((item) => ({

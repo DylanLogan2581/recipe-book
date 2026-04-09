@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
+import { publicRecipeCategoryListQueryOptions } from "@/features/categories";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
@@ -29,9 +30,14 @@ export function CreateRecipePage(): JSX.Element {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const sessionQuery = useQuery(sessionQueryOptions);
-  const createRecipeMutation = useMutation(createRecipeMutationOptions(queryClient));
+  const categoryListQuery = useQuery(publicRecipeCategoryListQueryOptions());
+  const createRecipeMutation = useMutation(
+    createRecipeMutationOptions(queryClient),
+  );
   const { toast } = useAppToast();
-  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
+  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(
+    null,
+  );
   const [coverPhotoInputResetKey, setCoverPhotoInputResetKey] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [values, setValues] = useState(createEmptyRecipeCreateFormValues);
@@ -83,7 +89,8 @@ export function CreateRecipePage(): JSX.Element {
 
     try {
       if (selectedCoverPhoto !== null) {
-        uploadedCoverPhotoPath = await uploadRecipeCoverPhoto(selectedCoverPhoto);
+        uploadedCoverPhotoPath =
+          await uploadRecipeCoverPhoto(selectedCoverPhoto);
       }
 
       const recipe = await createRecipeMutation.mutateAsync({
@@ -103,7 +110,9 @@ export function CreateRecipePage(): JSX.Element {
       });
     } catch (error) {
       if (uploadedCoverPhotoPath !== null) {
-        await deleteRecipeCoverPhoto(uploadedCoverPhotoPath).catch(() => undefined);
+        await deleteRecipeCoverPhoto(uploadedCoverPhotoPath).catch(
+          () => undefined,
+        );
       }
 
       toast({
@@ -129,6 +138,7 @@ export function CreateRecipePage(): JSX.Element {
 
       <div className="mt-6">
         <RecipeCreateForm
+          availableCategories={categoryListQuery.data ?? []}
           cancelButton={
             <Button
               asChild
@@ -161,6 +171,18 @@ export function CreateRecipePage(): JSX.Element {
           submitPendingLabel="Saving recipe..."
           values={values}
         />
+
+        {categoryListQuery.isError ? (
+          <section className="mt-4 rounded-lg border border-amber-300/70 bg-amber-50/80 px-5 py-4">
+            <h2 className="text-sm font-semibold text-amber-950">
+              Categories unavailable
+            </h2>
+            <p className="mt-1 text-sm text-amber-950/85">
+              The category list could not load right now. You can still save the
+              recipe without category tags.
+            </p>
+          </section>
+        ) : null}
       </div>
     </main>
   );

@@ -77,6 +77,66 @@ export type Database = {
           },
         ];
       };
+      recipe_categories: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          name: string;
+          slug: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          slug: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          slug?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      recipe_category_assignments: {
+        Row: {
+          category_id: string;
+          created_at: string;
+          recipe_id: string;
+        };
+        Insert: {
+          category_id: string;
+          created_at?: string;
+          recipe_id: string;
+        };
+        Update: {
+          category_id?: string;
+          created_at?: string;
+          recipe_id?: string;
+        };
+        Relationships: [
+          {
+            columns: ["category_id"];
+            foreignKeyName: "recipe_category_assignments_category_id_fkey";
+            isOneToOne: false;
+            referencedColumns: ["id"];
+            referencedRelation: "recipe_categories";
+          },
+          {
+            columns: ["recipe_id"];
+            foreignKeyName: "recipe_category_assignments_recipe_id_fkey";
+            isOneToOne: false;
+            referencedColumns: ["id"];
+            referencedRelation: "recipes";
+          },
+        ];
+      };
       recipe_equipment: {
         Row: {
           created_at: string;

@@ -132,6 +132,13 @@ describe("mapRecipeDetailRecord", () => {
           updated_at: "2026-03-25T21:30:00.000Z",
         },
       ],
+      [
+        {
+          id: "category-1",
+          name: "Weeknight",
+          slug: "weeknight",
+        },
+      ],
       "Dylan Logan",
     );
 
@@ -146,6 +153,13 @@ describe("mapRecipeDetailRecord", () => {
     expect(recipe.steps.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.creatorName).toBe("Dylan Logan");
     expect(recipe.allergens).toEqual(["milk", "wheat"]);
+    expect(recipe.categories).toEqual([
+      {
+        id: "category-1",
+        name: "Weeknight",
+        slug: "weeknight",
+      },
+    ]);
   });
 });
 

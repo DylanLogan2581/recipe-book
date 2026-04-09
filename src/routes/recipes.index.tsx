@@ -13,7 +13,9 @@ import type { JSX } from "react";
 function RecipesIndexRouteComponent(): JSX.Element {
   const search = Route.useSearch();
 
-  return <RecipesPage showDeletedBanner={search.deleted === "1"} />;
+  return (
+    <RecipesPage search={search} showDeletedBanner={search.deleted === "1"} />
+  );
 }
 
 export const Route = createFileRoute("/recipes/")({

@@ -14,10 +14,12 @@ import type { RecipeListItem } from "../types/recipes";
 import type { JSX } from "react";
 
 type RecipePreviewCardProps = {
+  onCategoryClick?: (slug: string) => void;
   recipe: RecipeListItem;
 };
 
 export function RecipePreviewCard({
+  onCategoryClick,
   recipe,
 }: RecipePreviewCardProps): JSX.Element {
   const summary = getRecipeSummary(recipe.summary, recipe.description);
@@ -48,6 +50,32 @@ export function RecipePreviewCard({
           </h2>
           <p className="truncate text-sm text-muted-foreground">{summary}</p>
         </div>
+
+        {recipe.categories.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {recipe.categories.map((category) =>
+              onCategoryClick === undefined ? (
+                <span
+                  key={category.id}
+                  className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
+                >
+                  {category.name}
+                </span>
+              ) : (
+                <button
+                  key={category.id}
+                  className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground transition hover:border-primary hover:text-foreground"
+                  onClick={() => {
+                    onCategoryClick(category.slug);
+                  }}
+                  type="button"
+                >
+                  {category.name}
+                </button>
+              ),
+            )}
+          </div>
+        ) : null}
 
         <div className="flex flex-wrap gap-2">
           {metadata.map((item) => (

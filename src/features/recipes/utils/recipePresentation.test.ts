@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
 import {
+  formatRecipeAttributionDates,
   formatRecipeAttributionLabel,
   formatRecipeMetadataDate,
   formatIngredientText,
@@ -10,6 +11,7 @@ import {
   formatRecipeTime,
   formatRecipeYield,
   formatStepTimer,
+  getRecipeCreatorLabel,
   getRecipeLoadDocumentTitle,
   getRecipeLoadErrorCopy,
   getRecipeSummary,
@@ -138,6 +140,17 @@ describe("recipe attribution formatting", () => {
     expect(formatRecipeMetadataDate("2026-04-03T10:00:00.000Z")).toBe(
       "Apr 3, 2026",
     );
+  });
+
+  it("formats creator labels and attribution dates separately", () => {
+    expect(getRecipeCreatorLabel("Dylan Logan")).toBe("Dylan Logan");
+    expect(getRecipeCreatorLabel(null)).toBe("Recipe author");
+    expect(
+      formatRecipeAttributionDates({
+        createdAt: "2026-04-03T10:00:00.000Z",
+        updatedAt: "2026-04-04T11:00:00.000Z",
+      }),
+    ).toBe("Created Apr 3, 2026 · Updated Apr 4, 2026");
   });
 
   it("builds a compact attribution label", () => {

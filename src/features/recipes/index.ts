@@ -21,6 +21,7 @@ export {
   deleteRecipe,
   getRecipeDetail,
   listRecipes,
+  listRecipesByOwner,
   RecipeDataAccessError,
   updateRecipe,
   type RecipeDataAccessErrorCode,
@@ -60,7 +61,9 @@ export {
 export {
   preloadRecipeDetail,
   preloadRecipeList,
+  preloadRecipeListByOwner,
   recipeDetailQueryOptions,
+  recipeListByOwnerQueryOptions,
   recipeListQueryOptions,
 } from "./queries/recipeQueryOptions";
 export { recipeCreateFormSchema } from "./schemas/recipeFormSchema";
@@ -102,4 +105,13 @@ export {
   scaleIngredientAmount,
   scaleRecipeYield,
 } from "./utils/recipeScaling";
+export {
+  formatRecipeAttributionDates,
+  formatRecipeAttributionLabel,
+  formatRecipeMetadataDate,
+  formatRecipeTime,
+  formatRecipeYield,
+  getRecipeCreatorLabel,
+  getRecipeSummary,
+} from "./utils/recipePresentation";
 export { useStepTimer } from "./hooks/useStepTimer";

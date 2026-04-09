@@ -4,9 +4,10 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
-  formatRecipeAttributionLabel,
+  formatRecipeAttributionDates,
   formatRecipeTime,
   formatRecipeYield,
+  getRecipeCreatorLabel,
   getRecipeScalingLabel,
   getRecipeSummary,
 } from "../utils/recipePresentation";
@@ -33,7 +34,8 @@ export function RecipeDetailHero({
     formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor),
     getRecipeScalingLabel(recipe.isScalable),
   ];
-  const attributionLabel = formatRecipeAttributionLabel(recipe);
+  const creatorLabel = getRecipeCreatorLabel(recipe.creatorName);
+  const attributionDates = formatRecipeAttributionDates(recipe);
 
   return (
     <section className="space-y-6">
@@ -67,7 +69,15 @@ export function RecipeDetailHero({
               </p>
             ) : null}
             <p className="mt-4 max-w-3xl text-xs leading-5 text-muted-foreground">
-              {attributionLabel}
+              By{" "}
+              <Link
+                className="font-medium text-foreground underline-offset-4 transition hover:text-primary hover:underline"
+                params={{ userId: recipe.ownerId }}
+                to="/users/$userId"
+              >
+                {creatorLabel}
+              </Link>{" "}
+              · {attributionDates}
             </p>
           </div>
 

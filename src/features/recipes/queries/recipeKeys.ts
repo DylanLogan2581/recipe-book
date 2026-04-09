@@ -1,8 +1,11 @@
 export const recipeQueryKeys = {
   all: ["recipes"] as const,
-  detail: (recipeId: string) => [...recipeQueryKeys.details(), recipeId] as const,
+  detail: (recipeId: string) =>
+    [...recipeQueryKeys.details(), recipeId] as const,
   details: () => [...recipeQueryKeys.all, "detail"] as const,
   list: () => [...recipeQueryKeys.lists(), "public"] as const,
+  listByOwner: (ownerId: string) =>
+    [...recipeQueryKeys.lists(), "owner", ownerId] as const,
   lists: () => [...recipeQueryKeys.all, "list"] as const,
 };
 

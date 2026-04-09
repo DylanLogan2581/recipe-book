@@ -71,12 +71,15 @@ export function formatRecipeYield(
   return `${scaledYieldQuantity} ${yieldUnit}`;
 }
 
-export function formatIngredientText(ingredient: {
-  amount: number | null;
-  item: string;
-  preparation: string | null;
-  unit: string | null;
-}, scaleFactor = 1): string {
+export function formatIngredientText(
+  ingredient: {
+    amount: number | null;
+    item: string;
+    preparation: string | null;
+    unit: string | null;
+  },
+  scaleFactor = 1,
+): string {
   const scaledAmount = scaleIngredientAmount(ingredient.amount, scaleFactor);
   const amountText = scaledAmount === null ? null : `${scaledAmount}`;
   const unitText = ingredient.unit;
@@ -122,14 +125,25 @@ export function formatRecipeMetadataDate(isoTimestamp: string): string {
   }).format(new Date(isoTimestamp));
 }
 
+export function getRecipeCreatorLabel(creatorName: string | null): string {
+  return creatorName ?? "Recipe author";
+}
+
+export function formatRecipeAttributionDates(recipe: {
+  createdAt: string;
+  updatedAt: string;
+}): string {
+  return `Created ${formatRecipeMetadataDate(recipe.createdAt)} · Updated ${formatRecipeMetadataDate(recipe.updatedAt)}`;
+}
+
 export function formatRecipeAttributionLabel(recipe: {
   createdAt: string;
   creatorName: string | null;
   updatedAt: string;
 }): string {
-  const creatorLabel = recipe.creatorName ?? "Recipe author";
+  const creatorLabel = getRecipeCreatorLabel(recipe.creatorName);
 
-  return `By ${creatorLabel} · Created ${formatRecipeMetadataDate(recipe.createdAt)} · Updated ${formatRecipeMetadataDate(recipe.updatedAt)}`;
+  return `By ${creatorLabel} · ${formatRecipeAttributionDates(recipe)}`;
 }
 
 export function getRecipeCountLabel(
@@ -180,10 +194,7 @@ export function getRecipeScalingLabel(isScalable: boolean): string {
   return isScalable ? "Scales cleanly" : "Fixed yield";
 }
 
-export function getRecipeSummary(
-  summary: string,
-  description: string,
-): string {
+export function getRecipeSummary(summary: string, description: string): string {
   const trimmedSummary = summary.trim();
 
   if (trimmedSummary !== "") {

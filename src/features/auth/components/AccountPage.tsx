@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
+import { ProfileSettingsSection } from "@/features/profiles";
 import { ThemePresetPicker, useThemePreset } from "@/features/theme";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -68,7 +69,8 @@ export function AccountPage(): JSX.Element {
     ? "loading"
     : (sessionQuery.data?.kind ?? "guest");
   const headlineDescription = getHeadlineDescription(kind);
-  const isGuest = sessionQuery.data?.kind === "guest" || sessionQuery.data === undefined;
+  const isGuest =
+    sessionQuery.data?.kind === "guest" || sessionQuery.data === undefined;
   const isConfigured = sessionQuery.data?.kind !== "unconfigured";
 
   return (
@@ -85,28 +87,31 @@ export function AccountPage(): JSX.Element {
       <div className="mt-6 space-y-8">
         <div className="space-y-4">
           {sessionQuery.data?.kind === "authenticated" ? (
-            <AuthenticatedAccountPanel
-              isPending={signOutMutation.isPending}
-              onSignOut={() => {
-                signOutMutation.mutate(undefined, {
-                  onError: (error) => {
-                    toast({
-                      description: error.message,
-                      tone: "error",
-                      title: "Sign-out failed",
-                    });
-                  },
-                  onSuccess: (result) => {
-                    toast({
-                      description: result.message,
-                      tone: "success",
-                      title: "Signed out",
-                    });
-                  },
-                });
-              }}
-              sessionState={sessionQuery.data}
-            />
+            <>
+              <AuthenticatedAccountPanel
+                isPending={signOutMutation.isPending}
+                onSignOut={() => {
+                  signOutMutation.mutate(undefined, {
+                    onError: (error) => {
+                      toast({
+                        description: error.message,
+                        tone: "error",
+                        title: "Sign-out failed",
+                      });
+                    },
+                    onSuccess: (result) => {
+                      toast({
+                        description: result.message,
+                        tone: "success",
+                        title: "Signed out",
+                      });
+                    },
+                  });
+                }}
+                sessionState={sessionQuery.data}
+              />
+              <ProfileSettingsSection userId={sessionQuery.data.userId} />
+            </>
           ) : (
             <section className="grid gap-4 md:grid-cols-2">
               <AuthFormCard
@@ -218,10 +223,7 @@ function submitCredentials(
   },
   mutation: CredentialMutation,
   options: {
-    setValues: (value: {
-      email: string;
-      password: string;
-    }) => void;
+    setValues: (value: { email: string; password: string }) => void;
     successTitle: string;
     toast: (input: {
       description: string;
@@ -234,7 +236,9 @@ function submitCredentials(
 
   if (!parsed.success) {
     options.toast({
-      description: parsed.error.issues[0]?.message ?? "Review the form values and try again.",
+      description:
+        parsed.error.issues[0]?.message ??
+        "Review the form values and try again.",
       tone: "error",
       title: "Form validation needed",
     });

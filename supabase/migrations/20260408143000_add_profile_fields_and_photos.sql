@@ -14,6 +14,12 @@ add constraint profiles_avatar_path_not_blank check (
   or char_length(btrim(avatar_path)) > 0
 );
 
+alter table public.profiles
+add constraint profiles_avatar_path_matches_owner check (
+  avatar_path is null
+  or split_part(avatar_path, '/', 1) = user_id::text
+);
+
 insert into
   storage.buckets (
     id,

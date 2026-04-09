@@ -21,8 +21,9 @@ export function ProfileAvatar({
   if (avatarUrl === null) {
     return (
       <div
-        aria-hidden="true"
+        aria-label={`${displayName} profile`}
         className={`inline-flex items-center justify-center rounded-full border border-border bg-muted font-semibold text-foreground ${sizeClassName}`}
+        role="img"
       >
         {fallbackLabel}
       </div>

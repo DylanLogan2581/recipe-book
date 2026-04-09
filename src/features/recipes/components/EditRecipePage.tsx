@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
+import { profileListQueryOptions } from "@/features/profiles";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
@@ -11,6 +12,7 @@ import { RecipeDataAccessError } from "../queries/recipeApi";
 import { isRecipeMutationAuthError } from "../queries/recipeAuth";
 import { updateRecipeMutationOptions } from "../queries/recipeMutationOptions";
 import {
+  copyRecipeCoverPhotoToOwner,
   deleteRecipeCoverPhoto,
   RecipePhotoUploadError,
   uploadRecipeCoverPhoto,
@@ -23,6 +25,7 @@ import {
 } from "../utils/recipeFormValues";
 
 import { RecipeCreateForm } from "./RecipeCreateForm";
+import { RecipeOwnershipAssignmentSection } from "./RecipeOwnershipAssignmentSection";
 
 import type { JSX } from "react";
 
@@ -30,21 +33,31 @@ type EditRecipePageProps = {
   recipeId: string;
 };
 
-export function EditRecipePage({
-  recipeId,
-}: EditRecipePageProps): JSX.Element {
+export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const recipeDetailQuery = useQuery(recipeDetailQueryOptions(recipeId));
   const sessionQuery = useQuery(sessionQueryOptions);
-  const updateRecipeMutation = useMutation(updateRecipeMutationOptions(queryClient));
+  const profileListQuery = useQuery({
+    ...profileListQueryOptions(),
+    enabled:
+      sessionQuery.data?.kind === "authenticated" && sessionQuery.data.isAdmin,
+  });
+  const updateRecipeMutation = useMutation(
+    updateRecipeMutationOptions(queryClient),
+  );
   const { toast } = useAppToast();
-  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(null);
+  const [selectedCoverPhoto, setSelectedCoverPhoto] = useState<File | null>(
+    null,
+  );
   const [coverPhotoInputResetKey, setCoverPhotoInputResetKey] = useState(0);
   const [hasRemovedExistingCoverPhoto, setHasRemovedExistingCoverPhoto] =
     useState(false);
-  const [initializedRecipeId, setInitializedRecipeId] = useState<string | null>(null);
+  const [initializedRecipeId, setInitializedRecipeId] = useState<string | null>(
+    null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedOwnerId, setSelectedOwnerId] = useState("");
   const [values, setValues] = useState(createEmptyRecipeCreateFormValues);
 
   useDocumentTitle(
@@ -64,6 +77,7 @@ export function EditRecipePage({
     setValues(createRecipeFormValuesFromRecipe(recipeDetailQuery.data));
     setSelectedCoverPhoto(null);
     setHasRemovedExistingCoverPhoto(false);
+    setSelectedOwnerId(recipeDetailQuery.data.ownerId);
     setInitializedRecipeId(recipeDetailQuery.data.id);
     setCoverPhotoInputResetKey((current) => current + 1);
   }, [initializedRecipeId, recipeDetailQuery.data]);
@@ -89,6 +103,15 @@ export function EditRecipePage({
 
   const recipe = recipeDetailQuery.data;
   const sessionState = sessionQuery.data;
+  const isAdmin =
+    sessionState?.kind === "authenticated" && sessionState.isAdmin;
+  const isOwner =
+    sessionState?.kind === "authenticated" &&
+    sessionState.userId === recipe.ownerId;
+  const canModerateRecipe = isAdmin;
+  const canEditRecipe = isOwner || canModerateRecipe;
+  const isAdminEditingOtherRecipe = canModerateRecipe && !isOwner;
+  const ownerProfiles = profileListQuery.data ?? [];
 
   if (sessionState === undefined || sessionState.kind === "guest") {
     return (
@@ -110,31 +133,77 @@ export function EditRecipePage({
     );
   }
 
-  if (sessionState.userId !== recipe.ownerId) {
+  if (!canEditRecipe) {
     return (
       <RecipeEditAccessState
-        description="Only the recipe owner can update this recipe."
+        description="Only the recipe owner or an admin can update this recipe."
         recipeId={recipe.id}
         title="You can’t edit this recipe"
       />
     );
   }
 
-  const currentCoverPhotoPath =
-    hasRemovedExistingCoverPhoto ? null : recipe.coverImagePath;
+  if (canModerateRecipe && profileListQuery.isLoading) {
+    return (
+      <main className="w-full max-w-6xl py-3 sm:py-4">
+        <section className="border-b border-border pb-4">
+          <h1 className="text-3xl font-semibold tracking-tight text-foreground">
+            Loading recipe editor
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Getting the latest owner details ready for editing.
+          </p>
+        </section>
+      </main>
+    );
+  }
+
+  const currentCoverPhotoPath = hasRemovedExistingCoverPhoto
+    ? null
+    : recipe.coverImagePath;
+  const nextOwnerId =
+    canModerateRecipe && selectedOwnerId.trim() !== ""
+      ? selectedOwnerId
+      : recipe.ownerId;
+  const ownerChangeEnabled =
+    canModerateRecipe &&
+    nextOwnerId.trim() !== "" &&
+    nextOwnerId !== recipe.ownerId;
 
   return (
     <main className="w-full max-w-6xl py-3 sm:py-4">
       <section className="border-b border-border pb-4">
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          Edit recipe
+          {isAdminEditingOtherRecipe ? "Admin edit recipe" : "Edit recipe"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Update the recipe details and save when you are ready.
+          {isAdminEditingOtherRecipe
+            ? "Update the recipe, then save any moderation changes when you are ready."
+            : "Update the recipe details and save when you are ready."}
         </p>
       </section>
 
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
+        {canModerateRecipe && !profileListQuery.isError ? (
+          <RecipeOwnershipAssignmentSection
+            onOwnerChange={setSelectedOwnerId}
+            ownerProfiles={ownerProfiles}
+            selectedOwnerId={selectedOwnerId}
+          />
+        ) : null}
+
+        {canModerateRecipe && profileListQuery.isError ? (
+          <section className="rounded-lg border border-amber-300/70 bg-amber-50/80 px-5 py-4">
+            <h2 className="text-sm font-semibold text-amber-950">
+              Owner reassignment unavailable
+            </h2>
+            <p className="mt-1 text-sm text-amber-950/85">
+              The recipe can still be edited, but the owner list could not load
+              right now.
+            </p>
+          </section>
+        ) : null}
+
         <RecipeCreateForm
           cancelButton={
             <Button
@@ -209,17 +278,30 @@ export function EditRecipePage({
 
     const previousCoverPhotoPath = recipe.coverImagePath;
     let nextCoverPhotoPath = currentCoverPhotoPath;
+    let copiedCoverPhotoPath: string | null = null;
     let uploadedCoverPhotoPath: string | null = null;
 
     try {
       if (selectedCoverPhoto !== null) {
-        uploadedCoverPhotoPath = await uploadRecipeCoverPhoto(selectedCoverPhoto);
+        uploadedCoverPhotoPath = await uploadRecipeCoverPhoto(
+          selectedCoverPhoto,
+          {
+            ownerId: nextOwnerId,
+          },
+        );
         nextCoverPhotoPath = uploadedCoverPhotoPath;
+      } else if (ownerChangeEnabled) {
+        copiedCoverPhotoPath = await copyRecipeCoverPhotoToOwner(
+          currentCoverPhotoPath,
+          nextOwnerId,
+        );
+        nextCoverPhotoPath = copiedCoverPhotoPath;
       }
 
       const updatedRecipe = await updateRecipeMutation.mutateAsync({
         ...parsedValues.data,
         coverImagePath: nextCoverPhotoPath,
+        ...(ownerChangeEnabled ? { ownerId: nextOwnerId } : {}),
         recipeId: recipe.id,
       });
 
@@ -227,7 +309,9 @@ export function EditRecipePage({
         previousCoverPhotoPath !== null &&
         previousCoverPhotoPath !== nextCoverPhotoPath
       ) {
-        await deleteRecipeCoverPhoto(previousCoverPhotoPath).catch(() => undefined);
+        await deleteRecipeCoverPhoto(previousCoverPhotoPath).catch(
+          () => undefined,
+        );
       }
 
       toast({
@@ -241,7 +325,18 @@ export function EditRecipePage({
       });
     } catch (error) {
       if (uploadedCoverPhotoPath !== null) {
-        await deleteRecipeCoverPhoto(uploadedCoverPhotoPath).catch(() => undefined);
+        await deleteRecipeCoverPhoto(uploadedCoverPhotoPath).catch(
+          () => undefined,
+        );
+      }
+
+      if (
+        copiedCoverPhotoPath !== null &&
+        copiedCoverPhotoPath !== previousCoverPhotoPath
+      ) {
+        await deleteRecipeCoverPhoto(copiedCoverPhotoPath).catch(
+          () => undefined,
+        );
       }
 
       toast({

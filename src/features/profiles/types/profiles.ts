@@ -7,6 +7,11 @@ export type PublicProfile = {
   userId: string;
 };
 
+export type PublicProfileListItem = Pick<
+  PublicProfile,
+  "displayName" | "userId"
+>;
+
 export type UpdateProfileInput = {
   avatarPath?: string | null;
   bio?: string | null;

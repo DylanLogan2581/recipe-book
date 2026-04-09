@@ -18,15 +18,18 @@ type RecipeRow = Database["public"]["Tables"]["recipes"]["Row"];
 type RecipeInsert = Database["public"]["Tables"]["recipes"]["Insert"];
 type RecipeIngredientInsert =
   Database["public"]["Tables"]["recipe_ingredients"]["Insert"];
-type RecipeIngredientRow = Database["public"]["Tables"]["recipe_ingredients"]["Row"];
+type RecipeIngredientRow =
+  Database["public"]["Tables"]["recipe_ingredients"]["Row"];
 type RecipeEquipmentInsert =
   Database["public"]["Tables"]["recipe_equipment"]["Insert"];
-type RecipeEquipmentRow = Database["public"]["Tables"]["recipe_equipment"]["Row"];
+type RecipeEquipmentRow =
+  Database["public"]["Tables"]["recipe_equipment"]["Row"];
 type RecipeStepInsert = Database["public"]["Tables"]["recipe_steps"]["Insert"];
 type RecipeStepRow = Database["public"]["Tables"]["recipe_steps"]["Row"];
 type RecipeCookLogInsert =
   Database["public"]["Tables"]["recipe_cook_logs"]["Insert"];
-export type RecipeCookLogRow = Database["public"]["Tables"]["recipe_cook_logs"]["Row"];
+export type RecipeCookLogRow =
+  Database["public"]["Tables"]["recipe_cook_logs"]["Row"];
 
 export type RecipeListRecord = RecipeRow;
 
@@ -36,12 +39,17 @@ export type RecipeDetailRecord = RecipeRow & {
   recipe_steps: RecipeStepRow[] | null;
 };
 
-export function buildRecipeInsert(input: CreateRecipeInput): RecipeInsert {
+export function buildRecipeInsert(
+  input: CreateRecipeInput & { ownerId?: string },
+): RecipeInsert {
+  const ownerId = normalizeOptionalText(input.ownerId);
+
   return {
     cook_minutes: input.cookMinutes ?? null,
     cover_image_path: normalizeOptionalText(input.coverImagePath),
     description: normalizeRecipeBodyText(input.description),
     is_scalable: input.isScalable ?? true,
+    ...(ownerId === null ? {} : { owner_id: ownerId }),
     prep_minutes: input.prepMinutes ?? null,
     summary: normalizeRecipeBodyText(input.summary),
     title: input.title.trim(),
@@ -198,7 +206,9 @@ export function mapRecipeCookLogRow(row: RecipeCookLogRow): RecipeCookLogEntry {
   };
 }
 
-function normalizeOptionalText(value: string | null | undefined): string | null {
+function normalizeOptionalText(
+  value: string | null | undefined,
+): string | null {
   if (value === undefined || value === null) {
     return null;
   }
@@ -216,7 +226,9 @@ function sortByPosition<T extends { position: number }>(items: T[]): T[] {
   return [...items].sort((left, right) => left.position - right.position);
 }
 
-function sortCookLogs<T extends { cooked_on: string; created_at: string }>(items: T[]): T[] {
+function sortCookLogs<T extends { cooked_on: string; created_at: string }>(
+  items: T[],
+): T[] {
   return [...items].sort((left, right) => {
     if (left.cooked_on === right.cooked_on) {
       return right.created_at.localeCompare(left.created_at);

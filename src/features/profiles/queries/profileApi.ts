@@ -1,6 +1,10 @@
 import { supabase } from "@/lib/supabase";
 
-import type { PublicProfile, UpdateProfileInput } from "../types/profiles";
+import type {
+  PublicProfile,
+  PublicProfileListItem,
+  UpdateProfileInput,
+} from "../types/profiles";
 
 type ProfileApiClient = NonNullable<typeof supabase>;
 
@@ -12,6 +16,7 @@ type ProfileRecord = {
   updated_at: string;
   user_id: string;
 };
+type ProfileListRecord = Pick<ProfileRecord, "display_name" | "user_id">;
 
 export type ProfileDataAccessErrorCode =
   | "authentication-required"
@@ -40,6 +45,10 @@ const profileSelect = `
   created_at,
   updated_at
 `;
+const profileListSelect = `
+  user_id,
+  display_name
+`;
 
 export async function getPublicProfile(
   userId: string,
@@ -65,6 +74,26 @@ export async function getPublicProfile(
   }
 
   return mapProfileRecord(data);
+}
+
+export async function listPublicProfiles(
+  client: ProfileApiClient | null = supabase,
+): Promise<PublicProfileListItem[]> {
+  const profileClient = getProfileApiClient(client);
+  const { data, error } = await profileClient
+    .from("profiles")
+    .select(profileListSelect)
+    .order("display_name", { ascending: true })
+    .overrideTypes<ProfileListRecord[], { merge: false }>();
+
+  if (error !== null) {
+    throw error;
+  }
+
+  return (data ?? []).map((profile) => ({
+    displayName: profile.display_name,
+    userId: profile.user_id,
+  }));
 }
 
 export async function updateCurrentUserProfile(

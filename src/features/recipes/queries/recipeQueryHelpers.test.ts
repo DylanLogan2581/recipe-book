@@ -9,7 +9,9 @@ import {
 import {
   preloadRecipeDetail,
   preloadRecipeList,
+  preloadRecipeListByOwner,
   recipeDetailQueryOptions,
+  recipeListByOwnerQueryOptions,
   recipeListQueryOptions,
 } from "./recipeQueryOptions";
 
@@ -26,12 +28,14 @@ const {
   deleteRecipeMock,
   getRecipeDetailMock,
   listRecipesMock,
+  listRecipesByOwnerMock,
 } = vi.hoisted(() => {
   return {
     createRecipeMock: vi.fn(),
     deleteRecipeMock: vi.fn(),
     getRecipeDetailMock: vi.fn(),
     listRecipesMock: vi.fn(),
+    listRecipesByOwnerMock: vi.fn(),
   };
 });
 
@@ -41,6 +45,7 @@ vi.mock("./recipeApi", () => {
     deleteRecipe: deleteRecipeMock,
     getRecipeDetail: getRecipeDetailMock,
     listRecipes: listRecipesMock,
+    listRecipesByOwner: listRecipesByOwnerMock,
   };
 });
 
@@ -57,7 +62,9 @@ function createTestQueryClient(): QueryClient {
   });
 }
 
-function buildRecipeDetail(overrides: Partial<RecipeDetail> = {}): RecipeDetail {
+function buildRecipeDetail(
+  overrides: Partial<RecipeDetail> = {},
+): RecipeDetail {
   return {
     cookMinutes: 20,
     cookLogs: [],
@@ -115,6 +122,12 @@ describe("recipe query keys", () => {
     ]);
     expect(recipeQueryKeys.lists()).toEqual(["recipes", "list"]);
     expect(recipeQueryKeys.list()).toEqual(["recipes", "list", "public"]);
+    expect(recipeQueryKeys.listByOwner("owner-7")).toEqual([
+      "recipes",
+      "list",
+      "owner",
+      "owner-7",
+    ]);
     expect(recipeMutationKeys.create()).toEqual(["recipes", "create"]);
     expect(recipeMutationKeys.delete()).toEqual(["recipes", "delete"]);
   });
@@ -155,6 +168,19 @@ describe("recipe query options", () => {
     expect(listRecipesMock).toHaveBeenCalledTimes(1);
   });
 
+  it("builds owner-specific list query options", async () => {
+    const recipes = [buildRecipeListItem()];
+    listRecipesByOwnerMock.mockResolvedValue(recipes);
+
+    const options = recipeListByOwnerQueryOptions("owner-1");
+    const queryFn = options.queryFn as () => Promise<RecipeListItem[]>;
+
+    expect(options.queryKey).toEqual(recipeQueryKeys.listByOwner("owner-1"));
+    expect(options.staleTime).toBe(30_000);
+    await expect(queryFn()).resolves.toEqual(recipes);
+    expect(listRecipesByOwnerMock).toHaveBeenCalledWith("owner-1");
+  });
+
   it("preloads recipe detail data into the query client cache", async () => {
     const queryClient = createTestQueryClient();
     const recipe = buildRecipeDetail();
@@ -163,9 +189,9 @@ describe("recipe query options", () => {
     await preloadRecipeDetail(queryClient, "recipe-1");
 
     expect(getRecipeDetailMock).toHaveBeenCalledWith("recipe-1");
-    expect(queryClient.getQueryData(recipeQueryKeys.detail("recipe-1"))).toEqual(
-      recipe,
-    );
+    expect(
+      queryClient.getQueryData(recipeQueryKeys.detail("recipe-1")),
+    ).toEqual(recipe);
   });
 
   it("preloads the recipe list into the query client cache", async () => {
@@ -177,6 +203,19 @@ describe("recipe query options", () => {
 
     expect(listRecipesMock).toHaveBeenCalledTimes(1);
     expect(queryClient.getQueryData(recipeQueryKeys.list())).toEqual(recipes);
+  });
+
+  it("preloads an owner-specific recipe list into the query client cache", async () => {
+    const queryClient = createTestQueryClient();
+    const recipes = [buildRecipeListItem()];
+    listRecipesByOwnerMock.mockResolvedValue(recipes);
+
+    await preloadRecipeListByOwner(queryClient, "owner-1");
+
+    expect(listRecipesByOwnerMock).toHaveBeenCalledWith("owner-1");
+    expect(
+      queryClient.getQueryData(recipeQueryKeys.listByOwner("owner-1")),
+    ).toEqual(recipes);
   });
 });
 
@@ -205,12 +244,10 @@ describe("recipe mutation options", () => {
     const mutationFn = options.mutationFn as (
       variables: CreateRecipeInput,
     ) => Promise<RecipeDetail>;
-    const mutationKey = (options as { mutationKey?: readonly string[] }).mutationKey;
+    const mutationKey = (options as { mutationKey?: readonly string[] })
+      .mutationKey;
     const onSuccess = options.onSuccess as
-      | ((
-          recipe: RecipeDetail,
-          variables: CreateRecipeInput,
-        ) => Promise<void>)
+      | ((recipe: RecipeDetail, variables: CreateRecipeInput) => Promise<void>)
       | undefined;
 
     expect(mutationKey).toEqual(recipeMutationKeys.create());
@@ -246,7 +283,8 @@ describe("recipe mutation options", () => {
     ) => Promise<{
       recipeId: string;
     }>;
-    const mutationKey = (options as { mutationKey?: readonly string[] }).mutationKey;
+    const mutationKey = (options as { mutationKey?: readonly string[] })
+      .mutationKey;
     const onSuccess = options.onSuccess as
       | ((
           result: {

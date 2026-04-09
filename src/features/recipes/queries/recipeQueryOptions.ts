@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getRecipeDetail, listRecipes } from "./recipeApi";
+import { getRecipeDetail, listRecipes, listRecipesByOwner } from "./recipeApi";
 import { recipeQueryKeys } from "./recipeKeys";
 
 import type { RecipeDetail, RecipeListItem } from "../types/recipes";
@@ -22,6 +22,14 @@ type RecipeListQueryOptions = ReturnType<
     ReturnType<typeof recipeQueryKeys.list>
   >
 >;
+type RecipeOwnerListQueryOptions = ReturnType<
+  typeof queryOptions<
+    RecipeListItem[],
+    Error,
+    RecipeListItem[],
+    ReturnType<typeof recipeQueryKeys.listByOwner>
+  >
+>;
 
 export function recipeDetailQueryOptions(
   recipeId: string,
@@ -41,6 +49,16 @@ export function recipeListQueryOptions(): RecipeListQueryOptions {
   });
 }
 
+export function recipeListByOwnerQueryOptions(
+  ownerId: string,
+): RecipeOwnerListQueryOptions {
+  return queryOptions({
+    queryFn: (): Promise<RecipeListItem[]> => listRecipesByOwner(ownerId),
+    queryKey: recipeQueryKeys.listByOwner(ownerId),
+    staleTime: 30_000,
+  });
+}
+
 export async function preloadRecipeDetail(
   queryClient: QueryClient,
   recipeId: string,
@@ -52,4 +70,11 @@ export async function preloadRecipeList(
   queryClient: QueryClient,
 ): Promise<void> {
   await queryClient.ensureQueryData(recipeListQueryOptions());
+}
+
+export async function preloadRecipeListByOwner(
+  queryClient: QueryClient,
+  ownerId: string,
+): Promise<void> {
+  await queryClient.ensureQueryData(recipeListByOwnerQueryOptions(ownerId));
 }

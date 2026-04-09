@@ -228,12 +228,36 @@ export async function getRecipeDetail(
 export async function listRecipes(
   client: RecipeApiClient | null = supabase,
 ): Promise<RecipeListItem[]> {
+  return listRecipeRecords({}, client);
+}
+
+export async function listRecipesByOwner(
+  ownerId: string,
+  client: RecipeApiClient | null = supabase,
+): Promise<RecipeListItem[]> {
+  return listRecipeRecords({ ownerId }, client);
+}
+
+async function listRecipeRecords(
+  filters: {
+    ownerId?: string;
+  },
+  client: RecipeApiClient | null = supabase,
+): Promise<RecipeListItem[]> {
   const recipeClient = getRecipeApiClient(client);
-  const { data, error } = await recipeClient
+  let query = recipeClient
     .from("recipes")
     .select(recipeListSelect)
-    .order("created_at", { ascending: false })
-    .overrideTypes<RecipeListRecord[], { merge: false }>();
+    .order("created_at", { ascending: false });
+
+  if (filters.ownerId !== undefined) {
+    query = query.eq("owner_id", filters.ownerId.trim());
+  }
+
+  const { data, error } = await query.overrideTypes<
+    RecipeListRecord[],
+    { merge: false }
+  >();
 
   if (error !== null) {
     throw error;
@@ -262,11 +286,16 @@ async function insertRecipeRelations(
     recipeId,
     input.ingredients,
   );
-  const equipmentRows = buildRecipeEquipmentInsertRows(recipeId, input.equipment);
+  const equipmentRows = buildRecipeEquipmentInsertRows(
+    recipeId,
+    input.equipment,
+  );
   const stepRows = buildRecipeStepInsertRows(recipeId, input.steps);
 
   if (ingredientRows.length > 0) {
-    const { error } = await client.from("recipe_ingredients").insert(ingredientRows);
+    const { error } = await client
+      .from("recipe_ingredients")
+      .insert(ingredientRows);
 
     if (error !== null) {
       throw error;
@@ -274,7 +303,9 @@ async function insertRecipeRelations(
   }
 
   if (equipmentRows.length > 0) {
-    const { error } = await client.from("recipe_equipment").insert(equipmentRows);
+    const { error } = await client
+      .from("recipe_equipment")
+      .insert(equipmentRows);
 
     if (error !== null) {
       throw error;

@@ -1,6 +1,9 @@
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
+import { getRecipeAllergenLabel, sortRecipeAllergens } from "./recipeAllergens";
 import { scaleIngredientAmount, scaleRecipeYield } from "./recipeScaling";
+
+import type { RecipeAllergen } from "../types/recipes";
 
 type RecipeLoadSurface = "detail" | "list";
 
@@ -8,6 +11,8 @@ type RecipeLoadErrorCopy = {
   description: string;
   title: string;
 };
+
+export const recipeAllergenEmptyStateLabel = "No major allergens listed.";
 
 export function getRecipeLoadDocumentTitle(
   error: unknown,
@@ -69,6 +74,16 @@ export function formatRecipeYield(
   }
 
   return `${scaledYieldQuantity} ${yieldUnit}`;
+}
+
+export function formatRecipeAllergenSummary(
+  allergens: readonly RecipeAllergen[],
+): string {
+  if (allergens.length === 0) {
+    return recipeAllergenEmptyStateLabel;
+  }
+
+  return sortRecipeAllergens(allergens).map(getRecipeAllergenLabel).join(" · ");
 }
 
 export function formatIngredientText(

@@ -10,8 +10,12 @@ import {
   type RecipeCreateIngredientFormValue,
   type RecipeCreateStepFormValue,
 } from "../utils/recipeFormValues";
-import { recipeTimerUnits, type RecipeTimerUnit } from "../utils/recipeTimerUnits";
+import {
+  recipeTimerUnits,
+  type RecipeTimerUnit,
+} from "../utils/recipeTimerUnits";
 
+import { RecipeAllergenFieldset } from "./RecipeAllergenFieldset";
 import { RecipeCoverImage } from "./RecipeCoverImage";
 
 import type { FormEvent, JSX } from "react";
@@ -213,7 +217,7 @@ export function RecipeCreateForm({
             ) : null}
           </div>
 
-          {(currentCoverPhotoPath !== null || selectedCoverPhoto !== null) ? (
+          {currentCoverPhotoPath !== null || selectedCoverPhoto !== null ? (
             <div className="grid gap-3 md:grid-cols-2">
               {currentCoverPhotoPath !== null ? (
                 <CoverPhotoPreviewCard
@@ -371,6 +375,18 @@ export function RecipeCreateForm({
           />
         )}
         title="Steps"
+      />
+
+      <RecipeAllergenFieldset
+        allergens={values.allergens}
+        onToggle={(allergen) => {
+          setValues((current) => ({
+            ...current,
+            allergens: current.allergens.includes(allergen)
+              ? current.allergens.filter((item) => item !== allergen)
+              : [...current.allergens, allergen],
+          }));
+        }}
       />
 
       <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-6">

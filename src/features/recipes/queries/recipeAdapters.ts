@@ -1,5 +1,10 @@
 import type { Database } from "@/types/supabase";
 
+import {
+  normalizeRecipeAllergens,
+  sortRecipeAllergens,
+} from "../utils/recipeAllergens";
+
 import type {
   CreateRecipeCookLogInput,
   CreateRecipeEquipmentInput,
@@ -45,6 +50,7 @@ export function buildRecipeInsert(
   const ownerId = normalizeOptionalText(input.ownerId);
 
   return {
+    allergens: sortRecipeAllergens(input.allergens ?? []),
     cook_minutes: input.cookMinutes ?? null,
     cover_image_path: normalizeOptionalText(input.coverImagePath),
     description: normalizeRecipeBodyText(input.description),
@@ -132,6 +138,7 @@ export function mapRecipeDetailRecord(
 
 export function mapRecipeListRecord(record: RecipeListRecord): RecipeListItem {
   return {
+    allergens: normalizeRecipeAllergens(record.allergens),
     cookMinutes: record.cook_minutes,
     coverImagePath: record.cover_image_path,
     createdAt: record.created_at,

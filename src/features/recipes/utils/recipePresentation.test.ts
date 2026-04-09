@@ -6,6 +6,8 @@ import {
   formatRecipeAttributionDates,
   formatRecipeAttributionLabel,
   formatRecipeMetadataDate,
+  formatRecipeAllergenSummary,
+  recipeAllergenEmptyStateLabel,
   formatIngredientText,
   formatCountdownClock,
   formatRecipeTime,
@@ -70,6 +72,16 @@ describe("formatRecipeYield", () => {
     expect(formatRecipeYield(null, "loaves")).toBe("loaves");
     expect(formatRecipeYield(2, null)).toBe("2 servings");
     expect(formatRecipeYield(null, null)).toBe("Yield not set");
+  });
+});
+
+describe("formatRecipeAllergenSummary", () => {
+  it("formats allergens with a stable fallback and label ordering", () => {
+    expect(recipeAllergenEmptyStateLabel).toBe("No major allergens listed.");
+    expect(formatRecipeAllergenSummary([])).toBe(recipeAllergenEmptyStateLabel);
+    expect(formatRecipeAllergenSummary(["sesame", "milk"])).toBe(
+      "Milk · Sesame",
+    );
   });
 });
 

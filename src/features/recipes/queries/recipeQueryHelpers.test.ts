@@ -66,6 +66,7 @@ function buildRecipeDetail(
   overrides: Partial<RecipeDetail> = {},
 ): RecipeDetail {
   return {
+    allergens: ["milk"],
     cookMinutes: 20,
     cookLogs: [],
     coverImagePath: null,
@@ -93,6 +94,7 @@ function buildRecipeListItem(
   overrides: Partial<RecipeListItem> = {},
 ): RecipeListItem {
   return {
+    allergens: ["milk"],
     cookMinutes: 20,
     coverImagePath: null,
     createdAt: "2026-03-27T10:00:00.000Z",

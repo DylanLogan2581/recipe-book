@@ -5,6 +5,7 @@ import { recipeCreateFormSchema } from "./recipeFormSchema";
 describe("recipeCreateFormSchema", () => {
   it("parses authoring form values into create recipe input", () => {
     const result = recipeCreateFormSchema.parse({
+      allergens: ["milk", "wheat"],
       cookMinutes: "15",
       description: "Roast until golden.",
       equipment: [
@@ -41,6 +42,7 @@ describe("recipeCreateFormSchema", () => {
     });
 
     expect(result).toEqual({
+      allergens: ["milk", "wheat"],
       cookMinutes: 15,
       description: "Roast until golden.",
       equipment: [
@@ -78,6 +80,7 @@ describe("recipeCreateFormSchema", () => {
 
   it("rejects missing title, ingredients, or steps", () => {
     const result = recipeCreateFormSchema.safeParse({
+      allergens: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -108,6 +111,7 @@ describe("recipeCreateFormSchema", () => {
 
   it("rejects negative and non-integer timer values", () => {
     const result = recipeCreateFormSchema.safeParse({
+      allergens: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -153,6 +157,7 @@ describe("recipeCreateFormSchema", () => {
 
   it("supports seconds and hours authoring units", () => {
     const result = recipeCreateFormSchema.parse({
+      allergens: [],
       cookMinutes: "",
       description: "",
       equipment: [],
@@ -192,5 +197,40 @@ describe("recipeCreateFormSchema", () => {
       expect.objectContaining({ timerSeconds: 45 }),
       expect.objectContaining({ timerSeconds: 7200 }),
     ]);
+  });
+
+  it("rejects allergens outside the hardcoded FDA list", () => {
+    const result = recipeCreateFormSchema.safeParse({
+      allergens: ["dairy"],
+      cookMinutes: "",
+      description: "",
+      equipment: [],
+      ingredients: [
+        {
+          amount: "1",
+          isOptional: false,
+          item: "Milk",
+          notes: "",
+          preparation: "",
+          unit: "cups",
+        },
+      ],
+      isScalable: false,
+      prepMinutes: "",
+      steps: [
+        {
+          instruction: "Pour the milk.",
+          notes: "",
+          timerUnit: "minutes",
+          timerValue: "",
+        },
+      ],
+      summary: "",
+      title: "Milk",
+      yieldQuantity: "",
+      yieldUnit: "",
+    });
+
+    expect(result.success).toBe(false);
   });
 });

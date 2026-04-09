@@ -211,6 +211,7 @@ export type Database = {
       };
       recipes: {
         Row: {
+          allergens: string[];
           cook_minutes: number | null;
           cover_image_path: string | null;
           created_at: string;
@@ -226,6 +227,7 @@ export type Database = {
           yield_unit: string | null;
         };
         Insert: {
+          allergens?: string[];
           cook_minutes?: number | null;
           cover_image_path?: string | null;
           created_at?: string;
@@ -241,6 +243,7 @@ export type Database = {
           yield_unit?: string | null;
         };
         Update: {
+          allergens?: string[];
           cook_minutes?: number | null;
           cover_image_path?: string | null;
           created_at?: string;

@@ -1,4 +1,16 @@
+export type RecipeAllergen =
+  | "milk"
+  | "eggs"
+  | "fish"
+  | "crustacean shellfish"
+  | "tree nuts"
+  | "peanuts"
+  | "wheat"
+  | "soybeans"
+  | "sesame";
+
 export type RecipeListItem = {
+  allergens: RecipeAllergen[];
   cookMinutes: number | null;
   coverImagePath: string | null;
   createdAt: string;
@@ -83,6 +95,7 @@ export type CreateRecipeStepInput = {
 };
 
 export type CreateRecipeInput = {
+  allergens?: RecipeAllergen[];
   cookMinutes?: number | null;
   coverImagePath?: string | null;
   description?: string | null;

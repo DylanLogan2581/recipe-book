@@ -1,3 +1,5 @@
+export { RecipeAllergenFieldset } from "./components/RecipeAllergenFieldset";
+export { RecipeAllergenSummary } from "./components/RecipeAllergenSummary";
 export { CreateRecipePage } from "./components/CreateRecipePage";
 export { EditRecipePage } from "./components/EditRecipePage";
 export { RecipeDetailPage } from "./components/RecipeDetailPage";
@@ -79,6 +81,7 @@ export type {
   CreateRecipeStepInput,
   DeleteRecipeInput,
   DeleteRecipeResult,
+  RecipeAllergen,
   RecipeCookLogEntry,
   RecipeDetail,
   RecipeEquipment,
@@ -105,6 +108,11 @@ export {
   scaleIngredientAmount,
   scaleRecipeYield,
 } from "./utils/recipeScaling";
+export {
+  getRecipeAllergenLabel,
+  recipeAllergens,
+  sortRecipeAllergens,
+} from "./utils/recipeAllergens";
 export {
   formatRecipeAttributionDates,
   formatRecipeAttributionLabel,

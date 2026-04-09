@@ -21,8 +21,18 @@ export function AuthenticatedAccountPanel({
         <p className="mt-1 text-sm text-muted-foreground">
           {sessionState.email ?? "This account can manage recipes."}
         </p>
+        {sessionState.isAdmin ? (
+          <p className="mt-1 text-sm text-muted-foreground">
+            Admin access is enabled for this account.
+          </p>
+        ) : null}
       </div>
-      <Button className="rounded-md px-4" disabled={isPending} onClick={onSignOut} size="lg">
+      <Button
+        className="rounded-md px-4"
+        disabled={isPending}
+        onClick={onSignOut}
+        size="lg"
+      >
         {isPending ? "Signing out..." : "Sign out"}
       </Button>
     </section>

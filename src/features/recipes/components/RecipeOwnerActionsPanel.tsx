@@ -28,30 +28,48 @@ export function RecipeOwnerActionsPanel({
 }: RecipeOwnerActionsPanelProps): JSX.Element | null {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const deleteRecipeMutation = useMutation(deleteRecipeMutationOptions(queryClient));
+  const deleteRecipeMutation = useMutation(
+    deleteRecipeMutationOptions(queryClient),
+  );
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const { toast } = useAppToast();
+  const isAdminModerator =
+    !isSessionLoading &&
+    sessionState !== undefined &&
+    sessionState.kind === "authenticated" &&
+    sessionState.isAdmin;
   const isOwner =
     !isSessionLoading &&
     sessionState !== undefined &&
     sessionState.kind === "authenticated" &&
     sessionState.userId === recipe.ownerId;
+  const canManageRecipe = isOwner || isAdminModerator;
+  const usesAdminLabels = isAdminModerator && !isOwner;
 
-  if (!isOwner) {
+  if (!canManageRecipe) {
     return null;
   }
 
   return (
-    <section aria-label="Recipe actions" className="border-t border-border pt-6">
+    <section
+      aria-label="Recipe actions"
+      className="border-t border-border pt-6"
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <Button asChild className="rounded-md px-4" size="sm" variant="outline">
           <Link params={{ recipeId: recipe.id }} to="/recipes/$recipeId/edit">
-            Edit recipe
+            {usesAdminLabels ? "Admin Edit" : "Edit recipe"}
           </Link>
         </Button>
 
         <RecipeDeleteDialog
-          description="This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
+          actionLabel={usesAdminLabels ? "Admin Delete" : "Delete recipe"}
+          description={
+            usesAdminLabels
+              ? "This permanently removes another user's recipe detail, ingredients, equipment, and method steps from the app."
+              : "This permanently removes the recipe detail, ingredients, equipment, and method steps from the app. The shelf will refresh after deletion so the removed entry does not linger."
+          }
+          headingLabel={usesAdminLabels ? "Admin delete" : "Delete recipe"}
           isPending={deleteRecipeMutation.isPending}
           onConfirm={() => {
             deleteRecipeMutation.mutate(
@@ -78,14 +96,18 @@ export function RecipeOwnerActionsPanel({
             setIsDeleteDialogOpen(open);
           }}
           open={isDeleteDialogOpen}
-          title="Delete this recipe?"
+          title={
+            usesAdminLabels
+              ? "Admin delete this recipe?"
+              : "Delete this recipe?"
+          }
         >
           <Button
             className="h-auto self-start px-0 py-0 text-destructive hover:text-destructive/80 sm:self-auto"
             size="sm"
             variant="link"
           >
-            Delete recipe
+            {usesAdminLabels ? "Admin Delete" : "Delete recipe"}
           </Button>
         </RecipeDeleteDialog>
       </div>

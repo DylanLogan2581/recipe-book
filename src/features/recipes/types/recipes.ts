@@ -113,5 +113,6 @@ export type DeleteRecipeResult = {
 };
 
 export type UpdateRecipeInput = CreateRecipeInput & {
+  ownerId?: string;
   recipeId: string;
 };

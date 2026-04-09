@@ -5,6 +5,7 @@ export { ProfileSettingsSection } from "./components/ProfileSettingsSection";
 export { PublicProfilePage } from "./components/PublicProfilePage";
 export {
   getPublicProfile,
+  listPublicProfiles,
   ProfileDataAccessError,
   updateCurrentUserProfile,
   type ProfileDataAccessErrorCode,
@@ -23,14 +24,20 @@ export { profileMutationKeys, profileQueryKeys } from "./queries/profileKeys";
 export { updateProfileMutationOptions } from "./queries/profileMutationOptions";
 export {
   preloadProfileDetail,
+  preloadProfileList,
   profileDetailQueryOptions,
+  profileListQueryOptions,
 } from "./queries/profileQueryOptions";
 export {
   profileFormSchema,
   type ProfileFormInput,
   type ProfileFormOutput,
 } from "./schemas/profileFormSchema";
-export type { PublicProfile, UpdateProfileInput } from "./types/profiles";
+export type {
+  PublicProfile,
+  PublicProfileListItem,
+  UpdateProfileInput,
+} from "./types/profiles";
 export {
   createEmptyProfileFormValues,
   createProfileFormValues,

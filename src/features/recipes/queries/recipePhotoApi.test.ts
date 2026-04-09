@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   buildRecipeCoverPhotoPath,
+  copyRecipeCoverPhotoToOwner,
   getRecipeCoverPhotoUrl,
   recipeCoverPhotoBucket,
   RecipePhotoUploadError,
@@ -79,7 +80,9 @@ describe("getRecipeCoverPhotoUrl", () => {
     expect(
       getRecipeCoverPhotoUrl("user-1/cover.jpg", mockClient as never),
     ).toBe("https://example.com/recipe-cover.jpg");
-    expect(mockClient.storage.from).toHaveBeenCalledWith(recipeCoverPhotoBucket);
+    expect(mockClient.storage.from).toHaveBeenCalledWith(
+      recipeCoverPhotoBucket,
+    );
   });
 
   it("returns null when the path or client is missing", () => {
@@ -123,7 +126,7 @@ describe("uploadRecipeCoverPhoto", () => {
         new File(["photo"], "Cover Shot.PNG", {
           type: "image/png",
         }),
-        client as never,
+        { client: client as never },
       ),
     ).resolves.toBe(
       "user-1/00000000-0000-4000-8000-000000000999-cover-shot.png",
@@ -161,11 +164,95 @@ describe("uploadRecipeCoverPhoto", () => {
         new File(["photo"], "cover.png", {
           type: "image/png",
         }),
-        client as never,
+        { client: client as never },
       ),
     ).rejects.toMatchObject({
       code: "storage-bucket-missing",
       name: "RecipePhotoUploadError",
     });
+  });
+
+  it("uploads to an explicitly selected owner folder when provided", async () => {
+    vi.spyOn(crypto, "randomUUID").mockReturnValue(
+      "00000000-0000-4000-8000-000000000777",
+    );
+
+    const upload = vi.fn().mockResolvedValue({
+      error: null,
+    });
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "admin-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      storage: {
+        from: vi.fn().mockReturnValue({
+          upload,
+        }),
+      },
+    };
+
+    await expect(
+      uploadRecipeCoverPhoto(
+        new File(["photo"], "Cover Shot.PNG", {
+          type: "image/png",
+        }),
+        {
+          client: client as never,
+          ownerId: "owner-9",
+        },
+      ),
+    ).resolves.toBe(
+      "owner-9/00000000-0000-4000-8000-000000000777-cover-shot.png",
+    );
+  });
+});
+
+describe("copyRecipeCoverPhotoToOwner", () => {
+  it("returns the existing path when the photo already belongs to that owner", async () => {
+    await expect(
+      copyRecipeCoverPhotoToOwner("owner-1/cover.jpg", "owner-1", null),
+    ).resolves.toBe("owner-1/cover.jpg");
+  });
+
+  it("copies an existing cover photo into the new owner folder", async () => {
+    const copy = vi.fn().mockResolvedValue({
+      error: null,
+    });
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "admin-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      storage: {
+        from: vi.fn().mockReturnValue({
+          copy,
+        }),
+      },
+    };
+
+    await expect(
+      copyRecipeCoverPhotoToOwner(
+        "owner-1/cover-photo.png",
+        "owner-2",
+        client as never,
+      ),
+    ).resolves.toBe("owner-2/cover-photo.png");
+    expect(copy).toHaveBeenCalledWith(
+      "owner-1/cover-photo.png",
+      "owner-2/cover-photo.png",
+    );
   });
 });

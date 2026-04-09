@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import type { JSX, ReactNode } from "react";
 
 type RecipeDeleteDialogProps = {
+  actionLabel: string;
   children: ReactNode;
   description: string;
+  headingLabel: string;
   isPending: boolean;
   onConfirm: () => void;
   onOpenChange: (open: boolean) => void;
@@ -16,8 +18,10 @@ type RecipeDeleteDialogProps = {
 };
 
 export function RecipeDeleteDialog({
+  actionLabel,
   children,
   description,
+  headingLabel,
   isPending,
   onConfirm,
   onOpenChange,
@@ -35,7 +39,9 @@ export function RecipeDeleteDialog({
               <AlertTriangle className="size-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-destructive">Delete recipe</p>
+              <p className="text-sm font-medium text-destructive">
+                {headingLabel}
+              </p>
               <AlertDialog.Title className="mt-2 text-xl font-semibold tracking-tight text-foreground">
                 {title}
               </AlertDialog.Title>
@@ -57,7 +63,7 @@ export function RecipeDeleteDialog({
               type="button"
               variant="destructive"
             >
-              {isPending ? "Deleting..." : "Delete recipe"}
+              {isPending ? "Deleting..." : actionLabel}
             </Button>
           </div>
         </AlertDialog.Content>

@@ -15,10 +15,16 @@ const allowedRecipeCoverPhotoTypes = new Set([
 
 export type RecipePhotoUploadErrorCode =
   | "invalid-file-type"
+  | "storage-copy-failed"
   | "storage-bucket-missing"
   | "storage-delete-failed"
   | "storage-unconfigured"
   | "upload-too-large";
+
+type UploadRecipeCoverPhotoOptions = {
+  client?: RecipePhotoApiClient | null;
+  ownerId?: string;
+};
 
 export class RecipePhotoUploadError extends Error {
   readonly code: RecipePhotoUploadErrorCode;
@@ -48,8 +54,9 @@ export function getRecipeCoverPhotoUrl(
     return null;
   }
 
-  return client.storage.from(recipeCoverPhotoBucket).getPublicUrl(coverImagePath).data
-    .publicUrl;
+  return client.storage
+    .from(recipeCoverPhotoBucket)
+    .getPublicUrl(coverImagePath).data.publicUrl;
 }
 
 export function validateRecipeCoverPhoto(file: File): void {
@@ -70,12 +77,16 @@ export function validateRecipeCoverPhoto(file: File): void {
 
 export async function uploadRecipeCoverPhoto(
   file: File,
-  client: RecipePhotoApiClient | null = supabase,
+  options: UploadRecipeCoverPhotoOptions = {},
 ): Promise<string> {
   validateRecipeCoverPhoto(file);
 
-  const recipePhotoClient = await getRecipePhotoClient(client);
-  const userId = await getRecipePhotoUserId(recipePhotoClient);
+  const recipePhotoClient = await getRecipePhotoClient(
+    options.client ?? supabase,
+  );
+  const userId =
+    normalizeRecipeCoverPhotoOwnerId(options.ownerId) ??
+    (await getRecipePhotoUserId(recipePhotoClient));
   const path = buildRecipeCoverPhotoPath(userId, file);
   const { error } = await recipePhotoClient.storage
     .from(recipeCoverPhotoBucket)
@@ -98,6 +109,43 @@ export async function uploadRecipeCoverPhoto(
   }
 
   return path;
+}
+
+export async function copyRecipeCoverPhotoToOwner(
+  coverImagePath: string | null,
+  ownerId: string,
+  client: RecipePhotoApiClient | null = supabase,
+): Promise<string | null> {
+  if (coverImagePath === null) {
+    return null;
+  }
+
+  const nextOwnerId = normalizeRecipeCoverPhotoOwnerId(ownerId);
+
+  if (nextOwnerId === null) {
+    return coverImagePath;
+  }
+
+  if (coverImagePath.startsWith(`${nextOwnerId}/`)) {
+    return coverImagePath;
+  }
+
+  const recipePhotoClient = await getRecipePhotoClient(client);
+  const fileName = coverImagePath.split("/").slice(1).join("/");
+  const nextCoverImagePath = `${nextOwnerId}/${fileName === "" ? "recipe-cover.jpg" : fileName}`;
+  const { error } = await recipePhotoClient.storage
+    .from(recipeCoverPhotoBucket)
+    .copy(coverImagePath, nextCoverImagePath);
+
+  if (error !== null) {
+    throw new RecipePhotoUploadError(
+      "storage-copy-failed",
+      "The recipe cover photo could not be moved to the new owner.",
+      { cause: error },
+    );
+  }
+
+  return nextCoverImagePath;
 }
 
 export async function deleteRecipeCoverPhoto(
@@ -137,15 +185,30 @@ async function getRecipePhotoClient(
   return recipePhotoClient;
 }
 
-async function getRecipePhotoUserId(client: RecipePhotoApiClient): Promise<string> {
+async function getRecipePhotoUserId(
+  client: RecipePhotoApiClient,
+): Promise<string> {
   const { data } = await client.auth.getUser();
 
   return data.user?.id ?? "unknown-user";
 }
 
+function normalizeRecipeCoverPhotoOwnerId(
+  ownerId: string | undefined,
+): string | null {
+  const trimmedOwnerId = ownerId?.trim();
+
+  return trimmedOwnerId === undefined || trimmedOwnerId === ""
+    ? null
+    : trimmedOwnerId;
+}
+
 function sanitizeRecipeCoverPhotoName(fileName: string): string {
   const extension = getRecipeCoverPhotoExtension(fileName);
-  const baseName = fileName.replace(/\.[^.]+$/, "").trim().toLowerCase();
+  const baseName = fileName
+    .replace(/\.[^.]+$/, "")
+    .trim()
+    .toLowerCase();
   const normalizedBaseName = baseName
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");

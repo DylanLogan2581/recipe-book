@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
+import { getRecipeCoverPhotoUrl } from "../queries/recipePhotoApi";
 import {
   formatRecipeTime,
   formatRecipeYield,
@@ -22,6 +23,7 @@ export function RecipePreviewCard({
   onCategoryClick,
   recipe,
 }: RecipePreviewCardProps): JSX.Element {
+  const coverImageUrl = getRecipeCoverPhotoUrl(recipe.coverImagePath);
   const summary = getRecipeSummary(recipe.summary, recipe.description);
   const metadata = [
     formatRecipeTime(recipe),
@@ -31,11 +33,20 @@ export function RecipePreviewCard({
 
   return (
     <article className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-      <RecipeCoverImage
-        coverImagePath={recipe.coverImagePath}
-        title={recipe.title}
-        variant="list"
-      />
+      {coverImageUrl !== null ? (
+        <Link
+          aria-label={`Open ${recipe.title}`}
+          className="block rounded-none outline-none transition focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          params={{ recipeId: recipe.id }}
+          to="/recipes/$recipeId"
+        >
+          <RecipeCoverImage
+            coverImagePath={recipe.coverImagePath}
+            title={recipe.title}
+            variant="list"
+          />
+        </Link>
+      ) : null}
 
       <div className="flex h-full flex-col gap-4 p-5">
         <div className="space-y-2">

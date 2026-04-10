@@ -1,3 +1,4 @@
+import { RangeSlider } from "@/components/ui/slider";
 import type { RecipeCategorySummary } from "@/features/categories";
 
 import type { JSX } from "react";
@@ -35,9 +36,10 @@ export function RecipeShelfFilters({
   );
   const minRangeValue = Math.min(minTotalMinutes ?? 0, maxSliderValue);
   const maxRangeValue = Math.min(
-    maxTotalMinutes ?? maxSliderValue,
+    Math.max(maxTotalMinutes ?? maxSliderValue, minRangeValue),
     maxSliderValue,
   );
+  const rangeValue: [number, number] = [minRangeValue, maxRangeValue];
 
   return (
     <section className="flex flex-col gap-4 border-t border-border pt-4 xl:flex-row xl:items-start xl:justify-between">
@@ -88,9 +90,6 @@ export function RecipeShelfFilters({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-sm font-medium text-foreground">Total time</p>
-            <p className="text-sm text-muted-foreground">
-              Narrow the shelf by total prep + cook time.
-            </p>
           </div>
           {hasActiveFilters ? (
             <button
@@ -103,91 +102,58 @@ export function RecipeShelfFilters({
           ) : null}
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label>
-            <span className="text-sm font-medium text-foreground">Min</span>
-            <input
-              className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              inputMode="numeric"
-              onChange={(event) => {
-                onMinTotalMinutesChange(
-                  parseOptionalMinuteInput(event.target.value),
+        <div className="flex flex-col gap-3 rounded-md border border-border px-3 py-3 sm:flex-row sm:items-center sm:gap-4">
+          <div className="shrink-0 text-sm text-muted-foreground">
+            {formatTotalTimeRangeLabel(rangeValue, maxSliderValue)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <RangeSlider
+              max={maxSliderValue}
+              min={0}
+              onValueChange={(nextRange) => {
+                const [nextMin, nextMax] = normalizeSliderRange(
+                  nextRange,
+                  maxSliderValue,
                 );
-              }}
-              placeholder="0"
-              value={minTotalMinutes ?? ""}
-            />
-          </label>
-
-          <label>
-            <span className="text-sm font-medium text-foreground">Max</span>
-            <input
-              className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-              inputMode="numeric"
-              onChange={(event) => {
+                onMinTotalMinutesChange(nextMin <= 0 ? null : nextMin);
                 onMaxTotalMinutesChange(
-                  parseOptionalMinuteInput(event.target.value),
+                  nextMax >= maxSliderValue ? null : nextMax,
                 );
               }}
-              placeholder={String(maxSliderValue)}
-              value={maxTotalMinutes ?? ""}
+              step={5}
+              value={rangeValue}
             />
-          </label>
-        </div>
-
-        <div className="space-y-2">
-          <input
-            className="w-full accent-primary"
-            max={maxSliderValue}
-            min={0}
-            onChange={(event) => {
-              const nextValue = Number(event.target.value);
-              onMinTotalMinutesChange(nextValue);
-
-              if (maxTotalMinutes !== null && nextValue > maxTotalMinutes) {
-                onMaxTotalMinutesChange(nextValue);
-              }
-            }}
-            step={5}
-            type="range"
-            value={Math.min(minRangeValue, maxRangeValue)}
-          />
-          <input
-            className="w-full accent-primary"
-            max={maxSliderValue}
-            min={0}
-            onChange={(event) => {
-              const nextValue = Number(event.target.value);
-              onMaxTotalMinutesChange(nextValue);
-
-              if (minTotalMinutes !== null && nextValue < minTotalMinutes) {
-                onMinTotalMinutesChange(nextValue);
-              }
-            }}
-            step={5}
-            type="range"
-            value={Math.max(maxRangeValue, minRangeValue)}
-          />
-          <p className="text-xs text-muted-foreground">
-            Range: {minTotalMinutes ?? 0} to {maxTotalMinutes ?? maxSliderValue}{" "}
-            minutes
-          </p>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
-function parseOptionalMinuteInput(value: string): number | null {
-  const trimmedValue = value.trim();
+function normalizeSliderRange(
+  value: number[],
+  maxSliderValue: number,
+): [number, number] {
+  const [rawMin = 0, rawMax = maxSliderValue] = value;
+  const nextMin = Math.max(0, Math.min(rawMin, maxSliderValue));
+  const nextMax = Math.max(nextMin, Math.min(rawMax, maxSliderValue));
 
-  if (trimmedValue === "") {
-    return null;
+  return [nextMin, nextMax];
+}
+
+function formatTotalTimeRangeLabel(
+  [minMinutes, maxMinutes]: [number, number],
+  maxSliderValue: number,
+): string {
+  const minLabel = `${minMinutes} min`;
+  const maxLabel =
+    maxMinutes >= maxSliderValue
+      ? `${maxSliderValue}+ min`
+      : `${maxMinutes} min`;
+
+  if (minMinutes <= 0 && maxMinutes >= maxSliderValue) {
+    return "Any time";
   }
 
-  const parsedValue = Number(trimmedValue);
-
-  return Number.isFinite(parsedValue) && parsedValue >= 0
-    ? Math.round(parsedValue)
-    : null;
+  return `${minLabel} - ${maxLabel}`;
 }

@@ -6,6 +6,11 @@ import {
   normalizeRecipeAllergens,
   sortRecipeAllergens,
 } from "../utils/recipeAllergens";
+import {
+  normalizeRecipeQuantity,
+  normalizeRecipeUnitKey,
+  type RecipeMeasurementFamily,
+} from "../utils/recipeUnits";
 
 import type {
   CreateRecipeCookLogInput,
@@ -50,6 +55,11 @@ export function buildRecipeInsert(
   input: CreateRecipeInput & { ownerId?: string },
 ): RecipeInsert {
   const ownerId = normalizeOptionalText(input.ownerId);
+  const normalizedYieldUnit = normalizeRecipeUnitKey(input.yieldUnit ?? null);
+  const normalizedYield = normalizeRecipeQuantity(
+    input.yieldQuantity ?? null,
+    normalizedYieldUnit,
+  );
 
   return {
     allergens: sortRecipeAllergens(input.allergens ?? []),
@@ -62,7 +72,10 @@ export function buildRecipeInsert(
     summary: normalizeRecipeBodyText(input.summary),
     title: input.title.trim(),
     yield_quantity: input.yieldQuantity ?? null,
-    yield_unit: normalizeOptionalText(input.yieldUnit),
+    yield_quantity_normalized: normalizedYield.normalizedQuantity,
+    yield_unit: normalizedYieldUnit,
+    yield_unit_family: normalizedYield.unitFamily,
+    yield_unit_key: normalizedYield.unitKey,
   };
 }
 
@@ -95,16 +108,27 @@ export function buildRecipeIngredientInsertRows(
   recipeId: string,
   ingredients: CreateRecipeIngredientInput[] | undefined,
 ): RecipeIngredientInsert[] {
-  return (ingredients ?? []).map((ingredient, index) => ({
-    amount: ingredient.amount ?? null,
-    is_optional: ingredient.isOptional ?? false,
-    item: ingredient.item.trim(),
-    notes: normalizeOptionalText(ingredient.notes),
-    position: index + 1,
-    preparation: normalizeOptionalText(ingredient.preparation),
-    recipe_id: recipeId,
-    unit: normalizeOptionalText(ingredient.unit),
-  }));
+  return (ingredients ?? []).map((ingredient, index) => {
+    const normalizedUnit = normalizeRecipeUnitKey(ingredient.unit ?? null);
+    const normalizedQuantity = normalizeRecipeQuantity(
+      ingredient.amount ?? null,
+      normalizedUnit,
+    );
+
+    return {
+      amount: ingredient.amount ?? null,
+      amount_normalized: normalizedQuantity.normalizedQuantity,
+      is_optional: ingredient.isOptional ?? false,
+      item: ingredient.item.trim(),
+      notes: normalizeOptionalText(ingredient.notes),
+      position: index + 1,
+      preparation: normalizeOptionalText(ingredient.preparation),
+      recipe_id: recipeId,
+      unit: normalizedUnit,
+      unit_family: normalizedQuantity.unitFamily,
+      unit_key: normalizedQuantity.unitKey,
+    };
+  });
 }
 
 export function buildRecipeStepInsertRows(
@@ -171,6 +195,9 @@ export function mapRecipeListRecord(
     totalMinutes: getTotalMinutes(record.prep_minutes, record.cook_minutes),
     updatedAt: record.updated_at,
     yieldQuantity: record.yield_quantity,
+    yieldQuantityNormalized: record.yield_quantity_normalized,
+    yieldUnitFamily: normalizeRecipeMeasurementFamily(record.yield_unit_family),
+    yieldUnitKey: normalizeRecipeUnitKey(record.yield_unit_key),
     yieldUnit: record.yield_unit,
   };
 }
@@ -200,12 +227,15 @@ function mapRecipeEquipmentRow(row: RecipeEquipmentRow): RecipeEquipment {
 function mapRecipeIngredientRow(row: RecipeIngredientRow): RecipeIngredient {
   return {
     amount: row.amount,
+    amountNormalized: row.amount_normalized,
     id: row.id,
     isOptional: row.is_optional,
     item: row.item,
     notes: row.notes,
     position: row.position,
     preparation: row.preparation,
+    unitFamily: normalizeRecipeMeasurementFamily(row.unit_family),
+    unitKey: normalizeRecipeUnitKey(row.unit_key),
     unit: row.unit,
   };
 }
@@ -247,6 +277,16 @@ function normalizeOptionalText(
 
 function normalizeRecipeBodyText(value: string | null | undefined): string {
   return normalizeOptionalText(value) ?? "";
+}
+
+function normalizeRecipeMeasurementFamily(
+  value: string | null,
+): RecipeMeasurementFamily | null {
+  if (value === "volume" || value === "weight" || value === "count") {
+    return value;
+  }
+
+  return null;
 }
 
 function sortByPosition<T extends { position: number }>(items: T[]): T[] {

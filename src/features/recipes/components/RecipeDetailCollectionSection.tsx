@@ -21,6 +21,7 @@ import type { JSX } from "react";
 
 type RecipeDetailCollectionSectionProps =
   | {
+      displaySystem: "imperial" | "metric";
       items: RecipeIngredient[];
       kind: "ingredients";
       scaleFactor?: number;
@@ -71,7 +72,11 @@ export function RecipeDetailCollectionSection(
         </Button>
       </div>
 
-      <div className={isExpanded ? "space-y-4" : "hidden"} hidden={!isExpanded} id={contentId}>
+      <div
+        className={isExpanded ? "space-y-4" : "hidden"}
+        hidden={!isExpanded}
+        id={contentId}
+      >
         {props.items.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
             {getEmptyText(props.kind)}
@@ -89,7 +94,11 @@ export function RecipeDetailCollectionSection(
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <p className="text-sm font-medium leading-6 text-foreground sm:text-[0.95rem]">
-                        {formatIngredientText(ingredient, props.scaleFactor ?? 1)}
+                        {formatIngredientText(
+                          ingredient,
+                          props.displaySystem,
+                          props.scaleFactor ?? 1,
+                        )}
                       </p>
                       {ingredient.isOptional ? (
                         <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
@@ -143,7 +152,10 @@ export function RecipeDetailCollectionSection(
         {props.kind === "steps" && props.items.length > 0 ? (
           <ol className="space-y-4">
             {props.items.map((step) => (
-              <li key={step.id} className="rounded-lg border border-border bg-background px-4 py-4 sm:px-5">
+              <li
+                key={step.id}
+                className="rounded-lg border border-border bg-background px-4 py-4 sm:px-5"
+              >
                 <div className="flex items-start gap-3 sm:gap-4">
                   <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-semibold text-foreground sm:size-10">
                     {step.position}
@@ -196,7 +208,9 @@ export function RecipeDetailCollectionSection(
   );
 }
 
-function getEmptyText(kind: RecipeDetailCollectionSectionProps["kind"]): string {
+function getEmptyText(
+  kind: RecipeDetailCollectionSectionProps["kind"],
+): string {
   switch (kind) {
     case "ingredients":
       return "No ingredients were listed for this recipe yet.";

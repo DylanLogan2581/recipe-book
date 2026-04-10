@@ -4,6 +4,7 @@ import {
   createRecipeTimerAuthoringValue,
   type RecipeTimerUnit,
 } from "./recipeTimerUnits";
+import { normalizeRecipeUnitKey, type RecipeUnitKey } from "./recipeUnits";
 
 import type { RecipeAllergen, RecipeDetail } from "../types/recipes";
 
@@ -13,7 +14,7 @@ export type RecipeCreateIngredientFormValue = {
   item: string;
   notes: string;
   preparation: string;
-  unit: string;
+  unit: RecipeUnitKey | "";
 };
 
 export type RecipeCreateEquipmentFormValue = {
@@ -42,7 +43,7 @@ export type RecipeCreateFormValues = {
   summary: string;
   title: string;
   yieldQuantity: string;
-  yieldUnit: string;
+  yieldUnit: RecipeUnitKey | "";
 };
 
 export function createEmptyRecipeIngredientFormValue(): RecipeCreateIngredientFormValue {
@@ -110,7 +111,7 @@ export function createRecipeFormValuesFromRecipe(
       item: ingredient.item,
       notes: ingredient.notes ?? "",
       preparation: ingredient.preparation ?? "",
-      unit: ingredient.unit ?? "",
+      unit: normalizeRecipeUnitKey(ingredient.unit) ?? "",
     })),
     isScalable: recipe.isScalable,
     prepMinutes: formatOptionalNumber(recipe.prepMinutes),
@@ -122,7 +123,7 @@ export function createRecipeFormValuesFromRecipe(
     summary: recipe.summary,
     title: recipe.title,
     yieldQuantity: formatOptionalNumber(recipe.yieldQuantity),
-    yieldUnit: recipe.yieldUnit ?? "",
+    yieldUnit: normalizeRecipeUnitKey(recipe.yieldUnit) ?? "",
   };
 }
 

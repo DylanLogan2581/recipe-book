@@ -27,7 +27,15 @@ export function RecipePreviewCard({
   const summary = getRecipeSummary(recipe.summary, recipe.description);
   const metadata = [
     formatRecipeTime(recipe),
-    formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit),
+    formatRecipeYield(
+      recipe.yieldQuantityNormalized,
+      recipe.yieldUnitFamily,
+      recipe.yieldUnitKey,
+      "imperial",
+      1,
+      recipe.yieldQuantity,
+      recipe.yieldUnit,
+    ),
     getRecipeScalingLabel(recipe.isScalable),
   ];
 

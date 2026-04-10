@@ -15,12 +15,16 @@ import type { RecipeDetail } from "../types/recipes";
 import type { JSX } from "react";
 
 type RecipeScalingPanelProps = {
+  displaySystem: "imperial" | "metric";
   onScaleChange: (scaleFactor: number) => void;
+  onDisplaySystemChange: (displaySystem: "imperial" | "metric") => void;
   recipe: RecipeDetail;
   scaleFactor: number;
 };
 
 export function RecipeScalingPanel({
+  displaySystem,
+  onDisplaySystemChange,
   onScaleChange,
   recipe,
   scaleFactor,
@@ -29,9 +33,9 @@ export function RecipeScalingPanel({
   const [customBatchSize, setCustomBatchSize] = useState(
     formatScaleFactorInputValue(scaleFactor),
   );
-  const [customBatchSizeError, setCustomBatchSizeError] = useState<string | null>(
-    null,
-  );
+  const [customBatchSizeError, setCustomBatchSizeError] = useState<
+    string | null
+  >(null);
   const customBatchSizeInputId = `recipe-batch-size-${recipe.id}`;
 
   useEffect(() => {
@@ -68,9 +72,15 @@ export function RecipeScalingPanel({
     <section className="border-t border-border pt-6">
       {!isScalable ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Batch size
-          </h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Batch size
+            </h2>
+            <MeasurementSystemToggle
+              displaySystem={displaySystem}
+              onChange={onDisplaySystemChange}
+            />
+          </div>
           <p className="text-sm text-muted-foreground">
             {getScalingPanelStatus(recipe)}
           </p>
@@ -83,11 +93,24 @@ export function RecipeScalingPanel({
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
               Batch size
             </h2>
+            <MeasurementSystemToggle
+              displaySystem={displaySystem}
+              onChange={onDisplaySystemChange}
+            />
             <span className="rounded-full border border-border bg-background px-3 py-1 text-sm text-muted-foreground">
               Current: {formatScaleLabel(scaleFactor)}
             </span>
             <span className="text-sm text-muted-foreground">
-              Makes {formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor)}
+              Makes{" "}
+              {formatRecipeYield(
+                recipe.yieldQuantityNormalized,
+                recipe.yieldUnitFamily,
+                recipe.yieldUnitKey,
+                displaySystem,
+                scaleFactor,
+                recipe.yieldQuantity,
+                recipe.yieldUnit,
+              )}
             </span>
           </div>
 
@@ -136,7 +159,12 @@ export function RecipeScalingPanel({
               placeholder="1, 2, or 0.5"
               value={customBatchSize}
             />
-            <Button className="rounded-md px-4" size="sm" type="submit" variant="outline">
+            <Button
+              className="rounded-md px-4"
+              size="sm"
+              type="submit"
+              variant="outline"
+            >
               Set
             </Button>
           </form>
@@ -172,3 +200,34 @@ function getScalingPanelStatus(
 
 const batchSizeInputClassName =
   "h-9 min-w-40 rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-xs outline-none transition focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20";
+
+type MeasurementSystemToggleProps = {
+  displaySystem: "imperial" | "metric";
+  onChange: (displaySystem: "imperial" | "metric") => void;
+};
+
+function MeasurementSystemToggle({
+  displaySystem,
+  onChange,
+}: MeasurementSystemToggleProps): JSX.Element {
+  return (
+    <div className="inline-flex rounded-md border border-border bg-background p-1">
+      {(["imperial", "metric"] as const).map((system) => (
+        <button
+          key={system}
+          className={
+            system === displaySystem
+              ? "rounded-sm bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground"
+              : "rounded-sm px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+          }
+          onClick={() => {
+            onChange(system);
+          }}
+          type="button"
+        >
+          {system === "imperial" ? "Imperial" : "Metric"}
+        </button>
+      ))}
+    </div>
+  );
+}

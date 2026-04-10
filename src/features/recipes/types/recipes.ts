@@ -1,5 +1,11 @@
 import type { RecipeCategorySummary } from "@/features/categories";
 
+import type {
+  RecipeDisplaySystem,
+  RecipeMeasurementFamily,
+  RecipeUnitKey,
+} from "../utils/recipeUnits";
+
 export type RecipeAllergen =
   | "milk"
   | "eggs"
@@ -27,17 +33,23 @@ export type RecipeListItem = {
   totalMinutes: number | null;
   updatedAt: string;
   yieldQuantity: number | null;
+  yieldQuantityNormalized: number | null;
+  yieldUnitFamily: RecipeMeasurementFamily | null;
+  yieldUnitKey: RecipeUnitKey | null;
   yieldUnit: string | null;
 };
 
 export type RecipeIngredient = {
   amount: number | null;
+  amountNormalized: number | null;
   id: string;
   isOptional: boolean;
   item: string;
   notes: string | null;
   position: number;
   preparation: string | null;
+  unitFamily: RecipeMeasurementFamily | null;
+  unitKey: RecipeUnitKey | null;
   unit: string | null;
 };
 
@@ -83,7 +95,7 @@ export type CreateRecipeIngredientInput = {
   item: string;
   notes?: string | null;
   preparation?: string | null;
-  unit?: string | null;
+  unit?: RecipeUnitKey | null;
 };
 
 export type CreateRecipeEquipmentInput = {
@@ -112,7 +124,11 @@ export type CreateRecipeInput = {
   summary?: string | null;
   title: string;
   yieldQuantity?: number | null;
-  yieldUnit?: string | null;
+  yieldUnit?: RecipeUnitKey | null;
+};
+
+export type RecipeMeasurementPreference = {
+  displaySystem: RecipeDisplaySystem;
 };
 
 export type CreateRecipeCookLogInput = {

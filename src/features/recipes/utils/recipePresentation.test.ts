@@ -60,18 +60,30 @@ describe("formatRecipeTime", () => {
 
 describe("formatRecipeYield", () => {
   it("formats quantity and unit together when both are present", () => {
-    expect(formatRecipeYield(4, "servings")).toBe("4 servings");
+    expect(formatRecipeYield(4, "count", "servings", "imperial")).toBe(
+      "4 servings",
+    );
   });
 
   it("applies the active scale factor to the displayed yield", () => {
-    expect(formatRecipeYield(4, "servings", 0.5)).toBe("2 servings");
-    expect(formatRecipeYield(4, "servings", 2)).toBe("8 servings");
+    expect(formatRecipeYield(4, "count", "servings", "imperial", 0.5)).toBe(
+      "2 servings",
+    );
+    expect(formatRecipeYield(4, "count", "servings", "imperial", 2)).toBe(
+      "8 servings",
+    );
   });
 
   it("falls back cleanly when quantity or unit is missing", () => {
-    expect(formatRecipeYield(null, "loaves")).toBe("loaves");
-    expect(formatRecipeYield(2, null)).toBe("2 servings");
-    expect(formatRecipeYield(null, null)).toBe("Yield not set");
+    expect(
+      formatRecipeYield(null, null, null, "imperial", 1, null, "loaves"),
+    ).toBe("loaves");
+    expect(formatRecipeYield(null, null, null, "imperial", 1, 2, null)).toBe(
+      "2",
+    );
+    expect(formatRecipeYield(null, null, null, "imperial")).toBe(
+      "Yield not set",
+    );
   });
 });
 
@@ -88,21 +100,33 @@ describe("formatRecipeAllergenSummary", () => {
 describe("formatIngredientText", () => {
   it("combines amount, unit, item, and preparation in reading order", () => {
     expect(
-      formatIngredientText({
-        amount: 2,
-        item: "lemons",
-        preparation: "thinly sliced",
-        unit: null,
-      }),
+      formatIngredientText(
+        {
+          amount: 2,
+          amountNormalized: null,
+          item: "lemons",
+          preparation: "thinly sliced",
+          unitFamily: null,
+          unitKey: null,
+          unit: null,
+        },
+        "imperial",
+      ),
     ).toBe("2 lemons, thinly sliced");
     expect(
-      formatIngredientText({
-        amount: 1.5,
-        item: "flour",
-        preparation: null,
-        unit: "cups",
-      }),
-    ).toBe("1.5 cups flour");
+      formatIngredientText(
+        {
+          amount: 1.5,
+          amountNormalized: 354.88,
+          item: "flour",
+          preparation: null,
+          unitFamily: "volume",
+          unitKey: "milliliters",
+          unit: "cups",
+        },
+        "imperial",
+      ),
+    ).toBe("1 1/2 cups flour");
   });
 
   it("applies the active scale factor to ingredient amounts", () => {
@@ -110,10 +134,14 @@ describe("formatIngredientText", () => {
       formatIngredientText(
         {
           amount: 1.5,
+          amountNormalized: 354.88,
           item: "flour",
           preparation: null,
+          unitFamily: "volume",
+          unitKey: "milliliters",
           unit: "cups",
         },
+        "imperial",
         2,
       ),
     ).toBe("3 cups flour");
@@ -121,12 +149,18 @@ describe("formatIngredientText", () => {
 
   it("falls back to the ingredient item when no amount metadata exists", () => {
     expect(
-      formatIngredientText({
-        amount: null,
-        item: "olive oil",
-        preparation: null,
-        unit: null,
-      }),
+      formatIngredientText(
+        {
+          amount: null,
+          amountNormalized: null,
+          item: "olive oil",
+          preparation: null,
+          unitFamily: null,
+          unitKey: null,
+          unit: null,
+        },
+        "imperial",
+      ),
     ).toBe("olive oil");
   });
 });

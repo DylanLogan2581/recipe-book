@@ -191,6 +191,7 @@ export type Database = {
       recipe_ingredients: {
         Row: {
           amount: number | null;
+          amount_normalized: number | null;
           created_at: string;
           id: string;
           is_optional: boolean;
@@ -199,11 +200,14 @@ export type Database = {
           position: number;
           preparation: string | null;
           recipe_id: string;
+          unit_family: string | null;
+          unit_key: string | null;
           unit: string | null;
           updated_at: string;
         };
         Insert: {
           amount?: number | null;
+          amount_normalized?: number | null;
           created_at?: string;
           id?: string;
           is_optional?: boolean;
@@ -212,11 +216,14 @@ export type Database = {
           position: number;
           preparation?: string | null;
           recipe_id: string;
+          unit_family?: string | null;
+          unit_key?: string | null;
           unit?: string | null;
           updated_at?: string;
         };
         Update: {
           amount?: number | null;
+          amount_normalized?: number | null;
           created_at?: string;
           id?: string;
           is_optional?: boolean;
@@ -225,6 +232,8 @@ export type Database = {
           position?: number;
           preparation?: string | null;
           recipe_id?: string;
+          unit_family?: string | null;
+          unit_key?: string | null;
           unit?: string | null;
           updated_at?: string;
         };
@@ -294,6 +303,9 @@ export type Database = {
           title: string;
           updated_at: string;
           yield_quantity: number | null;
+          yield_quantity_normalized: number | null;
+          yield_unit_family: string | null;
+          yield_unit_key: string | null;
           yield_unit: string | null;
         };
         Insert: {
@@ -310,6 +322,9 @@ export type Database = {
           title: string;
           updated_at?: string;
           yield_quantity?: number | null;
+          yield_quantity_normalized?: number | null;
+          yield_unit_family?: string | null;
+          yield_unit_key?: string | null;
           yield_unit?: string | null;
         };
         Update: {
@@ -326,6 +341,9 @@ export type Database = {
           title?: string;
           updated_at?: string;
           yield_quantity?: number | null;
+          yield_quantity_normalized?: number | null;
+          yield_unit_family?: string | null;
+          yield_unit_key?: string | null;
           yield_unit?: string | null;
         };
         Relationships: [];

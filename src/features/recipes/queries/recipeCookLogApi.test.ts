@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  createRecipeCookLog,
   isRecipeCookLogSchemaUnavailableError,
   listRecipeCookLogs,
 } from "./recipeCookLogApi";
@@ -33,7 +34,9 @@ describe("isRecipeCookLogSchemaUnavailableError", () => {
         message: "JSON object requested, multiple (or no) rows returned",
       }),
     ).toBe(false);
-    expect(isRecipeCookLogSchemaUnavailableError(new Error("boom"))).toBe(false);
+    expect(isRecipeCookLogSchemaUnavailableError(new Error("boom"))).toBe(
+      false,
+    );
   });
 });
 
@@ -64,7 +67,9 @@ describe("listRecipeCookLogs", () => {
       }),
     };
 
-    await expect(listRecipeCookLogs("recipe-1", client as never)).resolves.toEqual([
+    await expect(
+      listRecipeCookLogs("recipe-1", client as never),
+    ).resolves.toEqual([
       {
         cooked_on: "2026-04-03",
         created_at: "2026-04-03T10:00:00.000Z",
@@ -97,8 +102,76 @@ describe("listRecipeCookLogs", () => {
       }),
     };
 
-    await expect(listRecipeCookLogs("recipe-1", client as never)).resolves.toEqual(
-      [],
-    );
+    await expect(
+      listRecipeCookLogs("recipe-1", client as never),
+    ).resolves.toEqual([]);
+  });
+});
+
+describe("createRecipeCookLog", () => {
+  it("maps blocked cross-owner inserts to a clean ownership error", async () => {
+    const client = {
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "viewer-1",
+            },
+          },
+          error: null,
+        }),
+      },
+      from: vi.fn((table: string) => {
+        if (table === "recipe_cook_logs") {
+          return {
+            insert: vi.fn().mockReturnValue({
+              select: vi.fn().mockReturnValue({
+                single: vi.fn().mockReturnValue({
+                  overrideTypes: vi.fn().mockResolvedValue({
+                    data: null,
+                    error: {
+                      code: "42501",
+                      message:
+                        'new row violates row-level security policy for table "recipe_cook_logs"',
+                    },
+                  }),
+                }),
+              }),
+            }),
+          };
+        }
+
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({
+                data: {
+                  id: "recipe-1",
+                  owner_id: "owner-1",
+                },
+                error: null,
+              }),
+            }),
+          }),
+        };
+      }),
+      rpc: vi.fn().mockResolvedValue({
+        data: false,
+        error: null,
+      }),
+    };
+
+    await expect(
+      createRecipeCookLog(
+        {
+          recipeId: "recipe-1",
+        },
+        client as never,
+      ),
+    ).rejects.toMatchObject({
+      code: "ownership-required",
+      message:
+        "Only the recipe owner or an admin can save cook memories for this recipe.",
+    });
   });
 });

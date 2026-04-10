@@ -6,6 +6,11 @@ import {
   type RecipeCookLogRow,
 } from "./recipeAdapters";
 import { requireRecipeMutationAuth } from "./recipeAuth";
+import {
+  isRecipeMutationPermissionDeniedError,
+  resolveRecipeMutationAccessError,
+  type RecipeOwnershipLookupClient,
+} from "./recipeMutationAccess";
 
 import type {
   CreateRecipeCookLogInput,
@@ -28,11 +33,21 @@ export async function createRecipeCookLog(
   const { data, error } = await recipeClient
     .from("recipe_cook_logs")
     .insert(buildRecipeCookLogInsert(input))
-    .select("id, recipe_id, owner_id, cooked_on, notes, photo_path, created_at, updated_at")
+    .select(
+      "id, recipe_id, owner_id, cooked_on, notes, photo_path, created_at, updated_at",
+    )
     .single()
     .overrideTypes<RecipeCookLogRow, { merge: false }>();
 
   if (error !== null) {
+    if (isRecipeMutationPermissionDeniedError(error)) {
+      throw await resolveRecipeMutationAccessError(
+        "create-cook-log",
+        input.recipeId,
+        recipeClient as unknown as RecipeOwnershipLookupClient,
+      );
+    }
+
     throw error;
   }
 
@@ -49,7 +64,9 @@ export async function listRecipeCookLogs(
 
   const { data, error } = await client
     .from("recipe_cook_logs")
-    .select("id, recipe_id, owner_id, cooked_on, notes, photo_path, created_at, updated_at")
+    .select(
+      "id, recipe_id, owner_id, cooked_on, notes, photo_path, created_at, updated_at",
+    )
     .eq("recipe_id", recipeId)
     .overrideTypes<RecipeCookLogRow[], { merge: false }>();
 

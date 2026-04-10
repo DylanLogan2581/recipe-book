@@ -28,7 +28,9 @@ add constraint recipe_cook_logs_photo_path_matches_owner check (
 
 drop policy if exists "Recipe owners can insert cook logs" on public.recipe_cook_logs;
 
-create policy "Recipe owners can insert cook logs" on public.recipe_cook_logs for insert to authenticated
+drop policy if exists "Recipe owners and admins can insert cook logs" on public.recipe_cook_logs;
+
+create policy "Recipe owners and admins can insert cook logs" on public.recipe_cook_logs for insert to authenticated
 with
   check (
     public.current_user_can_manage_recipe (recipe_id)
@@ -40,7 +42,9 @@ with
 
 drop policy if exists "Recipe owners can update cook logs" on public.recipe_cook_logs;
 
-create policy "Recipe owners can update cook logs" on public.recipe_cook_logs
+drop policy if exists "Recipe owners and admins can update cook logs" on public.recipe_cook_logs;
+
+create policy "Recipe owners and admins can update cook logs" on public.recipe_cook_logs
 for update
   to authenticated using (
     public.current_user_can_manage_recipe (recipe_id)
@@ -60,7 +64,9 @@ with
 
 drop policy if exists "Recipe owners can delete cook logs" on public.recipe_cook_logs;
 
-create policy "Recipe owners can delete cook logs" on public.recipe_cook_logs for delete to authenticated using (
+drop policy if exists "Recipe owners and admins can delete cook logs" on public.recipe_cook_logs;
+
+create policy "Recipe owners and admins can delete cook logs" on public.recipe_cook_logs for delete to authenticated using (
   public.current_user_can_manage_recipe (recipe_id)
   and (
     select

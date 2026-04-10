@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
 import { publicRecipeCategoryListQueryOptions } from "@/features/categories";
+import { equipmentListQueryOptions } from "@/features/equipment";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
@@ -30,7 +31,13 @@ export function CreateRecipePage(): JSX.Element {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const sessionQuery = useQuery(sessionQueryOptions);
+  const equipmentOwnerId =
+    sessionQuery.data?.kind === "authenticated" ? sessionQuery.data.userId : "";
   const categoryListQuery = useQuery(publicRecipeCategoryListQueryOptions());
+  const equipmentListQuery = useQuery({
+    ...equipmentListQueryOptions(equipmentOwnerId),
+    enabled: equipmentOwnerId !== "",
+  });
   const createRecipeMutation = useMutation(
     createRecipeMutationOptions(queryClient),
   );
@@ -139,6 +146,7 @@ export function CreateRecipePage(): JSX.Element {
       <div className="mt-6">
         <RecipeCreateForm
           availableCategories={categoryListQuery.data ?? []}
+          availableEquipment={equipmentListQuery.data ?? []}
           cancelButton={
             <Button
               asChild
@@ -167,6 +175,7 @@ export function CreateRecipePage(): JSX.Element {
           removeCoverPhotoLabel="Remove photo"
           selectedCoverPhoto={selectedCoverPhoto}
           setValues={setValues}
+          showManageEquipmentLink
           submitLabel="Create recipe"
           submitPendingLabel="Saving recipe..."
           values={values}
@@ -180,6 +189,18 @@ export function CreateRecipePage(): JSX.Element {
             <p className="mt-1 text-sm text-amber-950/85">
               The category list could not load right now. You can still save the
               recipe without category tags.
+            </p>
+          </section>
+        ) : null}
+
+        {equipmentListQuery.isError ? (
+          <section className="mt-4 rounded-lg border border-amber-300/70 bg-amber-50/80 px-5 py-4">
+            <h2 className="text-sm font-semibold text-amber-950">
+              Equipment unavailable
+            </h2>
+            <p className="mt-1 text-sm text-amber-950/85">
+              Your equipment list could not load right now. Add equipment later
+              if you need it for this recipe.
             </p>
           </section>
         ) : null}

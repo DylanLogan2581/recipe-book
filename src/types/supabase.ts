@@ -141,6 +141,7 @@ export type Database = {
         Row: {
           created_at: string;
           details: string | null;
+          equipment_id: string;
           id: string;
           is_optional: boolean;
           name: string;
@@ -151,6 +152,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           details?: string | null;
+          equipment_id: string;
           id?: string;
           is_optional?: boolean;
           name: string;
@@ -161,6 +163,7 @@ export type Database = {
         Update: {
           created_at?: string;
           details?: string | null;
+          equipment_id?: string;
           id?: string;
           is_optional?: boolean;
           name?: string;
@@ -169,6 +172,13 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
+          {
+            columns: ["equipment_id"];
+            foreignKeyName: "recipe_equipment_equipment_id_fkey";
+            isOneToOne: false;
+            referencedColumns: ["id"];
+            referencedRelation: "user_equipment";
+          },
           {
             columns: ["recipe_id"];
             foreignKeyName: "recipe_equipment_recipe_id_fkey";
@@ -317,6 +327,30 @@ export type Database = {
           updated_at?: string;
           yield_quantity?: number | null;
           yield_unit?: string | null;
+        };
+        Relationships: [];
+      };
+      user_equipment: {
+        Row: {
+          created_at: string;
+          id: string;
+          name: string;
+          owner_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          name: string;
+          owner_id?: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          name?: string;
+          owner_id?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

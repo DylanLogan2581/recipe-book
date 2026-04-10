@@ -20,6 +20,8 @@ export function getRecipeLoadDocumentTitle(
 ): string {
   if (surface === "detail" && error instanceof RecipeDataAccessError) {
     switch (error.code) {
+      case "invalid-equipment":
+        return "Recipe Unavailable";
       case "not-found":
         return "Recipe Not Found";
       case "supabase-unconfigured":
@@ -175,6 +177,12 @@ export function getRecipeLoadErrorCopy(
 ): RecipeLoadErrorCopy {
   if (error instanceof RecipeDataAccessError) {
     switch (error.code) {
+      case "invalid-equipment":
+        return {
+          description:
+            "One or more selected equipment items are no longer available for this recipe owner.",
+          title: "This recipe could not be loaded right now.",
+        };
       case "not-found":
         return {
           description:

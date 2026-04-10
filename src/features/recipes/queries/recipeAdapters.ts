@@ -1,4 +1,5 @@
 import type { RecipeCategorySummary } from "@/features/categories";
+import type { EquipmentItem } from "@/features/equipment";
 import type { Database } from "@/types/supabase";
 
 import {
@@ -68,11 +69,13 @@ export function buildRecipeInsert(
 export function buildRecipeEquipmentInsertRows(
   recipeId: string,
   equipment: CreateRecipeEquipmentInput[] | undefined,
+  inventoryItemsById: ReadonlyMap<string, EquipmentItem>,
 ): RecipeEquipmentInsert[] {
   return (equipment ?? []).map((item, index) => ({
     details: normalizeOptionalText(item.details),
+    equipment_id: item.equipmentId,
     is_optional: item.isOptional ?? false,
-    name: item.name.trim(),
+    name: inventoryItemsById.get(item.equipmentId)?.name.trim() ?? "",
     position: index + 1,
     recipe_id: recipeId,
   }));
@@ -176,6 +179,7 @@ function getTotalMinutes(
 function mapRecipeEquipmentRow(row: RecipeEquipmentRow): RecipeEquipment {
   return {
     details: row.details,
+    equipmentId: row.equipment_id,
     id: row.id,
     isOptional: row.is_optional,
     name: row.name,

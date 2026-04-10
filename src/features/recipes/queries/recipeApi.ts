@@ -2,6 +2,8 @@ import {
   listRecipeCategoriesByRecipeIds,
   replaceRecipeCategoryAssignments,
 } from "@/features/categories";
+import { listEquipmentByIdsForOwner } from "@/features/equipment";
+import type { EquipmentItem } from "@/features/equipment";
 import { supabase } from "@/lib/supabase";
 
 import {
@@ -33,7 +35,10 @@ type CreatedRecipeRecord = {
   id: string;
 };
 
-export type RecipeDataAccessErrorCode = "not-found" | "supabase-unconfigured";
+export type RecipeDataAccessErrorCode =
+  | "invalid-equipment"
+  | "not-found"
+  | "supabase-unconfigured";
 
 export class RecipeDataAccessError extends Error {
   readonly code: RecipeDataAccessErrorCode;
@@ -93,6 +98,7 @@ const recipeDetailSelect = `
   ),
   recipe_equipment (
     id,
+    equipment_id,
     position,
     name,
     details,
@@ -118,9 +124,12 @@ export async function createRecipe(
     const { data, error } = await recipeClient
       .from("recipes")
       .insert(buildRecipeInsert(input))
-      .select("id")
+      .select("id, owner_id")
       .single()
-      .overrideTypes<CreatedRecipeRecord, { merge: false }>();
+      .overrideTypes<
+        CreatedRecipeRecord & { owner_id: string },
+        { merge: false }
+      >();
 
     if (error !== null) {
       throw error;
@@ -128,7 +137,12 @@ export async function createRecipe(
 
     createdRecipeId = data.id;
 
-    await insertRecipeRelations(recipeClient, createdRecipeId, input);
+    await insertRecipeRelations(
+      recipeClient,
+      createdRecipeId,
+      data.owner_id,
+      input,
+    );
 
     return getRecipeDetail(createdRecipeId, recipeClient);
   } catch (error) {
@@ -150,9 +164,12 @@ export async function deleteRecipe(
     .from("recipes")
     .delete()
     .eq("id", recipeId)
-    .select("id")
+    .select("id, owner_id")
     .maybeSingle()
-    .overrideTypes<CreatedRecipeRecord, { merge: false }>();
+    .overrideTypes<
+      CreatedRecipeRecord & { owner_id: string },
+      { merge: false }
+    >();
 
   if (error !== null) {
     throw error;
@@ -180,9 +197,12 @@ export async function updateRecipe(
     .from("recipes")
     .update(buildRecipeInsert(input))
     .eq("id", recipeId)
-    .select("id")
+    .select("id, owner_id")
     .maybeSingle()
-    .overrideTypes<CreatedRecipeRecord, { merge: false }>();
+    .overrideTypes<
+      CreatedRecipeRecord & { owner_id: string },
+      { merge: false }
+    >();
 
   if (error !== null) {
     throw error;
@@ -195,7 +215,7 @@ export async function updateRecipe(
     );
   }
 
-  await replaceRecipeRelations(recipeClient, recipeId, input);
+  await replaceRecipeRelations(recipeClient, recipeId, data.owner_id, input);
 
   return getRecipeDetail(recipeId, recipeClient);
 }
@@ -299,8 +319,14 @@ function getRecipeApiClient(client: RecipeApiClient | null): RecipeApiClient {
 async function insertRecipeRelations(
   client: RecipeApiClient,
   recipeId: string,
+  recipeOwnerId: string,
   input: CreateRecipeInput,
 ): Promise<void> {
+  const inventoryItemsById = await getEquipmentInventoryItemsById(
+    recipeOwnerId,
+    input.equipment,
+    client,
+  );
   const ingredientRows = buildRecipeIngredientInsertRows(
     recipeId,
     input.ingredients,
@@ -308,6 +334,7 @@ async function insertRecipeRelations(
   const equipmentRows = buildRecipeEquipmentInsertRows(
     recipeId,
     input.equipment,
+    inventoryItemsById,
   );
   const stepRows = buildRecipeStepInsertRows(recipeId, input.steps);
   await replaceRecipeCategoryAssignments(recipeId, input.categoryIds, client);
@@ -344,6 +371,7 @@ async function insertRecipeRelations(
 async function replaceRecipeRelations(
   client: RecipeApiClient,
   recipeId: string,
+  recipeOwnerId: string,
   input: CreateRecipeInput,
 ): Promise<void> {
   const ingredientDelete = await client
@@ -373,5 +401,29 @@ async function replaceRecipeRelations(
     throw stepDelete.error;
   }
 
-  await insertRecipeRelations(client, recipeId, input);
+  await insertRecipeRelations(client, recipeId, recipeOwnerId, input);
+}
+
+async function getEquipmentInventoryItemsById(
+  ownerId: string,
+  equipment: CreateRecipeInput["equipment"],
+  client: RecipeApiClient,
+): Promise<ReadonlyMap<string, EquipmentItem>> {
+  const equipmentIds = [
+    ...new Set((equipment ?? []).map((item) => item.equipmentId)),
+  ];
+  const inventoryItems = await listEquipmentByIdsForOwner(
+    ownerId,
+    equipmentIds,
+    client,
+  );
+
+  if (inventoryItems.length !== equipmentIds.length) {
+    throw new RecipeDataAccessError(
+      "invalid-equipment",
+      "One or more selected equipment items are unavailable for this recipe owner.",
+    );
+  }
+
+  return new Map(inventoryItems.map((item) => [item.id, item]));
 }

@@ -405,6 +405,11 @@ export function formatRecipeQuantity(
     unitFamily === null ||
     canonicalUnitKey === null
   ) {
+    const scaledFallbackQuantity =
+      fallbackQuantity === null || fallbackQuantity === undefined
+        ? null
+        : roundRecipeQuantity(fallbackQuantity * scaleFactor);
+
     if (fallbackQuantity === null || fallbackQuantity === undefined) {
       return fallbackUnit ?? null;
     }
@@ -414,10 +419,10 @@ export function formatRecipeQuantity(
       fallbackUnit === undefined ||
       fallbackUnit.trim() === ""
     ) {
-      return formatRecipeFraction(fallbackQuantity);
+      return formatRecipeFraction(scaledFallbackQuantity ?? fallbackQuantity);
     }
 
-    return `${formatRecipeFraction(fallbackQuantity)} ${fallbackUnit}`;
+    return `${formatRecipeFraction(scaledFallbackQuantity ?? fallbackQuantity)} ${fallbackUnit}`;
   }
 
   const scaledQuantity = roundRecipeQuantity(normalizedQuantity * scaleFactor);
@@ -461,6 +466,17 @@ function selectDisplayUnitKey(
       normalizedQuantity >= getRecipeUnitDefinition("quarts").toCanonicalFactor
     ) {
       return "quarts";
+    }
+
+    if (
+      normalizedQuantity >= getRecipeUnitDefinition("pints").toCanonicalFactor
+    ) {
+      const quantityInPints =
+        normalizedQuantity / getRecipeUnitDefinition("pints").toCanonicalFactor;
+
+      if (isWholeishQuantity(quantityInPints)) {
+        return "pints";
+      }
     }
 
     if (
@@ -579,6 +595,10 @@ function findClosestFraction(value: number): string | null {
 
 function isSingularQuantity(quantity: number): boolean {
   return Math.abs(quantity - 1) < 0.01;
+}
+
+function isWholeishQuantity(quantity: number): boolean {
+  return Math.abs(quantity - Math.round(quantity)) < 0.01;
 }
 
 function roundRecipeQuantity(value: number): number {

@@ -211,9 +211,14 @@ function MeasurementSystemToggle({
   onChange,
 }: MeasurementSystemToggleProps): JSX.Element {
   return (
-    <div className="inline-flex rounded-md border border-border bg-background p-1">
+    <div
+      aria-label="Measurement system"
+      className="inline-flex rounded-md border border-border bg-background p-1"
+      role="group"
+    >
       {(["imperial", "metric"] as const).map((system) => (
         <button
+          aria-pressed={system === displaySystem}
           key={system}
           className={
             system === displaySystem

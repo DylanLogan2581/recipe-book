@@ -97,6 +97,10 @@ with
         public.recipe_categories
       where
         recipe_categories.id = recipe_category_assignments.category_id
+        and (
+          recipe_categories.is_active
+          or public.current_user_is_admin ()
+        )
     )
   );
 

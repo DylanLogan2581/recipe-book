@@ -27,9 +27,17 @@ export function RecipeShelfFilters({
   onMinTotalMinutesChange,
   selectedCategorySlugs,
 }: RecipeShelfFiltersProps): JSX.Element {
-  const maxSliderValue = Math.max(maxAvailableTotalMinutes, 5);
-  const minRangeValue = minTotalMinutes ?? 0;
-  const maxRangeValue = maxTotalMinutes ?? maxSliderValue;
+  const maxSliderValue = Math.max(
+    maxAvailableTotalMinutes,
+    minTotalMinutes ?? 0,
+    maxTotalMinutes ?? 0,
+    5,
+  );
+  const minRangeValue = Math.min(minTotalMinutes ?? 0, maxSliderValue);
+  const maxRangeValue = Math.min(
+    maxTotalMinutes ?? maxSliderValue,
+    maxSliderValue,
+  );
 
   return (
     <section className="flex flex-col gap-4 border-t border-border pt-4 xl:flex-row xl:items-start xl:justify-between">
@@ -161,7 +169,8 @@ export function RecipeShelfFilters({
             value={Math.max(maxRangeValue, minRangeValue)}
           />
           <p className="text-xs text-muted-foreground">
-            Range: {minRangeValue} to {maxRangeValue} minutes
+            Range: {minTotalMinutes ?? 0} to {maxTotalMinutes ?? maxSliderValue}{" "}
+            minutes
           </p>
         </div>
       </div>

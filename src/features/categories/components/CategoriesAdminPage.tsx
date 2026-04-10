@@ -180,6 +180,13 @@ export function CategoriesAdminPage(): JSX.Element {
           categories={activeCategories}
           emptyState="No active categories yet."
           isPending={updateCategoryMutation.isPending}
+          onInvalidName={(message) => {
+            toast({
+              description: message,
+              title: "Category form needs attention",
+              tone: "error",
+            });
+          }}
           onToggleActive={(category) => {
             updateCategoryMutation.mutate(
               {
@@ -238,6 +245,13 @@ export function CategoriesAdminPage(): JSX.Element {
           categories={retiredCategories}
           emptyState="No retired categories."
           isPending={updateCategoryMutation.isPending}
+          onInvalidName={(message) => {
+            toast({
+              description: message,
+              title: "Category form needs attention",
+              tone: "error",
+            });
+          }}
           onToggleActive={(category) => {
             updateCategoryMutation.mutate(
               {
@@ -327,6 +341,7 @@ type CategoryListSectionProps = {
   categories: RecipeCategory[];
   emptyState: string;
   isPending: boolean;
+  onInvalidName: (message: string) => void;
   onToggleActive: (category: RecipeCategory) => void;
   onUpdate: (input: {
     categoryId: string;
@@ -341,6 +356,7 @@ function CategoryListSection({
   categories,
   emptyState,
   isPending,
+  onInvalidName,
   onToggleActive,
   onUpdate,
   title,
@@ -363,6 +379,7 @@ function CategoryListSection({
               key={`${category.id}-${category.name}-${category.isActive ? "active" : "retired"}`}
               category={category}
               isPending={isPending}
+              onInvalidName={onInvalidName}
               onToggleActive={onToggleActive}
               onUpdate={(name) => {
                 onUpdate({
@@ -383,6 +400,7 @@ function CategoryListSection({
 type CategoryEditorRowProps = {
   category: RecipeCategory;
   isPending: boolean;
+  onInvalidName: (message: string) => void;
   onToggleActive: (category: RecipeCategory) => void;
   onUpdate: (name: string) => void;
   toggleLabel: string;
@@ -391,6 +409,7 @@ type CategoryEditorRowProps = {
 function CategoryEditorRow({
   category,
   isPending,
+  onInvalidName,
   onToggleActive,
   onUpdate,
   toggleLabel,
@@ -419,7 +438,19 @@ function CategoryEditorRow({
             className="rounded-md px-4"
             disabled={isPending}
             onClick={() => {
-              onUpdate(draftName);
+              const parsed = recipeCategoryFormSchema.safeParse({
+                name: draftName,
+              });
+
+              if (!parsed.success) {
+                onInvalidName(
+                  parsed.error.issues[0]?.message ??
+                    "Add a valid category name.",
+                );
+                return;
+              }
+
+              onUpdate(parsed.data.name);
             }}
             type="button"
             variant="outline"

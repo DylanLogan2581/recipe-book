@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const recipeShelfCategoryCsvSchema = z
   .string()
-  .regex(/^[a-z0-9-]+(?:,[a-z0-9-]+)*$/)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*(?:,[a-z0-9]+(?:-[a-z0-9]+)*)*$/)
   .optional();
 
 const recipeShelfMinuteSchema = z.string().regex(/^\d+$/).optional();

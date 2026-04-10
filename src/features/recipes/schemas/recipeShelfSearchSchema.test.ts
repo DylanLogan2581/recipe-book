@@ -38,5 +38,13 @@ describe("recipeShelfSearchSchema", () => {
       recipeShelfSearchSchema.safeParse({ categories: "Brunch,weeknight" })
         .success,
     ).toBe(false);
+    expect(
+      recipeShelfSearchSchema.safeParse({ categories: "-brunch,weeknight" })
+        .success,
+    ).toBe(false);
+    expect(
+      recipeShelfSearchSchema.safeParse({ categories: "brunch--ideas" })
+        .success,
+    ).toBe(false);
   });
 });

@@ -43,6 +43,7 @@ export type RecipeIngredient = {
 
 export type RecipeEquipment = {
   details: string | null;
+  equipmentId: string;
   id: string;
   isOptional: boolean;
   name: string;
@@ -87,8 +88,8 @@ export type CreateRecipeIngredientInput = {
 
 export type CreateRecipeEquipmentInput = {
   details?: string | null;
+  equipmentId: string;
   isOptional?: boolean;
-  name: string;
 };
 
 export type CreateRecipeStepInput = {

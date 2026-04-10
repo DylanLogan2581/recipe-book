@@ -18,8 +18,8 @@ export type RecipeCreateIngredientFormValue = {
 
 export type RecipeCreateEquipmentFormValue = {
   details: string;
+  equipmentId: string;
   isOptional: boolean;
-  name: string;
 };
 
 export type RecipeCreateStepFormValue = {
@@ -59,8 +59,8 @@ export function createEmptyRecipeIngredientFormValue(): RecipeCreateIngredientFo
 export function createEmptyRecipeEquipmentFormValue(): RecipeCreateEquipmentFormValue {
   return {
     details: "",
+    equipmentId: "",
     isOptional: false,
-    name: "",
   };
 }
 
@@ -101,8 +101,8 @@ export function createRecipeFormValuesFromRecipe(
     description: recipe.description,
     equipment: recipe.equipment.map((item) => ({
       details: item.details ?? "",
+      equipmentId: item.equipmentId,
       isOptional: item.isOptional,
-      name: item.name,
     })),
     ingredients: recipe.ingredients.map((ingredient) => ({
       amount: formatOptionalNumber(ingredient.amount),

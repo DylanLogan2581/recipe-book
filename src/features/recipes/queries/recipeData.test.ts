@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   buildRecipeInsert,
   buildRecipeCookLogInsert,
+  buildRecipeEquipmentInsertRows,
   buildRecipeIngredientInsertRows,
   buildRecipeStepInsertRows,
   mapRecipeDetailRecord,
@@ -26,6 +27,7 @@ describe("mapRecipeDetailRecord", () => {
           {
             created_at: "2026-03-26T10:00:00.000Z",
             details: null,
+            equipment_id: "inventory-2",
             id: "equipment-2",
             is_optional: false,
             name: "Mixing bowl",
@@ -36,6 +38,7 @@ describe("mapRecipeDetailRecord", () => {
           {
             created_at: "2026-03-26T10:00:00.000Z",
             details: "for finishing",
+            equipment_id: "inventory-1",
             id: "equipment-1",
             is_optional: true,
             name: "Microplane",
@@ -150,6 +153,10 @@ describe("mapRecipeDetailRecord", () => {
     ]);
     expect(recipe.ingredients.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.equipment.map((item) => item.position)).toEqual([1, 2]);
+    expect(recipe.equipment.map((item) => item.equipmentId)).toEqual([
+      "inventory-1",
+      "inventory-2",
+    ]);
     expect(recipe.steps.map((item) => item.position)).toEqual([1, 2]);
     expect(recipe.creatorName).toBe("Dylan Logan");
     expect(recipe.allergens).toEqual(["milk", "wheat"]);
@@ -179,6 +186,28 @@ describe("recipe insert builders", () => {
         unit: " ",
       },
     ]);
+    const equipment = buildRecipeEquipmentInsertRows(
+      "recipe-1",
+      [
+        {
+          details: " heavy duty ",
+          equipmentId: "inventory-1",
+          isOptional: true,
+        },
+      ],
+      new Map([
+        [
+          "inventory-1",
+          {
+            createdAt: "",
+            id: "inventory-1",
+            name: " Dutch oven ",
+            ownerId: "owner-1",
+            updatedAt: "",
+          },
+        ],
+      ]),
+    );
     const steps = buildRecipeStepInsertRows("recipe-1", [
       {
         instruction: " Toast the spices ",
@@ -209,6 +238,16 @@ describe("recipe insert builders", () => {
         preparation: "finely grated",
         recipe_id: "recipe-1",
         unit: null,
+      },
+    ]);
+    expect(equipment).toEqual([
+      {
+        details: "heavy duty",
+        equipment_id: "inventory-1",
+        is_optional: true,
+        name: "Dutch oven",
+        position: 1,
+        recipe_id: "recipe-1",
       },
     ]);
     expect(steps).toEqual([

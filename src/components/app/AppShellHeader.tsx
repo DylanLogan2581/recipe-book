@@ -25,16 +25,32 @@ export function AppShellHeader({
           </Link>
 
           <nav className="flex items-center gap-1">
-            <Button asChild className="rounded-md px-3" size="sm" variant="ghost">
-              <Link to="/recipes">
-                Recipes
-              </Link>
+            <Button
+              asChild
+              className="rounded-md px-3"
+              size="sm"
+              variant="ghost"
+            >
+              <Link to="/recipes">Recipes</Link>
+            </Button>
+            <Button
+              asChild
+              className="rounded-md px-3"
+              size="sm"
+              variant="ghost"
+            >
+              <Link to="/equipment">Equipment</Link>
             </Button>
           </nav>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button asChild className="rounded-md px-3" size="sm" variant="outline">
+          <Button
+            asChild
+            className="rounded-md px-3"
+            size="sm"
+            variant="outline"
+          >
             <Link to="/account">
               <UserRound className="size-4" />
               {authActionLabel}

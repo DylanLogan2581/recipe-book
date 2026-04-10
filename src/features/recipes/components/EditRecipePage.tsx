@@ -5,6 +5,10 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
 import { publicRecipeCategoryListQueryOptions } from "@/features/categories";
+import {
+  equipmentListQueryOptions,
+  type EquipmentItem,
+} from "@/features/equipment";
 import { profileListQueryOptions } from "@/features/profiles";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -62,6 +66,17 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedOwnerId, setSelectedOwnerId] = useState("");
   const [values, setValues] = useState(createEmptyRecipeCreateFormValues);
+  const equipmentOwnerId =
+    recipeDetailQuery.data === undefined
+      ? ""
+      : selectedOwnerId.trim() !== ""
+        ? selectedOwnerId
+        : recipeDetailQuery.data.ownerId;
+  const equipmentListQuery = useQuery({
+    ...equipmentListQueryOptions(equipmentOwnerId),
+    enabled:
+      sessionQuery.data?.kind === "authenticated" && equipmentOwnerId !== "",
+  });
 
   useDocumentTitle(
     recipeDetailQuery.data === undefined
@@ -84,6 +99,30 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
     setInitializedRecipeId(recipeDetailQuery.data.id);
     setCoverPhotoInputResetKey((current) => current + 1);
   }, [initializedRecipeId, recipeDetailQuery.data]);
+
+  useEffect(() => {
+    if (equipmentListQuery.data === undefined) {
+      return;
+    }
+
+    const validEquipmentIds = new Set(
+      equipmentListQuery.data.map((item) => item.id),
+    );
+
+    setValues((current) => {
+      const nextEquipment = current.equipment.map((item) =>
+        item.equipmentId === "" || validEquipmentIds.has(item.equipmentId)
+          ? item
+          : { ...item, equipmentId: "" },
+      );
+      const hasChanges = nextEquipment.some(
+        (item, index) =>
+          item.equipmentId !== current.equipment[index]?.equipmentId,
+      );
+
+      return hasChanges ? { ...current, equipment: nextEquipment } : current;
+    });
+  }, [equipmentListQuery.data]);
 
   if (
     recipeDetailQuery.data === undefined ||
@@ -176,6 +215,11 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
     categoryListQuery.data ?? [],
     recipe.categories,
   );
+  const availableEquipment =
+    nextOwnerId === recipe.ownerId
+      ? mergeEquipmentOptions(equipmentListQuery.data ?? [], recipe.equipment)
+      : (equipmentListQuery.data ?? []);
+  const showManageEquipmentLink = sessionState.userId === nextOwnerId;
 
   return (
     <main className="w-full max-w-6xl py-3 sm:py-4">
@@ -213,6 +257,7 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
 
         <RecipeCreateForm
           availableCategories={availableCategories}
+          availableEquipment={availableEquipment}
           cancelButton={
             <Button
               asChild
@@ -230,6 +275,7 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
           hasCoverPhoto={
             currentCoverPhotoPath !== null || selectedCoverPhoto !== null
           }
+          isEquipmentLoading={equipmentListQuery.isLoading}
           isPending={isSubmitting}
           onCoverPhotoChange={(file) => {
             setSelectedCoverPhoto(file);
@@ -260,6 +306,7 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
           }
           selectedCoverPhoto={selectedCoverPhoto}
           setValues={setValues}
+          showManageEquipmentLink={showManageEquipmentLink}
           submitLabel="Save changes"
           submitPendingLabel="Saving changes..."
           values={values}
@@ -273,6 +320,18 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
             <p className="mt-1 text-sm text-amber-950/85">
               The category list could not load right now. Existing category
               assignments are still preserved when you save.
+            </p>
+          </section>
+        ) : null}
+
+        {equipmentListQuery.isError ? (
+          <section className="rounded-lg border border-amber-300/70 bg-amber-50/80 px-5 py-4">
+            <h2 className="text-sm font-semibold text-amber-950">
+              Equipment unavailable
+            </h2>
+            <p className="mt-1 text-sm text-amber-950/85">
+              The equipment inventory for this recipe owner could not load right
+              now. Existing selections are still shown where possible.
             </p>
           </section>
         ) : null}
@@ -368,6 +427,38 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
       setIsSubmitting(false);
     }
   }
+}
+
+function mergeEquipmentOptions(
+  availableEquipment: readonly EquipmentItem[],
+  recipeEquipment: {
+    equipmentId: string;
+    name: string;
+  }[],
+): EquipmentItem[] {
+  const equipmentMap = new Map<string, EquipmentItem>();
+
+  for (const item of availableEquipment) {
+    equipmentMap.set(item.id, item);
+  }
+
+  for (const item of recipeEquipment) {
+    if (equipmentMap.has(item.equipmentId)) {
+      continue;
+    }
+
+    equipmentMap.set(item.equipmentId, {
+      createdAt: "",
+      id: item.equipmentId,
+      name: item.name,
+      ownerId: "",
+      updatedAt: "",
+    });
+  }
+
+  return [...equipmentMap.values()].sort((left, right) =>
+    left.name.localeCompare(right.name),
+  );
 }
 
 type RecipeEditAccessStateProps = {

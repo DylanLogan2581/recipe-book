@@ -1,5 +1,8 @@
+import { Link } from "@tanstack/react-router";
+
 import { Button } from "@/components/ui/button";
 import type { RecipeCategorySummary } from "@/features/categories";
+import type { EquipmentItem } from "@/features/equipment";
 
 import { getIngredientUnitGroups } from "../utils/ingredientUnits";
 import {
@@ -30,10 +33,12 @@ const checkboxClassName =
 
 type RecipeCreateFormProps = {
   availableCategories: RecipeCategorySummary[];
+  availableEquipment: EquipmentItem[];
   cancelButton: JSX.Element;
   coverPhotoInputResetKey: number;
   currentCoverPhotoPath: string | null;
   hasCoverPhoto: boolean;
+  isEquipmentLoading: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
   onRemoveCoverPhoto: () => void;
@@ -43,6 +48,7 @@ type RecipeCreateFormProps = {
   setValues: (
     updater: (current: RecipeCreateFormValues) => RecipeCreateFormValues,
   ) => void;
+  showManageEquipmentLink: boolean;
   submitLabel: string;
   submitPendingLabel: string;
   values: RecipeCreateFormValues;
@@ -50,10 +56,12 @@ type RecipeCreateFormProps = {
 
 export function RecipeCreateForm({
   availableCategories,
+  availableEquipment,
   cancelButton,
   coverPhotoInputResetKey,
   currentCoverPhotoPath,
   hasCoverPhoto,
+  isEquipmentLoading,
   isPending,
   onCoverPhotoChange,
   onRemoveCoverPhoto,
@@ -61,6 +69,7 @@ export function RecipeCreateForm({
   removeCoverPhotoLabel,
   selectedCoverPhoto,
   setValues,
+  showManageEquipmentLink,
   submitLabel,
   submitPendingLabel,
   values,
@@ -315,6 +324,51 @@ export function RecipeCreateForm({
 
       <RecipeCreateCollectionSection
         addLabel="Add equipment"
+        description={
+          isEquipmentLoading ? (
+            <p className="text-sm text-muted-foreground">
+              {showManageEquipmentLink
+                ? "Loading your equipment inventory."
+                : "Loading the selected owner's equipment inventory."}
+            </p>
+          ) : availableEquipment.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {showManageEquipmentLink ? (
+                <>
+                  No equipment is saved yet. Add equipment on the{" "}
+                  <Link
+                    className="font-medium text-foreground underline underline-offset-4"
+                    to="/equipment"
+                  >
+                    Equipment
+                  </Link>{" "}
+                  page first.
+                </>
+              ) : (
+                "No equipment is available in the selected owner's inventory yet."
+              )}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {showManageEquipmentLink ? (
+                <>
+                  Select from your saved equipment. You can update the list on
+                  the{" "}
+                  <Link
+                    className="font-medium text-foreground underline underline-offset-4"
+                    to="/equipment"
+                  >
+                    Equipment
+                  </Link>{" "}
+                  page.
+                </>
+              ) : (
+                "Select from the selected owner's saved equipment."
+              )}
+            </p>
+          )
+        }
+        isAddDisabled={isEquipmentLoading || availableEquipment.length === 0}
         items={values.equipment}
         onAdd={() => {
           setValues((current) => ({
@@ -335,6 +389,7 @@ export function RecipeCreateForm({
         }}
         renderItem={(equipment, index) => (
           <EquipmentFields
+            availableEquipment={availableEquipment}
             equipment={equipment}
             onChange={(nextEquipment) => {
               setValues((current) => ({
@@ -445,7 +500,9 @@ function CoverPhotoPreviewCard({
 
 type RecipeCreateCollectionSectionProps<TItem> = {
   addLabel: string;
+  description?: JSX.Element;
   getItemHeading?: (index: number) => string | null;
+  isAddDisabled?: boolean;
   items: TItem[];
   onAdd: () => void;
   onRemove: (index: number) => void;
@@ -455,7 +512,9 @@ type RecipeCreateCollectionSectionProps<TItem> = {
 
 function RecipeCreateCollectionSection<TItem>({
   addLabel,
+  description,
   getItemHeading,
+  isAddDisabled = false,
   items,
   onAdd,
   onRemove,
@@ -465,11 +524,15 @@ function RecipeCreateCollectionSection<TItem>({
   return (
     <section className="space-y-4 border-b border-border pb-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold tracking-tight text-foreground">
-          {title}
-        </h2>
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground">
+            {title}
+          </h2>
+          {description ?? null}
+        </div>
         <Button
           className="rounded-md px-4"
+          disabled={isAddDisabled}
           onClick={onAdd}
           type="button"
           variant="outline"
@@ -620,26 +683,34 @@ function IngredientFields({
 }
 
 type EquipmentFieldsProps = {
+  availableEquipment: EquipmentItem[];
   equipment: RecipeCreateEquipmentFormValue;
   onChange: (equipment: RecipeCreateEquipmentFormValue) => void;
 };
 
 function EquipmentFields({
+  availableEquipment,
   equipment,
   onChange,
 }: EquipmentFieldsProps): JSX.Element {
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <label>
+      <label className="md:col-span-2">
         <span className="text-sm font-medium text-foreground">Equipment</span>
-        <input
+        <select
           className={inputClassName}
           onChange={(event) => {
-            onChange({ ...equipment, name: event.target.value });
+            onChange({ ...equipment, equipmentId: event.target.value });
           }}
-          placeholder="Chef's knife"
-          value={equipment.name}
-        />
+          value={equipment.equipmentId}
+        >
+          <option value="">Choose equipment</option>
+          {availableEquipment.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </select>
       </label>
 
       <label>

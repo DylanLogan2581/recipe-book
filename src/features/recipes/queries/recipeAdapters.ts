@@ -1,4 +1,5 @@
 import type { RecipeCategorySummary } from "@/features/categories";
+import type { EquipmentItem } from "@/features/equipment";
 import type { Database } from "@/types/supabase";
 
 import {
@@ -68,14 +69,26 @@ export function buildRecipeInsert(
 export function buildRecipeEquipmentInsertRows(
   recipeId: string,
   equipment: CreateRecipeEquipmentInput[] | undefined,
+  inventoryItemsById: ReadonlyMap<string, EquipmentItem>,
 ): RecipeEquipmentInsert[] {
-  return (equipment ?? []).map((item, index) => ({
-    details: normalizeOptionalText(item.details),
-    is_optional: item.isOptional ?? false,
-    name: item.name.trim(),
-    position: index + 1,
-    recipe_id: recipeId,
-  }));
+  return (equipment ?? []).map((item, index) => {
+    const inventoryItem = inventoryItemsById.get(item.equipmentId);
+
+    if (inventoryItem === undefined) {
+      throw new Error(
+        `Equipment inventory item ${item.equipmentId} is missing from the recipe owner inventory map.`,
+      );
+    }
+
+    return {
+      details: normalizeOptionalText(item.details),
+      equipment_id: item.equipmentId,
+      is_optional: item.isOptional ?? false,
+      name: inventoryItem.name.trim(),
+      position: index + 1,
+      recipe_id: recipeId,
+    };
+  });
 }
 
 export function buildRecipeIngredientInsertRows(
@@ -176,6 +189,7 @@ function getTotalMinutes(
 function mapRecipeEquipmentRow(row: RecipeEquipmentRow): RecipeEquipment {
   return {
     details: row.details,
+    equipmentId: row.equipment_id,
     id: row.id,
     isOptional: row.is_optional,
     name: row.name,

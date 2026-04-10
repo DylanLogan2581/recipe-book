@@ -41,6 +41,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
       equipment: [
         {
           details: "large pot",
+          equipmentId: "inventory-1",
           id: "equipment-1",
           isOptional: false,
           name: "Dutch oven",
@@ -88,8 +89,8 @@ describe("createRecipeFormValuesFromRecipe", () => {
       equipment: [
         {
           details: "large pot",
+          equipmentId: "inventory-1",
           isOptional: false,
-          name: "Dutch oven",
         },
       ],
       ingredients: [

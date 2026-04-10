@@ -12,8 +12,8 @@ describe("recipeCreateFormSchema", () => {
       equipment: [
         {
           details: "Large mixing bowl",
+          equipmentId: "22222222-2222-4222-8222-222222222222",
           isOptional: false,
-          name: "Bowl",
         },
       ],
       ingredients: [
@@ -50,8 +50,8 @@ describe("recipeCreateFormSchema", () => {
       equipment: [
         {
           details: "Large mixing bowl",
+          equipmentId: "22222222-2222-4222-8222-222222222222",
           isOptional: false,
-          name: "Bowl",
         },
       ],
       ingredients: [
@@ -109,6 +109,56 @@ describe("recipeCreateFormSchema", () => {
         "Add at least one ingredient.",
         "Add at least one step.",
       ]),
+    );
+  });
+
+  it("requires equipment selections to come from the inventory list", () => {
+    const result = recipeCreateFormSchema.safeParse({
+      allergens: [],
+      categoryIds: [],
+      cookMinutes: "",
+      description: "",
+      equipment: [
+        {
+          details: "",
+          equipmentId: "",
+          isOptional: false,
+        },
+      ],
+      ingredients: [
+        {
+          amount: "1",
+          isOptional: false,
+          item: "Flour",
+          notes: "",
+          preparation: "",
+          unit: "cups",
+        },
+      ],
+      isScalable: true,
+      prepMinutes: "",
+      steps: [
+        {
+          instruction: "Mix the flour.",
+          notes: "",
+          timerUnit: "minutes",
+          timerValue: "",
+        },
+      ],
+      summary: "",
+      title: "Bread",
+      yieldQuantity: "",
+      yieldUnit: "",
+    });
+
+    expect(result.success).toBe(false);
+
+    if (result.success) {
+      return;
+    }
+
+    expect(result.error.issues.map((issue) => issue.message)).toContain(
+      "Choose an equipment item.",
     );
   });
 

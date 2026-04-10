@@ -65,8 +65,8 @@ const recipeIngredientSchema = z.object({
 
 const recipeEquipmentSchema = z.object({
   details: optionalTrimmedTextSchema,
+  equipmentId: z.string().uuid("Choose an equipment item."),
   isOptional: z.boolean(),
-  name: z.string().trim().min(1, "Add an equipment item."),
 });
 
 const recipeStepSchema = z.object({
@@ -116,8 +116,8 @@ export const recipeCreateFormSchema = z
       description,
       equipment: equipment.map((item) => ({
         details: normalizeOptionalText(item.details),
+        equipmentId: item.equipmentId,
         isOptional: item.isOptional,
-        name: item.name,
       })),
       ingredients: ingredients.map((ingredient) => ({
         amount: ingredient.amount,

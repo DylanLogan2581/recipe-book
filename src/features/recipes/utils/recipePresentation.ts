@@ -21,6 +21,8 @@ export function getRecipeLoadDocumentTitle(
   if (surface === "detail" && error instanceof RecipeDataAccessError) {
     switch (error.code) {
       case "invalid-equipment":
+      case "mutation-blocked":
+      case "ownership-required":
         return "Recipe Unavailable";
       case "not-found":
         return "Recipe Not Found";
@@ -181,6 +183,13 @@ export function getRecipeLoadErrorCopy(
         return {
           description:
             "One or more selected equipment items are no longer available for this recipe owner.",
+          title: "This recipe could not be loaded right now.",
+        };
+      case "mutation-blocked":
+      case "ownership-required":
+        return {
+          description:
+            "This recipe is available to read, but the current session cannot complete that management action.",
           title: "This recipe could not be loaded right now.",
         };
       case "not-found":

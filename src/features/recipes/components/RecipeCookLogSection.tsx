@@ -14,6 +14,7 @@ import {
   RecipeCookLogPhotoError,
   uploadRecipeCookLogPhoto,
 } from "../queries/recipeCookLogPhotoApi";
+import { RecipeDataAccessError } from "../queries/recipeDataErrors";
 import { recipeQueryKeys } from "../queries/recipeKeys";
 
 import type {
@@ -88,96 +89,114 @@ export function RecipeCookLogSection({
         </Button>
       </div>
 
-      <div className={isExpanded ? "space-y-6" : "hidden"} hidden={!isExpanded} id={contentId}>
-          {isOwner ? (
-            <section className="space-y-4" aria-labelledby="cook-memory-create-heading">
-              <div className="border-b border-border/70 pb-2">
-                <h3
-                  className="text-base font-semibold tracking-tight text-foreground"
-                  id="cook-memory-create-heading"
-                >
-                  Add a cook memory
-                </h3>
-              </div>
-              <form
-                className="rounded-lg border border-border bg-background p-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  void handleCreateCookLog();
-                }}
-              >
-                <div className="grid gap-4 md:grid-cols-2">
-                  <label>
-                    <span className="text-sm font-medium text-foreground">Cooked on</span>
-                    <input
-                      className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      onChange={(event) => {
-                        setCookedOn(event.target.value);
-                      }}
-                      type="date"
-                      value={cookedOn}
-                    />
-                  </label>
-
-                  <label>
-                    <span className="text-sm font-medium text-foreground">Photo</span>
-                    <input
-                      accept="image/jpeg,image/png,image/webp"
-                      className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      disabled={isSubmitting}
-                      onChange={(event) => {
-                        setSelectedPhoto(event.target.files?.[0] ?? null);
-                      }}
-                      type="file"
-                    />
-                  </label>
-
-                  <label className="md:col-span-2">
-                    <span className="text-sm font-medium text-foreground">Notes</span>
-                    <textarea
-                      className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
-                      onChange={(event) => {
-                        setNotes(event.target.value);
-                      }}
-                      placeholder="What changed, what worked, and what you want to remember next time."
-                      value={notes}
-                    />
-                  </label>
-                </div>
-
-                <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
-                  <Button className="rounded-md px-5" disabled={isSubmitting} size="lg" type="submit">
-                    {isSubmitting ? "Saving memory..." : "Save cook memory"}
-                  </Button>
-                </div>
-              </form>
-            </section>
-          ) : null}
-
+      <div
+        className={isExpanded ? "space-y-6" : "hidden"}
+        hidden={!isExpanded}
+        id={contentId}
+      >
+        {isOwner ? (
           <section
-            aria-labelledby="cook-memory-history-heading"
-            className={savedMemoriesSectionClassName}
+            className="space-y-4"
+            aria-labelledby="cook-memory-create-heading"
           >
             <div className="border-b border-border/70 pb-2">
               <h3
                 className="text-base font-semibold tracking-tight text-foreground"
-                id="cook-memory-history-heading"
+                id="cook-memory-create-heading"
               >
-                Saved memories
+                Add a cook memory
               </h3>
             </div>
-            {recipe.cookLogs.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
-                No cook memories were saved for this recipe yet.
+            <form
+              className="rounded-lg border border-border bg-background p-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void handleCreateCookLog();
+              }}
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <label>
+                  <span className="text-sm font-medium text-foreground">
+                    Cooked on
+                  </span>
+                  <input
+                    className="mt-2 w-full rounded-2xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    onChange={(event) => {
+                      setCookedOn(event.target.value);
+                    }}
+                    type="date"
+                    value={cookedOn}
+                  />
+                </label>
+
+                <label>
+                  <span className="text-sm font-medium text-foreground">
+                    Photo
+                  </span>
+                  <input
+                    accept="image/jpeg,image/png,image/webp"
+                    className="mt-2 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    disabled={isSubmitting}
+                    onChange={(event) => {
+                      setSelectedPhoto(event.target.files?.[0] ?? null);
+                    }}
+                    type="file"
+                  />
+                </label>
+
+                <label className="md:col-span-2">
+                  <span className="text-sm font-medium text-foreground">
+                    Notes
+                  </span>
+                  <textarea
+                    className="mt-2 min-h-28 w-full rounded-xl border border-input bg-background/90 px-4 py-3 text-sm text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    onChange={(event) => {
+                      setNotes(event.target.value);
+                    }}
+                    placeholder="What changed, what worked, and what you want to remember next time."
+                    value={notes}
+                  />
+                </label>
               </div>
-            ) : (
-              <ol className="space-y-4">
-                {recipe.cookLogs.map((cookLog) => (
-                  <CookLogCard key={cookLog.id} cookLog={cookLog} />
-                ))}
-              </ol>
-            )}
+
+              <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+                <Button
+                  className="rounded-md px-5"
+                  disabled={isSubmitting}
+                  size="lg"
+                  type="submit"
+                >
+                  {isSubmitting ? "Saving memory..." : "Save cook memory"}
+                </Button>
+              </div>
+            </form>
           </section>
+        ) : null}
+
+        <section
+          aria-labelledby="cook-memory-history-heading"
+          className={savedMemoriesSectionClassName}
+        >
+          <div className="border-b border-border/70 pb-2">
+            <h3
+              className="text-base font-semibold tracking-tight text-foreground"
+              id="cook-memory-history-heading"
+            >
+              Saved memories
+            </h3>
+          </div>
+          {recipe.cookLogs.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">
+              No cook memories were saved for this recipe yet.
+            </div>
+          ) : (
+            <ol className="space-y-4">
+              {recipe.cookLogs.map((cookLog) => (
+                <CookLogCard key={cookLog.id} cookLog={cookLog} />
+              ))}
+            </ol>
+          )}
+        </section>
       </div>
     </section>
   );
@@ -203,13 +222,16 @@ export function RecipeCookLogSection({
       setNotes("");
       setSelectedPhoto(null);
       toast({
-        description: "The cook log history has been refreshed with your latest entry.",
+        description:
+          "The cook log history has been refreshed with your latest entry.",
         tone: "success",
         title: "Cook memory saved",
       });
     } catch (error) {
       if (uploadedPhotoPath !== null) {
-        await deleteRecipeCookLogPhoto(uploadedPhotoPath).catch(() => undefined);
+        await deleteRecipeCookLogPhoto(uploadedPhotoPath).catch(
+          () => undefined,
+        );
       }
 
       toast({
@@ -254,7 +276,14 @@ function CookLogCard({
 }
 
 function getCookLogErrorMessage(error: unknown): string {
-  if (isRecipeMutationAuthError(error) || error instanceof RecipeCookLogPhotoError) {
+  if (
+    isRecipeMutationAuthError(error) ||
+    error instanceof RecipeCookLogPhotoError
+  ) {
+    return error.message;
+  }
+
+  if (error instanceof RecipeDataAccessError) {
     return error.message;
   }
 

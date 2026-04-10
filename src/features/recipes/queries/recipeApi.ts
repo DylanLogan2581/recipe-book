@@ -18,6 +18,11 @@ import {
 } from "./recipeAdapters";
 import { requireRecipeMutationAuth } from "./recipeAuth";
 import { listRecipeCookLogs } from "./recipeCookLogApi";
+import { RecipeDataAccessError } from "./recipeDataErrors";
+import {
+  resolveRecipeMutationAccessError,
+  type RecipeOwnershipLookupClient,
+} from "./recipeMutationAccess";
 import { getRecipeCreatorName } from "./recipeProfileApi";
 
 import type {
@@ -34,25 +39,8 @@ type RecipeApiClient = NonNullable<typeof supabase>;
 type CreatedRecipeRecord = {
   id: string;
 };
-
-export type RecipeDataAccessErrorCode =
-  | "invalid-equipment"
-  | "not-found"
-  | "supabase-unconfigured";
-
-export class RecipeDataAccessError extends Error {
-  readonly code: RecipeDataAccessErrorCode;
-
-  constructor(
-    code: RecipeDataAccessErrorCode,
-    message: string,
-    options?: ErrorOptions,
-  ) {
-    super(message, options);
-    this.code = code;
-    this.name = "RecipeDataAccessError";
-  }
-}
+export { RecipeDataAccessError } from "./recipeDataErrors";
+export type { RecipeDataAccessErrorCode } from "./recipeDataErrors";
 
 const recipeListSelect = `
   id,
@@ -176,9 +164,10 @@ export async function deleteRecipe(
   }
 
   if (data === null) {
-    throw new RecipeDataAccessError(
-      "not-found",
-      `Recipe ${recipeId} was not found or could not be deleted.`,
+    throw await resolveRecipeMutationAccessError(
+      "delete",
+      recipeId,
+      recipeClient as unknown as RecipeOwnershipLookupClient,
     );
   }
 
@@ -209,9 +198,10 @@ export async function updateRecipe(
   }
 
   if (data === null) {
-    throw new RecipeDataAccessError(
-      "not-found",
-      `Recipe ${recipeId} was not found or could not be updated.`,
+    throw await resolveRecipeMutationAccessError(
+      "update",
+      recipeId,
+      recipeClient as unknown as RecipeOwnershipLookupClient,
     );
   }
 

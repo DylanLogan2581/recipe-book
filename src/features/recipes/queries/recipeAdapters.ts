@@ -71,14 +71,24 @@ export function buildRecipeEquipmentInsertRows(
   equipment: CreateRecipeEquipmentInput[] | undefined,
   inventoryItemsById: ReadonlyMap<string, EquipmentItem>,
 ): RecipeEquipmentInsert[] {
-  return (equipment ?? []).map((item, index) => ({
-    details: normalizeOptionalText(item.details),
-    equipment_id: item.equipmentId,
-    is_optional: item.isOptional ?? false,
-    name: inventoryItemsById.get(item.equipmentId)?.name.trim() ?? "",
-    position: index + 1,
-    recipe_id: recipeId,
-  }));
+  return (equipment ?? []).map((item, index) => {
+    const inventoryItem = inventoryItemsById.get(item.equipmentId);
+
+    if (inventoryItem === undefined) {
+      throw new Error(
+        `Equipment inventory item ${item.equipmentId} is missing from the recipe owner inventory map.`,
+      );
+    }
+
+    return {
+      details: normalizeOptionalText(item.details),
+      equipment_id: item.equipmentId,
+      is_optional: item.isOptional ?? false,
+      name: inventoryItem.name.trim(),
+      position: index + 1,
+      recipe_id: recipeId,
+    };
+  });
 }
 
 export function buildRecipeIngredientInsertRows(

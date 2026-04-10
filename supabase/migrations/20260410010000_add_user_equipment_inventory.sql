@@ -76,7 +76,7 @@ insert into
   public.user_equipment (owner_id, name)
 select distinct
   recipes.owner_id,
-  recipe_equipment.name
+  btrim(recipe_equipment.name)
 from
   public.recipe_equipment
   inner join public.recipes on recipes.id = recipe_equipment.recipe_id

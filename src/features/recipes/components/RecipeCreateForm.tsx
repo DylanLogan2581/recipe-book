@@ -38,6 +38,7 @@ type RecipeCreateFormProps = {
   coverPhotoInputResetKey: number;
   currentCoverPhotoPath: string | null;
   hasCoverPhoto: boolean;
+  isEquipmentLoading: boolean;
   isPending: boolean;
   onCoverPhotoChange: (file: File | null) => void;
   onRemoveCoverPhoto: () => void;
@@ -60,6 +61,7 @@ export function RecipeCreateForm({
   coverPhotoInputResetKey,
   currentCoverPhotoPath,
   hasCoverPhoto,
+  isEquipmentLoading,
   isPending,
   onCoverPhotoChange,
   onRemoveCoverPhoto,
@@ -323,7 +325,13 @@ export function RecipeCreateForm({
       <RecipeCreateCollectionSection
         addLabel="Add equipment"
         description={
-          availableEquipment.length === 0 ? (
+          isEquipmentLoading ? (
+            <p className="text-sm text-muted-foreground">
+              {showManageEquipmentLink
+                ? "Loading your equipment inventory."
+                : "Loading the selected owner's equipment inventory."}
+            </p>
+          ) : availableEquipment.length === 0 ? (
             <p className="text-sm text-muted-foreground">
               {showManageEquipmentLink ? (
                 <>
@@ -360,7 +368,7 @@ export function RecipeCreateForm({
             </p>
           )
         }
-        isAddDisabled={availableEquipment.length === 0}
+        isAddDisabled={isEquipmentLoading || availableEquipment.length === 0}
         items={values.equipment}
         onAdd={() => {
           setValues((current) => ({

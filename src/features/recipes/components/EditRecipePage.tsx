@@ -275,6 +275,7 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
           hasCoverPhoto={
             currentCoverPhotoPath !== null || selectedCoverPhoto !== null
           }
+          isEquipmentLoading={equipmentListQuery.isLoading}
           isPending={isSubmitting}
           onCoverPhotoChange={(file) => {
             setSelectedCoverPhoto(file);

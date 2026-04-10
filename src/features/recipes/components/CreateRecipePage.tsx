@@ -160,6 +160,7 @@ export function CreateRecipePage(): JSX.Element {
           coverPhotoInputResetKey={coverPhotoInputResetKey}
           currentCoverPhotoPath={null}
           hasCoverPhoto={selectedCoverPhoto !== null}
+          isEquipmentLoading={equipmentListQuery.isLoading}
           isPending={isSubmitting}
           onCoverPhotoChange={(file) => {
             setSelectedCoverPhoto(file);

@@ -86,6 +86,9 @@ function buildRecipeDetail(
     totalMinutes: 30,
     updatedAt: "2026-03-27T10:15:00.000Z",
     yieldQuantity: 4,
+    yieldQuantityNormalized: 4,
+    yieldUnitFamily: "count",
+    yieldUnitKey: "servings",
     yieldUnit: "servings",
     ...overrides,
   };
@@ -110,6 +113,9 @@ function buildRecipeListItem(
     totalMinutes: 30,
     updatedAt: "2026-03-27T10:15:00.000Z",
     yieldQuantity: 4,
+    yieldQuantityNormalized: 4,
+    yieldUnitFamily: "count",
+    yieldUnitKey: "servings",
     yieldUnit: "servings",
     ...overrides,
   };

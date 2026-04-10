@@ -18,6 +18,7 @@ import {
   recipeTimerUnits,
   type RecipeTimerUnit,
 } from "../utils/recipeTimerUnits";
+import { getRecipeUnitGroups } from "../utils/recipeUnits";
 
 import { RecipeAllergenFieldset } from "./RecipeAllergenFieldset";
 import { RecipeCategoryFieldset } from "./RecipeCategoryFieldset";
@@ -74,6 +75,8 @@ export function RecipeCreateForm({
   submitPendingLabel,
   values,
 }: RecipeCreateFormProps): JSX.Element {
+  const unitGroups = getRecipeUnitGroups();
+
   return (
     <form className="space-y-10" onSubmit={onSubmit}>
       <section className="space-y-6 border-b border-border pb-8">
@@ -147,16 +150,27 @@ export function RecipeCreateForm({
             <span className="text-sm font-medium text-foreground">
               Yield unit
             </span>
-            <input
+            <select
               className={inputClassName}
               name="yieldUnit"
               onChange={(event) => {
-                const yieldUnit = event.target.value;
+                const yieldUnit = event.target
+                  .value as RecipeCreateFormValues["yieldUnit"];
                 setValues((current) => ({ ...current, yieldUnit }));
               }}
-              placeholder="servings"
               value={values.yieldUnit}
-            />
+            >
+              <option value="">No unit</option>
+              {unitGroups.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
           </label>
 
           <label>
@@ -591,9 +605,6 @@ function IngredientFields({
   ingredient,
   onChange,
 }: IngredientFieldsProps): JSX.Element {
-  const normalizedUnit = ingredient.unit.trim();
-  const unitGroups = getIngredientUnitGroups(normalizedUnit);
-
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <label className="md:col-span-2">
@@ -626,12 +637,16 @@ function IngredientFields({
         <select
           className={inputClassName}
           onChange={(event) => {
-            onChange({ ...ingredient, unit: event.target.value.trim() });
+            onChange({
+              ...ingredient,
+              unit: event.target
+                .value as RecipeCreateIngredientFormValue["unit"],
+            });
           }}
-          value={normalizedUnit}
+          value={ingredient.unit}
         >
           <option value="">No unit</option>
-          {unitGroups.map((group) => (
+          {getIngredientUnitGroups().map((group) => (
             <optgroup key={group.label} label={group.label}>
               {group.options.map((option) => (
                 <option key={option} value={option}>

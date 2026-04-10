@@ -1,9 +1,16 @@
 import { RecipeDataAccessError } from "../queries/recipeApi";
 
 import { getRecipeAllergenLabel, sortRecipeAllergens } from "./recipeAllergens";
-import { scaleIngredientAmount, scaleRecipeYield } from "./recipeScaling";
+import {
+  formatRecipeQuantity,
+  type RecipeDisplaySystem,
+  type RecipeUnitKey,
+} from "./recipeUnits";
 
-import type { RecipeAllergen } from "../types/recipes";
+import type {
+  RecipeAllergen,
+  RecipeMeasurementPreference,
+} from "../types/recipes";
 
 type RecipeLoadSurface = "detail" | "list";
 
@@ -59,25 +66,25 @@ export function formatRecipeTime(recipe: {
 }
 
 export function formatRecipeYield(
-  yieldQuantity: number | null,
-  yieldUnit: string | null,
+  yieldQuantityNormalized: number | null,
+  yieldUnitFamily: RecipeQuantityLike["unitFamily"],
+  yieldUnitKey: RecipeQuantityLike["unitKey"],
+  displaySystem: RecipeDisplaySystem,
   scaleFactor = 1,
+  fallbackYieldQuantity?: number | null,
+  fallbackYieldUnit?: string | null,
 ): string {
-  const scaledYieldQuantity = scaleRecipeYield(yieldQuantity, scaleFactor);
-
-  if (scaledYieldQuantity === null && yieldUnit === null) {
-    return "Yield not set";
-  }
-
-  if (scaledYieldQuantity === null) {
-    return yieldUnit ?? "Yield not set";
-  }
-
-  if (yieldUnit === null) {
-    return `${scaledYieldQuantity} servings`;
-  }
-
-  return `${scaledYieldQuantity} ${yieldUnit}`;
+  return (
+    formatRecipeQuantity(
+      yieldQuantityNormalized,
+      yieldUnitFamily,
+      yieldUnitKey,
+      displaySystem,
+      scaleFactor,
+      fallbackYieldQuantity,
+      fallbackYieldUnit,
+    ) ?? "Yield not set"
+  );
 }
 
 export function formatRecipeAllergenSummary(
@@ -91,24 +98,25 @@ export function formatRecipeAllergenSummary(
 }
 
 export function formatIngredientText(
-  ingredient: {
-    amount: number | null;
-    item: string;
-    preparation: string | null;
-    unit: string | null;
-  },
+  ingredient: RecipeIngredientLike,
+  displaySystem: RecipeMeasurementPreference["displaySystem"],
   scaleFactor = 1,
 ): string {
-  const scaledAmount = scaleIngredientAmount(ingredient.amount, scaleFactor);
-  const amountText = scaledAmount === null ? null : `${scaledAmount}`;
-  const unitText = ingredient.unit;
-  const lead = [amountText, unitText].filter(Boolean).join(" ").trim();
+  const lead = formatRecipeQuantity(
+    ingredient.amountNormalized,
+    ingredient.unitFamily,
+    ingredient.unitKey,
+    displaySystem,
+    scaleFactor,
+    ingredient.amount,
+    ingredient.unit,
+  );
   const itemText =
     ingredient.preparation === null
       ? ingredient.item
       : `${ingredient.item}, ${ingredient.preparation}`;
 
-  if (lead === "") {
+  if (lead === null) {
     return itemText;
   }
 
@@ -241,3 +249,16 @@ export function getRecipeSummary(summary: string, description: string): string {
 
   return "A public recipe is ready to open in the detail route.";
 }
+
+type RecipeQuantityLike = {
+  unitFamily: "count" | "volume" | "weight" | null;
+  unitKey: RecipeUnitKey | null;
+};
+
+type RecipeIngredientLike = RecipeQuantityLike & {
+  amount: number | null;
+  amountNormalized: number | null;
+  item: string;
+  preparation: string | null;
+  unit: string | null;
+};

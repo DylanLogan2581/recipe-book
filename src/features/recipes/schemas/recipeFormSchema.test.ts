@@ -39,7 +39,7 @@ describe("recipeCreateFormSchema", () => {
       summary: "Simple loaf",
       title: "Bread",
       yieldQuantity: "1",
-      yieldUnit: "loaf",
+      yieldUnit: "servings",
     });
 
     expect(result).toEqual({
@@ -76,7 +76,7 @@ describe("recipeCreateFormSchema", () => {
       summary: "Simple loaf",
       title: "Bread",
       yieldQuantity: 1,
-      yieldUnit: "loaf",
+      yieldUnit: "servings",
     });
   });
 
@@ -176,7 +176,7 @@ describe("recipeCreateFormSchema", () => {
           item: "Salt",
           notes: "",
           preparation: "",
-          unit: "tsp",
+          unit: "teaspoons",
         },
       ],
       isScalable: false,
@@ -223,7 +223,7 @@ describe("recipeCreateFormSchema", () => {
           item: "Beans",
           notes: "",
           preparation: "",
-          unit: "cup",
+          unit: "cups",
         },
       ],
       isScalable: false,

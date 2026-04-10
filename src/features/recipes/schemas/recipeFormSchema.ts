@@ -5,6 +5,11 @@ import {
   convertRecipeTimerToSeconds,
   recipeTimerUnits,
 } from "../utils/recipeTimerUnits";
+import {
+  normalizeRecipeUnitKey,
+  recipeUnitKeys,
+  type RecipeUnitKey,
+} from "../utils/recipeUnits";
 
 import type { CreateRecipeInput } from "../types/recipes";
 
@@ -60,7 +65,7 @@ const recipeIngredientSchema = z.object({
   item: z.string().trim().min(1, "Add an ingredient name."),
   notes: optionalTrimmedTextSchema,
   preparation: optionalTrimmedTextSchema,
-  unit: optionalTrimmedTextSchema,
+  unit: z.union([z.literal(""), z.enum(recipeUnitKeys)]),
 });
 
 const recipeEquipmentSchema = z.object({
@@ -75,6 +80,11 @@ const recipeStepSchema = z.object({
   timerUnit: z.enum(recipeTimerUnits),
   timerValue: optionalIntegerStringSchema,
 });
+
+const optionalRecipeUnitSchema = z.union([
+  z.literal(""),
+  z.enum(recipeUnitKeys),
+]);
 
 export const recipeCreateFormSchema = z
   .object({
@@ -92,7 +102,7 @@ export const recipeCreateFormSchema = z
     summary: optionalTrimmedTextSchema,
     title: z.string().trim().min(1, "Add a recipe title."),
     yieldQuantity: optionalNumberStringSchema,
-    yieldUnit: optionalTrimmedTextSchema,
+    yieldUnit: optionalRecipeUnitSchema,
   })
   .transform(
     ({
@@ -125,7 +135,7 @@ export const recipeCreateFormSchema = z
         item: ingredient.item,
         notes: normalizeOptionalText(ingredient.notes),
         preparation: normalizeOptionalText(ingredient.preparation),
-        unit: normalizeOptionalText(ingredient.unit),
+        unit: normalizeOptionalUnitKey(ingredient.unit),
       })),
       isScalable,
       prepMinutes,
@@ -140,10 +150,16 @@ export const recipeCreateFormSchema = z
       summary,
       title,
       yieldQuantity,
-      yieldUnit: normalizeOptionalText(yieldUnit),
+      yieldUnit: normalizeOptionalUnitKey(yieldUnit),
     }),
   );
 
 function normalizeOptionalText(value: string): string | null {
   return value === "" ? null : value;
+}
+
+function normalizeOptionalUnitKey(
+  value: "" | RecipeUnitKey,
+): RecipeUnitKey | null {
+  return normalizeRecipeUnitKey(value);
 }

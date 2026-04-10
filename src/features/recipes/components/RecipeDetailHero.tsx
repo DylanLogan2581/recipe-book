@@ -19,11 +19,13 @@ import type { RecipeDetail } from "../types/recipes";
 import type { JSX } from "react";
 
 type RecipeDetailHeroProps = {
+  displaySystem: "imperial" | "metric";
   recipe: RecipeDetail;
   scaleFactor: number;
 };
 
 export function RecipeDetailHero({
+  displaySystem,
   recipe,
   scaleFactor,
 }: RecipeDetailHeroProps): JSX.Element {
@@ -32,7 +34,15 @@ export function RecipeDetailHero({
   const hasCoverImage = recipe.coverImagePath !== null;
   const metadata = [
     formatRecipeTime(recipe),
-    formatRecipeYield(recipe.yieldQuantity, recipe.yieldUnit, scaleFactor),
+    formatRecipeYield(
+      recipe.yieldQuantityNormalized,
+      recipe.yieldUnitFamily,
+      recipe.yieldUnitKey,
+      displaySystem,
+      scaleFactor,
+      recipe.yieldQuantity,
+      recipe.yieldUnit,
+    ),
     getRecipeScalingLabel(recipe.isScalable),
   ];
   const creatorLabel = getRecipeCreatorLabel(recipe.creatorName);

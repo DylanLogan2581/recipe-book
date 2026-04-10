@@ -52,12 +52,15 @@ describe("createRecipeFormValuesFromRecipe", () => {
       ingredients: [
         {
           amount: 2,
+          amountNormalized: null,
           id: "ingredient-1",
           isOptional: false,
           item: "Olive oil",
           notes: "plus more to serve",
           position: 1,
           preparation: "divided",
+          unitFamily: null,
+          unitKey: null,
           unit: "tbsp",
         },
       ],
@@ -78,6 +81,9 @@ describe("createRecipeFormValuesFromRecipe", () => {
       totalMinutes: 35,
       updatedAt: "2026-04-03T00:00:00.000Z",
       yieldQuantity: 4,
+      yieldQuantityNormalized: null,
+      yieldUnitFamily: null,
+      yieldUnitKey: null,
       yieldUnit: "servings",
     };
 
@@ -100,7 +106,7 @@ describe("createRecipeFormValuesFromRecipe", () => {
           item: "Olive oil",
           notes: "plus more to serve",
           preparation: "divided",
-          unit: "tbsp",
+          unit: "tablespoons",
         },
       ],
       isScalable: true,
@@ -142,6 +148,9 @@ describe("createRecipeFormValuesFromRecipe", () => {
       totalMinutes: null,
       updatedAt: "2026-04-03T00:00:00.000Z",
       yieldQuantity: null,
+      yieldQuantityNormalized: null,
+      yieldUnitFamily: null,
+      yieldUnitKey: null,
       yieldUnit: null,
     };
 
@@ -183,6 +192,9 @@ describe("createRecipeFormValuesFromRecipe", () => {
       totalMinutes: null,
       updatedAt: "2026-04-03T00:00:00.000Z",
       yieldQuantity: null,
+      yieldQuantityNormalized: null,
+      yieldUnitFamily: null,
+      yieldUnitKey: null,
       yieldUnit: null,
     };
 

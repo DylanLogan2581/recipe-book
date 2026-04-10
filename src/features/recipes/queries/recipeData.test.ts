@@ -50,6 +50,7 @@ describe("mapRecipeDetailRecord", () => {
         recipe_ingredients: [
           {
             amount: 2,
+            amount_normalized: 9.8578,
             created_at: "2026-03-26T10:00:00.000Z",
             id: "ingredient-2",
             is_optional: true,
@@ -58,11 +59,14 @@ describe("mapRecipeDetailRecord", () => {
             position: 2,
             preparation: null,
             recipe_id: "recipe-1",
+            unit_family: "volume",
+            unit_key: "milliliters",
             unit: "teaspoons",
             updated_at: "2026-03-26T10:00:00.000Z",
           },
           {
             amount: 500,
+            amount_normalized: 500,
             created_at: "2026-03-26T10:00:00.000Z",
             id: "ingredient-1",
             is_optional: false,
@@ -71,6 +75,8 @@ describe("mapRecipeDetailRecord", () => {
             position: 1,
             preparation: null,
             recipe_id: "recipe-1",
+            unit_family: "weight",
+            unit_key: "grams",
             unit: "grams",
             updated_at: "2026-03-26T10:00:00.000Z",
           },
@@ -101,6 +107,9 @@ describe("mapRecipeDetailRecord", () => {
         title: "Lemon Pasta",
         updated_at: "2026-03-26T10:15:00.000Z",
         yield_quantity: 4,
+        yield_quantity_normalized: 4,
+        yield_unit_family: "count",
+        yield_unit_key: "servings",
         yield_unit: "servings",
       },
       [
@@ -183,7 +192,7 @@ describe("recipe insert builders", () => {
         item: " Lemon zest ",
         notes: " ",
         preparation: " finely grated ",
-        unit: " ",
+        unit: null,
       },
     ]);
     const equipment = buildRecipeEquipmentInsertRows(
@@ -226,17 +235,23 @@ describe("recipe insert builders", () => {
       summary: "",
       title: "Lemon Pasta",
       yield_quantity: null,
+      yield_quantity_normalized: null,
+      yield_unit_family: null,
+      yield_unit_key: null,
       yield_unit: null,
     });
     expect(ingredients).toEqual([
       {
         amount: null,
+        amount_normalized: null,
         is_optional: true,
         item: "Lemon zest",
         notes: null,
         position: 1,
         preparation: "finely grated",
         recipe_id: "recipe-1",
+        unit_family: null,
+        unit_key: null,
         unit: null,
       },
     ]);

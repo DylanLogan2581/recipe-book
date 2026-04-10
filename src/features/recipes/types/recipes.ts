@@ -1,3 +1,5 @@
+import type { RecipeCategorySummary } from "@/features/categories";
+
 export type RecipeAllergen =
   | "milk"
   | "eggs"
@@ -11,6 +13,7 @@ export type RecipeAllergen =
 
 export type RecipeListItem = {
   allergens: RecipeAllergen[];
+  categories: RecipeCategorySummary[];
   cookMinutes: number | null;
   coverImagePath: string | null;
   createdAt: string;
@@ -96,6 +99,7 @@ export type CreateRecipeStepInput = {
 
 export type CreateRecipeInput = {
   allergens?: RecipeAllergen[];
+  categoryIds?: string[];
   cookMinutes?: number | null;
   coverImagePath?: string | null;
   description?: string | null;

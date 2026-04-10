@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import type { RecipeCategorySummary } from "@/features/categories";
 
 import { getIngredientUnitGroups } from "../utils/ingredientUnits";
 import {
@@ -16,6 +17,7 @@ import {
 } from "../utils/recipeTimerUnits";
 
 import { RecipeAllergenFieldset } from "./RecipeAllergenFieldset";
+import { RecipeCategoryFieldset } from "./RecipeCategoryFieldset";
 import { RecipeCoverImage } from "./RecipeCoverImage";
 
 import type { FormEvent, JSX } from "react";
@@ -27,6 +29,7 @@ const checkboxClassName =
   "size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20";
 
 type RecipeCreateFormProps = {
+  availableCategories: RecipeCategorySummary[];
   cancelButton: JSX.Element;
   coverPhotoInputResetKey: number;
   currentCoverPhotoPath: string | null;
@@ -46,6 +49,7 @@ type RecipeCreateFormProps = {
 };
 
 export function RecipeCreateForm({
+  availableCategories,
   cancelButton,
   coverPhotoInputResetKey,
   currentCoverPhotoPath,
@@ -375,6 +379,19 @@ export function RecipeCreateForm({
           />
         )}
         title="Steps"
+      />
+
+      <RecipeCategoryFieldset
+        categories={availableCategories}
+        onToggle={(categoryId) => {
+          setValues((current) => ({
+            ...current,
+            categoryIds: current.categoryIds.includes(categoryId)
+              ? current.categoryIds.filter((item) => item !== categoryId)
+              : [...current.categoryIds, categoryId],
+          }));
+        }}
+        selectedCategoryIds={values.categoryIds}
       />
 
       <RecipeAllergenFieldset

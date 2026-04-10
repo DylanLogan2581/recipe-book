@@ -1,3 +1,5 @@
+import type { RecipeCategorySummary } from "@/features/categories";
+
 import {
   createRecipeTimerAuthoringValue,
   type RecipeTimerUnit,
@@ -29,6 +31,7 @@ export type RecipeCreateStepFormValue = {
 
 export type RecipeCreateFormValues = {
   allergens: RecipeAllergen[];
+  categoryIds: string[];
   cookMinutes: string;
   description: string;
   equipment: RecipeCreateEquipmentFormValue[];
@@ -73,6 +76,7 @@ export function createEmptyRecipeStepFormValue(): RecipeCreateStepFormValue {
 export function createEmptyRecipeCreateFormValues(): RecipeCreateFormValues {
   return {
     allergens: [],
+    categoryIds: [],
     cookMinutes: "",
     description: "",
     equipment: [],
@@ -92,6 +96,7 @@ export function createRecipeFormValuesFromRecipe(
 ): RecipeCreateFormValues {
   return {
     allergens: recipe.allergens,
+    categoryIds: recipe.categories.map((category) => category.id),
     cookMinutes: formatOptionalNumber(recipe.cookMinutes),
     description: recipe.description,
     equipment: recipe.equipment.map((item) => ({
@@ -119,6 +124,25 @@ export function createRecipeFormValuesFromRecipe(
     yieldQuantity: formatOptionalNumber(recipe.yieldQuantity),
     yieldUnit: recipe.yieldUnit ?? "",
   };
+}
+
+export function mergeRecipeCategoryOptions(
+  availableCategories: readonly RecipeCategorySummary[],
+  selectedCategories: readonly RecipeCategorySummary[],
+): RecipeCategorySummary[] {
+  const categoryMap = new Map<string, RecipeCategorySummary>();
+
+  for (const category of availableCategories) {
+    categoryMap.set(category.id, category);
+  }
+
+  for (const category of selectedCategories) {
+    categoryMap.set(category.id, category);
+  }
+
+  return [...categoryMap.values()].sort((left, right) =>
+    left.name.localeCompare(right.name),
+  );
 }
 
 function formatOptionalNumber(value: number | null): string {

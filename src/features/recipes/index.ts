@@ -2,6 +2,7 @@ export { RecipeAllergenFieldset } from "./components/RecipeAllergenFieldset";
 export { RecipeAllergenSummary } from "./components/RecipeAllergenSummary";
 export { CreateRecipePage } from "./components/CreateRecipePage";
 export { EditRecipePage } from "./components/EditRecipePage";
+export { RecipeCategoryFieldset } from "./components/RecipeCategoryFieldset";
 export { RecipeDetailPage } from "./components/RecipeDetailPage";
 export { RecipeDetailHero } from "./components/RecipeDetailHero";
 export { RecipeDetailPageErrorState } from "./components/RecipeDetailPageErrorState";
@@ -96,6 +97,7 @@ export {
   createEmptyRecipeIngredientFormValue,
   createEmptyRecipeStepFormValue,
   createRecipeFormValuesFromRecipe,
+  mergeRecipeCategoryOptions,
   type RecipeCreateEquipmentFormValue,
   type RecipeCreateFormValues,
   type RecipeCreateIngredientFormValue,

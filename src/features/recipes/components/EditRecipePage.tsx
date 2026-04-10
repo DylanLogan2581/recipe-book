@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
+import { publicRecipeCategoryListQueryOptions } from "@/features/categories";
 import { profileListQueryOptions } from "@/features/profiles";
 import { useAppToast } from "@/hooks/useAppToast";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -22,6 +23,7 @@ import { recipeCreateFormSchema } from "../schemas/recipeFormSchema";
 import {
   createEmptyRecipeCreateFormValues,
   createRecipeFormValuesFromRecipe,
+  mergeRecipeCategoryOptions,
 } from "../utils/recipeFormValues";
 
 import { RecipeCreateForm } from "./RecipeCreateForm";
@@ -38,6 +40,7 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
   const queryClient = useQueryClient();
   const recipeDetailQuery = useQuery(recipeDetailQueryOptions(recipeId));
   const sessionQuery = useQuery(sessionQueryOptions);
+  const categoryListQuery = useQuery(publicRecipeCategoryListQueryOptions());
   const profileListQuery = useQuery({
     ...profileListQueryOptions(),
     enabled:
@@ -169,6 +172,10 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
     canModerateRecipe &&
     nextOwnerId.trim() !== "" &&
     nextOwnerId !== recipe.ownerId;
+  const availableCategories = mergeRecipeCategoryOptions(
+    categoryListQuery.data ?? [],
+    recipe.categories,
+  );
 
   return (
     <main className="w-full max-w-6xl py-3 sm:py-4">
@@ -205,6 +212,7 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
         ) : null}
 
         <RecipeCreateForm
+          availableCategories={availableCategories}
           cancelButton={
             <Button
               asChild
@@ -256,6 +264,18 @@ export function EditRecipePage({ recipeId }: EditRecipePageProps): JSX.Element {
           submitPendingLabel="Saving changes..."
           values={values}
         />
+
+        {categoryListQuery.isError ? (
+          <section className="rounded-lg border border-amber-300/70 bg-amber-50/80 px-5 py-4">
+            <h2 className="text-sm font-semibold text-amber-950">
+              Categories unavailable
+            </h2>
+            <p className="mt-1 text-sm text-amber-950/85">
+              The category list could not load right now. Existing category
+              assignments are still preserved when you save.
+            </p>
+          </section>
+        ) : null}
       </div>
     </main>
   );

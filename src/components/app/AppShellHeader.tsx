@@ -7,10 +7,12 @@ import type { JSX } from "react";
 
 type AppShellHeaderProps = {
   authActionLabel: string;
+  showAdminNav: boolean;
 };
 
 export function AppShellHeader({
   authActionLabel,
+  showAdminNav,
 }: AppShellHeaderProps): JSX.Element {
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
@@ -41,6 +43,16 @@ export function AppShellHeader({
             >
               <Link to="/equipment">Equipment</Link>
             </Button>
+            {showAdminNav ? (
+              <Button
+                asChild
+                className="rounded-md px-3"
+                size="sm"
+                variant="ghost"
+              >
+                <Link to="/admin/categories">Admin</Link>
+              </Button>
+            ) : null}
           </nav>
         </div>
 

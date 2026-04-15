@@ -37,11 +37,16 @@ function RootShell(): JSX.Element {
     sessionQuery.isLoading,
     sessionQuery.data,
   );
+  const showAdminNav =
+    sessionQuery.data?.kind === "authenticated" && sessionQuery.data.isAdmin;
 
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-4 sm:px-6 lg:px-8">
-        <AppShellHeader authActionLabel={authActionLabel} />
+        <AppShellHeader
+          authActionLabel={authActionLabel}
+          showAdminNav={showAdminNav}
+        />
 
         <div className="flex-1 py-5 sm:py-6">
           <Outlet />

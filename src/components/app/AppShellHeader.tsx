@@ -5,13 +5,24 @@ import { Button } from "@/components/ui/button";
 
 import type { JSX } from "react";
 
+type AuthActionState =
+  | {
+      kind: "authenticated";
+      avatarUrl: string | null;
+      label: string;
+    }
+  | {
+      kind: "guest" | "loading" | "unconfigured";
+      label: string;
+    };
+
 type AppShellHeaderProps = {
-  authActionLabel: string;
+  authAction: AuthActionState;
   showAdminNav: boolean;
 };
 
 export function AppShellHeader({
-  authActionLabel,
+  authAction,
   showAdminNav,
 }: AppShellHeaderProps): JSX.Element {
   return (
@@ -57,19 +68,76 @@ export function AppShellHeader({
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            asChild
-            className="rounded-md px-3"
-            size="sm"
-            variant="outline"
-          >
-            <Link to="/account">
-              <UserRound className="size-4" />
-              {authActionLabel}
-            </Link>
-          </Button>
+          {authAction.kind === "authenticated" ? (
+            <Button
+              asChild
+              className="max-w-56 rounded-md px-2.5 sm:px-3"
+              size="sm"
+              variant="outline"
+            >
+              <Link to="/account">
+                <HeaderAvatar
+                  avatarUrl={authAction.avatarUrl}
+                  label={authAction.label}
+                />
+                <span className="truncate">{authAction.label}</span>
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className="rounded-md px-3"
+              size="sm"
+              variant="outline"
+            >
+              <Link to="/account">
+                <UserRound className="size-4" />
+                {authAction.label}
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>
   );
+}
+
+type HeaderAvatarProps = {
+  avatarUrl: string | null;
+  label: string;
+};
+
+function HeaderAvatar({
+  avatarUrl,
+  label,
+}: HeaderAvatarProps): JSX.Element {
+  if (avatarUrl !== null) {
+    return (
+      <img
+        alt={`${label} profile`}
+        className="size-5 rounded-full border border-border object-cover"
+        src={avatarUrl}
+      />
+    );
+  }
+
+  return (
+    <span
+      aria-label={`${label} profile`}
+      className="inline-flex size-5 items-center justify-center rounded-full border border-border bg-muted text-[0.65rem] font-semibold text-foreground"
+      role="img"
+    >
+      {getHeaderAvatarFallback(label)}
+    </span>
+  );
+}
+
+function getHeaderAvatarFallback(label: string): string {
+  const trimmedLabel = label.trim();
+
+  if (trimmedLabel === "") {
+    return "?";
+  }
+
+  return trimmedLabel.slice(0, 1).toUpperCase();
 }

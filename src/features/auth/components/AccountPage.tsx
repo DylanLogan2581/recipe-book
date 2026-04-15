@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { ProfileSettingsSection } from "@/features/profiles";
 import { ThemePresetPicker, useThemePreset } from "@/features/theme";
 import { useAppToast } from "@/hooks/useAppToast";
@@ -197,22 +195,6 @@ export function AccountPage(): JSX.Element {
             </section>
           ) : null}
 
-          {sessionQuery.data?.kind === "authenticated" &&
-          sessionQuery.data.isAdmin ? (
-            <section className="space-y-3 border-t border-border pt-6">
-              <div>
-                <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                  Admin
-                </h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Manage shared recipe categories for the shelf.
-                </p>
-              </div>
-              <Button asChild className="rounded-md px-4" variant="outline">
-                <Link to="/admin/categories">Manage categories</Link>
-              </Button>
-            </section>
-          ) : null}
         </div>
 
         <section className="space-y-4 border-t border-border pt-6">

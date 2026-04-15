@@ -3,11 +3,16 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy, Suspense, type JSX } from "react";
 
 import { AppShellHeader, AppToasterProvider } from "@/components/app";
+import type { AuthActionState } from "@/components/app";
 import {
   preloadSessionState,
   sessionQueryOptions,
   type AuthSessionState,
 } from "@/features/auth";
+import {
+  getProfilePhotoUrl,
+  profileDetailQueryOptions,
+} from "@/features/profiles";
 import {
   ThemePresetProvider,
 } from "@/features/theme";
@@ -33,18 +38,26 @@ const ReactQueryDevtools = isDev
 
 function RootShell(): JSX.Element {
   const sessionQuery = useQuery(sessionQueryOptions);
-  const authActionLabel = getAuthActionLabel(
+  const sessionState = sessionQuery.data;
+  const currentUserId =
+    sessionState?.kind === "authenticated" ? sessionState.userId : "";
+  const profileQuery = useQuery({
+    ...profileDetailQueryOptions(currentUserId),
+    enabled: currentUserId !== "",
+  });
+  const authAction = getAuthAction(
     sessionQuery.isLoading,
-    sessionQuery.data,
+    sessionState,
+    profileQuery.data,
   );
   const showAdminNav =
-    sessionQuery.data?.kind === "authenticated" && sessionQuery.data.isAdmin;
+    sessionState?.kind === "authenticated" && sessionState.isAdmin;
 
   return (
     <div className="min-h-screen bg-background">
       <div className="mx-auto flex min-h-screen w-full max-w-[96rem] flex-col px-4 sm:px-6 lg:px-8">
         <AppShellHeader
-          authActionLabel={authActionLabel}
+          authAction={authAction}
           showAdminNav={showAdminNav}
         />
 
@@ -56,25 +69,47 @@ function RootShell(): JSX.Element {
   );
 }
 
-function getAuthActionLabel(
+function getAuthAction(
   isLoading: boolean,
   sessionState: AuthSessionState | undefined,
-): string {
+  profile:
+    | {
+        avatarPath: string | null;
+        displayName: string;
+      }
+    | undefined,
+): AuthActionState {
   if (isLoading) {
-    return "Account";
+    return {
+      kind: "loading",
+      label: "Account",
+    };
   }
 
   if (sessionState === undefined) {
-    return "Sign in";
+    return {
+      kind: "guest",
+      label: "Sign in",
+    };
   }
 
   switch (sessionState.kind) {
     case "authenticated":
-      return "Account";
+      return {
+        kind: "authenticated",
+        avatarUrl: getProfilePhotoUrl(profile?.avatarPath ?? null),
+        label: profile?.displayName ?? sessionState.email ?? "Account",
+      };
     case "guest":
-      return "Sign in";
+      return {
+        kind: "guest",
+        label: "Sign in",
+      };
     case "unconfigured":
-      return "Account";
+      return {
+        kind: "unconfigured",
+        label: "Account",
+      };
   }
 }
 

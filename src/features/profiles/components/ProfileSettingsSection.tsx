@@ -100,6 +100,13 @@ export function ProfileSettingsSection({
 
   const profile = profileQuery.data;
   const currentAvatarPath = hasRemovedCurrentAvatar ? null : profile.avatarPath;
+  const avatarStatusText = getAvatarStatusText({
+    currentAvatarPath,
+    hasRemovedCurrentAvatar,
+    selectedAvatarPhoto,
+  });
+  const avatarInputId = `profile-avatar-upload-${userId}`;
+  const avatarStatusId = `profile-avatar-status-${userId}`;
 
   return (
     <section className="space-y-4 border-t border-border pt-6">
@@ -138,31 +145,36 @@ export function ProfileSettingsSection({
                   <p className="text-sm font-medium text-foreground">
                     Public avatar
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {getAvatarStatusText(
-                      currentAvatarPath,
-                      selectedAvatarPhoto,
-                    )}
+                  <p
+                    className="text-sm text-muted-foreground"
+                    id={avatarStatusId}
+                  >
+                    {avatarStatusText}
                   </p>
                 </div>
               </div>
 
               <div className="w-full space-y-3">
-                <input
-                  key={avatarInputResetKey}
-                  accept="image/jpeg,image/png,image/webp"
-                  className={`${inputClassName} mt-0 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground`}
-                  disabled={isSubmitting}
-                  onChange={(event) => {
-                    const file = event.target.files?.[0] ?? null;
-                    setSelectedAvatarPhoto(file);
+                <label className="block" htmlFor={avatarInputId}>
+                  <span className="sr-only">Upload profile photo</span>
+                  <input
+                    key={avatarInputResetKey}
+                    accept="image/jpeg,image/png,image/webp"
+                    aria-describedby={avatarStatusId}
+                    className={`${inputClassName} mt-0 file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-2 file:text-sm file:font-medium file:text-foreground`}
+                    disabled={isSubmitting}
+                    id={avatarInputId}
+                    onChange={(event) => {
+                      const file = event.target.files?.[0] ?? null;
+                      setSelectedAvatarPhoto(file);
 
-                    if (file !== null) {
-                      setHasRemovedCurrentAvatar(false);
-                    }
-                  }}
-                  type="file"
-                />
+                      if (file !== null) {
+                        setHasRemovedCurrentAvatar(false);
+                      }
+                    }}
+                    type="file"
+                  />
+                </label>
 
                 {currentAvatarPath !== null || selectedAvatarPhoto !== null ? (
                   <Button
@@ -303,15 +315,20 @@ export function ProfileSettingsSection({
   }
 }
 
-function getAvatarStatusText(
-  currentAvatarPath: string | null,
-  selectedAvatarPhoto: File | null,
-): string {
-  if (selectedAvatarPhoto !== null) {
+function getAvatarStatusText(input: {
+  currentAvatarPath: string | null;
+  hasRemovedCurrentAvatar: boolean;
+  selectedAvatarPhoto: File | null;
+}): string {
+  if (input.selectedAvatarPhoto !== null) {
     return "New photo selected. Save to update your public profile.";
   }
 
-  if (currentAvatarPath !== null) {
+  if (input.hasRemovedCurrentAvatar) {
+    return "Current photo will be removed when you save.";
+  }
+
+  if (input.currentAvatarPath !== null) {
     return "This image is visible on your public profile.";
   }
 

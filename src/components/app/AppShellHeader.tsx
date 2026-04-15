@@ -2,10 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { BookOpenText, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { getProfileAvatarFallbackLabel } from "@/lib/profilePresentation";
 
 import type { JSX } from "react";
 
-type AuthActionState =
+export type AuthActionState =
   | {
       kind: "authenticated";
       avatarUrl: string | null;
@@ -114,7 +115,8 @@ function HeaderAvatar({
   if (avatarUrl !== null) {
     return (
       <img
-        alt={`${label} profile`}
+        alt=""
+        aria-hidden="true"
         className="size-5 rounded-full border border-border object-cover"
         src={avatarUrl}
       />
@@ -123,21 +125,10 @@ function HeaderAvatar({
 
   return (
     <span
-      aria-label={`${label} profile`}
+      aria-hidden="true"
       className="inline-flex size-5 items-center justify-center rounded-full border border-border bg-muted text-[0.65rem] font-semibold text-foreground"
-      role="img"
     >
-      {getHeaderAvatarFallback(label)}
+      {getProfileAvatarFallbackLabel(label)}
     </span>
   );
-}
-
-function getHeaderAvatarFallback(label: string): string {
-  const trimmedLabel = label.trim();
-
-  if (trimmedLabel === "") {
-    return "?";
-  }
-
-  return trimmedLabel.slice(0, 1).toUpperCase();
 }

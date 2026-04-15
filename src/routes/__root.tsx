@@ -3,6 +3,7 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { lazy, Suspense, type JSX } from "react";
 
 import { AppShellHeader, AppToasterProvider } from "@/components/app";
+import type { AuthActionState } from "@/components/app";
 import {
   preloadSessionState,
   sessionQueryOptions,
@@ -77,16 +78,7 @@ function getAuthAction(
         displayName: string;
       }
     | undefined,
-):
-  | {
-      kind: "authenticated";
-      avatarUrl: string | null;
-      label: string;
-    }
-  | {
-      kind: "guest" | "loading" | "unconfigured";
-      label: string;
-    } {
+): AuthActionState {
   if (isLoading) {
     return {
       kind: "loading",

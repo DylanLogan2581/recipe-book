@@ -7,6 +7,8 @@ function RangeSlider({
   className,
   ...props
 }: React.ComponentProps<typeof Slider.Root>): React.JSX.Element {
+  const thumbValues = props.value ?? props.defaultValue ?? [0];
+
   return (
     <Slider.Root
       className={cn(
@@ -19,12 +21,12 @@ function RangeSlider({
       <Slider.Track className="relative h-1.5 w-full grow overflow-hidden rounded-full bg-muted">
         <Slider.Range className="absolute h-full bg-primary" />
       </Slider.Track>
-      {props.value?.map((value, index) => (
+      {thumbValues.map((_, index) => (
         <Slider.Thumb
           aria-label={index === 0 ? "Minimum value" : "Maximum value"}
           className="block size-4 rounded-full border border-primary/30 bg-background shadow-sm outline-none transition hover:scale-105 focus-visible:ring-3 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50"
           data-slot="slider-thumb"
-          key={`${index}-${value}`}
+          key={index}
         />
       ))}
     </Slider.Root>

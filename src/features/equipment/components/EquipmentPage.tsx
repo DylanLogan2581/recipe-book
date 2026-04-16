@@ -71,9 +71,12 @@ export function EquipmentPage(): JSX.Element {
 
   if (sessionQuery.data.kind === "unconfigured") {
     return (
-      <EquipmentPageState
+      <ProtectedRouteAuthGate
+        eyebrow="Configuration required"
         description="Supabase is not configured for equipment management in this environment."
-        title="Equipment management is unavailable"
+        primaryAction={{ label: "Review account setup", to: "/account" }}
+        secondaryAction={{ label: "Browse recipes", to: "/recipes" }}
+        title="Equipment management unavailable"
       />
     );
   }

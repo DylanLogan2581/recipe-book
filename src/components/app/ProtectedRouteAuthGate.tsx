@@ -2,14 +2,15 @@ import { Link } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
 
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 
 type ProtectedRouteAuthGateAction = {
   label: string;
-  to: "/account" | "/equipment" | "/recipes" | "/recipes/new";
+  to: ComponentProps<typeof Link>["to"];
 };
 
 type ProtectedRouteAuthGateProps = {
+  eyebrow?: string;
   description: string;
   primaryAction: ProtectedRouteAuthGateAction;
   secondaryAction: ProtectedRouteAuthGateAction;
@@ -17,16 +18,17 @@ type ProtectedRouteAuthGateProps = {
 };
 
 export function ProtectedRouteAuthGate({
+  eyebrow = "Protected page",
   description,
   primaryAction,
   secondaryAction,
   title,
 }: ProtectedRouteAuthGateProps): JSX.Element {
   return (
-    <main className="flex w-full flex-1 items-center justify-center py-6 sm:py-10">
+    <main className="flex min-h-dvh w-full items-center justify-center py-6 sm:py-10">
       <section className="w-full max-w-3xl rounded-2xl border border-border bg-card/60 px-6 py-10 text-center shadow-sm sm:px-10 sm:py-12">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Protected page
+          {eyebrow}
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           {title}

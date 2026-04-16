@@ -21,12 +21,13 @@ export function RecipesPageContent({
     return <RecipesEmptyState isFiltered={isFiltered} />;
   }
 
-  const sparseGridClassName =
-    recipes.length === 1
-      ? "mx-auto w-full max-w-3xl grid-cols-1"
-      : recipes.length === 2
-        ? "mx-auto w-full max-w-6xl sm:grid-cols-2 2xl:grid-cols-2"
-        : "sm:grid-cols-2 2xl:grid-cols-3";
+  let sparseGridClassName = "sm:grid-cols-2 2xl:grid-cols-3";
+
+  if (recipes.length === 1) {
+    sparseGridClassName = "mx-auto w-full max-w-3xl grid-cols-1";
+  } else if (recipes.length === 2) {
+    sparseGridClassName = "mx-auto w-full max-w-6xl sm:grid-cols-2";
+  }
 
   return (
     <section className={cn("grid gap-5", sparseGridClassName)}>

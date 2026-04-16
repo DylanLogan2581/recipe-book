@@ -1,14 +1,13 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-
 import { useStepTimer } from "../hooks/useStepTimer";
 import {
   formatCountdownClock,
   formatIngredientText,
   formatStepTimer,
 } from "../utils/recipePresentation";
+import { recipeSectionTriggerButtonClassName } from "../utils/recipeSectionStyles";
 
 import { RecipeStepTimerControl } from "./RecipeStepTimerControl";
 
@@ -21,6 +20,7 @@ import type { JSX } from "react";
 
 type RecipeDetailCollectionSectionProps =
   | {
+      defaultExpanded?: boolean;
       displaySystem: "imperial" | "metric";
       items: RecipeIngredient[];
       kind: "ingredients";
@@ -28,11 +28,13 @@ type RecipeDetailCollectionSectionProps =
       title: string;
     }
   | {
+      defaultExpanded?: boolean;
       items: RecipeEquipment[];
       kind: "equipment";
       title: string;
     }
   | {
+      defaultExpanded?: boolean;
       items: RecipeStep[];
       kind: "steps";
       title: string;
@@ -41,41 +43,45 @@ type RecipeDetailCollectionSectionProps =
 export function RecipeDetailCollectionSection(
   props: RecipeDetailCollectionSectionProps,
 ): JSX.Element {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(props.defaultExpanded ?? false);
   const stepTimer = useStepTimer();
   const contentId = `recipe-detail-section-${props.kind}`;
+  const headingId = `${contentId}-heading`;
 
   return (
     <section className="space-y-4 border-t border-border pt-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+      <button
+        aria-controls={contentId}
+        aria-expanded={isExpanded}
+        className={recipeSectionTriggerButtonClassName}
+        onClick={() => {
+          setIsExpanded((current) => !current);
+        }}
+        type="button"
+      >
+        <div className="flex min-w-0 items-center gap-3">
+          <h2
+            className="text-2xl font-semibold tracking-tight text-foreground"
+            id={headingId}
+          >
             {props.title}
           </h2>
           <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
             {props.items.length}
           </span>
         </div>
-        <Button
-          aria-controls={contentId}
-          aria-expanded={isExpanded}
-          className="rounded-md px-3"
-          onClick={() => {
-            setIsExpanded((current) => !current);
-          }}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {isExpanded ? <ChevronUp /> : <ChevronDown />}
-          {isExpanded ? "Hide" : "Show"}
-        </Button>
-      </div>
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          <span aria-hidden>{isExpanded ? "Hide" : "Show"}</span>
+        </span>
+      </button>
 
       <div
         className={isExpanded ? "space-y-4" : "hidden"}
         hidden={!isExpanded}
         id={contentId}
+        role="region"
+        aria-labelledby={headingId}
       >
         {props.items.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">

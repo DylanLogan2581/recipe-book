@@ -16,6 +16,7 @@ import {
 } from "../queries/recipeCookLogPhotoApi";
 import { RecipeDataAccessError } from "../queries/recipeDataErrors";
 import { recipeQueryKeys } from "../queries/recipeKeys";
+import { recipeSectionTriggerButtonClassName } from "../utils/recipeSectionStyles";
 
 import type {
   CreateRecipeCookLogInput,
@@ -61,38 +62,42 @@ export function RecipeCookLogSection({
     ? "space-y-4 border-t border-border/70 pt-6"
     : "space-y-4";
   const contentId = `recipe-cook-log-content-${recipe.id}`;
+  const headingId = `${contentId}-heading`;
 
   return (
     <section className="space-y-6 border-t border-border pt-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+      <button
+        aria-controls={contentId}
+        aria-expanded={isExpanded}
+        className={recipeSectionTriggerButtonClassName}
+        onClick={() => {
+          setIsExpanded((current) => !current);
+        }}
+        type="button"
+      >
+        <div className="flex min-w-0 items-center gap-3">
+          <h2
+            className="text-2xl font-semibold tracking-tight text-foreground"
+            id={headingId}
+          >
             Kitchen memories
           </h2>
           <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
             {recipe.cookLogs.length}
           </span>
         </div>
-        <Button
-          aria-controls={contentId}
-          aria-expanded={isExpanded}
-          className="rounded-md px-3"
-          onClick={() => {
-            setIsExpanded((current) => !current);
-          }}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {isExpanded ? <ChevronUp /> : <ChevronDown />}
-          {isExpanded ? "Hide" : "Show"}
-        </Button>
-      </div>
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          <span aria-hidden>{isExpanded ? "Hide" : "Show"}</span>
+        </span>
+      </button>
 
       <div
         className={isExpanded ? "space-y-6" : "hidden"}
         hidden={!isExpanded}
         id={contentId}
+        role="region"
+        aria-labelledby={headingId}
       >
         {isOwner ? (
           <section

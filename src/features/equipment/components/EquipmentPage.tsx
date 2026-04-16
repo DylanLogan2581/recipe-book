@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState, type ChangeEvent, type JSX } from "react";
 
+import { ProtectedRouteAuthGate } from "@/components/app";
 import { Button } from "@/components/ui/button";
 import { sessionQueryOptions } from "@/features/auth";
 import { useAppToast } from "@/hooks/useAppToast";
@@ -59,8 +60,10 @@ export function EquipmentPage(): JSX.Element {
 
   if (sessionQuery.data === undefined || sessionQuery.data.kind === "guest") {
     return (
-      <EquipmentPageState
-        description="Sign in to manage the equipment you use across recipes."
+      <ProtectedRouteAuthGate
+        description="Sign in to build your equipment inventory and keep recipe forms fast."
+        primaryAction={{ label: "Sign in to continue", to: "/account" }}
+        secondaryAction={{ label: "Browse recipes", to: "/recipes" }}
         title="Sign in to manage equipment"
       />
     );
@@ -233,7 +236,9 @@ export function EquipmentPage(): JSX.Element {
                       <div className="flex items-center gap-2">
                         <Button
                           className="rounded-md px-4"
-                          disabled={!isDirty || isReorderPending || isUpdatePending}
+                          disabled={
+                            !isDirty || isReorderPending || isUpdatePending
+                          }
                           type="submit"
                         >
                           {isUpdatePending ? "Saving..." : "Save"}

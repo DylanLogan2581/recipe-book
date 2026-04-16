@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 import { RecipePreviewCard } from "./RecipePreviewCard";
 import { RecipesEmptyState } from "./RecipesEmptyState";
 
@@ -19,8 +21,16 @@ export function RecipesPageContent({
     return <RecipesEmptyState isFiltered={isFiltered} />;
   }
 
+  let sparseGridClassName = "sm:grid-cols-2 2xl:grid-cols-3";
+
+  if (recipes.length === 1) {
+    sparseGridClassName = "mx-auto w-full max-w-3xl grid-cols-1";
+  } else if (recipes.length === 2) {
+    sparseGridClassName = "mx-auto w-full max-w-6xl sm:grid-cols-2";
+  }
+
   return (
-    <section className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+    <section className={cn("grid gap-5", sparseGridClassName)}>
       {recipes.map((recipe) => (
         <RecipePreviewCard
           key={recipe.id}

@@ -56,18 +56,28 @@ export function RecipePreviewCard({
         </Link>
       ) : null}
 
-      <div className="flex h-full flex-col gap-4 p-5">
-        <div className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
-            <Link
-              className="transition hover:text-primary"
-              params={{ recipeId: recipe.id }}
-              to="/recipes/$recipeId"
-            >
-              {recipe.title}
-            </Link>
-          </h2>
-          <p className="truncate text-sm text-muted-foreground">{summary}</p>
+      <div className="flex h-full flex-col gap-3 p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 space-y-2">
+            <h2 className="text-xl font-semibold tracking-tight text-foreground">
+              <Link
+                className="transition hover:text-primary"
+                params={{ recipeId: recipe.id }}
+                to="/recipes/$recipeId"
+              >
+                {recipe.title}
+              </Link>
+            </h2>
+            <p className="truncate text-sm text-muted-foreground">{summary}</p>
+          </div>
+          <Link
+            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary transition hover:underline"
+            params={{ recipeId: recipe.id }}
+            to="/recipes/$recipeId"
+          >
+            Open
+            <ArrowRight className="size-4" />
+          </Link>
         </div>
 
         {recipe.categories.length > 0 ? (
@@ -105,17 +115,6 @@ export function RecipePreviewCard({
               {item}
             </span>
           ))}
-        </div>
-
-        <div className="mt-auto flex justify-end">
-          <Link
-            className="inline-flex items-center gap-1 text-sm font-medium text-primary transition hover:underline"
-            params={{ recipeId: recipe.id }}
-            to="/recipes/$recipeId"
-          >
-            Open
-            <ArrowRight className="size-4" />
-          </Link>
         </div>
       </div>
     </article>

@@ -16,6 +16,7 @@ import {
 } from "../queries/recipeCookLogPhotoApi";
 import { RecipeDataAccessError } from "../queries/recipeDataErrors";
 import { recipeQueryKeys } from "../queries/recipeKeys";
+import { recipeSectionTriggerButtonClassName } from "../utils/recipeSectionStyles";
 
 import type {
   CreateRecipeCookLogInput,
@@ -61,22 +62,24 @@ export function RecipeCookLogSection({
     ? "space-y-4 border-t border-border/70 pt-6"
     : "space-y-4";
   const contentId = `recipe-cook-log-content-${recipe.id}`;
-  const buttonId = `${contentId}-trigger`;
+  const headingId = `${contentId}-heading`;
 
   return (
     <section className="space-y-6 border-t border-border pt-6">
       <button
         aria-controls={contentId}
         aria-expanded={isExpanded}
-        className="flex w-full items-center justify-between gap-4 rounded-lg border border-border bg-background px-4 py-3 text-left shadow-sm outline-none transition hover:border-primary/40 hover:bg-muted/40 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
-        id={buttonId}
+        className={recipeSectionTriggerButtonClassName}
         onClick={() => {
           setIsExpanded((current) => !current);
         }}
         type="button"
       >
         <div className="flex min-w-0 items-center gap-3">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2
+            className="text-2xl font-semibold tracking-tight text-foreground"
+            id={headingId}
+          >
             Kitchen memories
           </h2>
           <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground">
@@ -85,7 +88,7 @@ export function RecipeCookLogSection({
         </div>
         <span className="flex items-center gap-2 text-sm text-muted-foreground">
           {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-          {isExpanded ? "Hide" : "Show"}
+          <span aria-hidden>{isExpanded ? "Hide" : "Show"}</span>
         </span>
       </button>
 
@@ -94,7 +97,7 @@ export function RecipeCookLogSection({
         hidden={!isExpanded}
         id={contentId}
         role="region"
-        aria-labelledby={buttonId}
+        aria-labelledby={headingId}
       >
         {isOwner ? (
           <section

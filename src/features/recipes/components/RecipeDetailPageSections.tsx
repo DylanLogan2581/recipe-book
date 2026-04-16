@@ -42,6 +42,7 @@ export function RecipeDetailPageSections({
           defaultExpanded
           displaySystem={displaySystem}
           items={recipe.ingredients}
+          key={`${recipe.id}-ingredients`}
           kind="ingredients"
           scaleFactor={scaleFactor}
           title="Ingredients"
@@ -49,6 +50,7 @@ export function RecipeDetailPageSections({
         <RecipeDetailCollectionSection
           defaultExpanded={recipe.equipment.length > 0}
           items={recipe.equipment}
+          key={`${recipe.id}-equipment`}
           kind="equipment"
           title="Equipment"
         />
@@ -57,6 +59,7 @@ export function RecipeDetailPageSections({
       <RecipeDetailCollectionSection
         defaultExpanded
         items={recipe.steps}
+        key={`${recipe.id}-steps`}
         kind="steps"
         title="Method"
       />

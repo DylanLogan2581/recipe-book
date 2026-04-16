@@ -351,6 +351,7 @@ export type Database = {
       user_equipment: {
         Row: {
           created_at: string;
+          display_order: number;
           id: string;
           name: string;
           owner_id: string;
@@ -358,6 +359,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          display_order?: number;
           id?: string;
           name: string;
           owner_id?: string;
@@ -365,6 +367,7 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          display_order?: number;
           id?: string;
           name?: string;
           owner_id?: string;

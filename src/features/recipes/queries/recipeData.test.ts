@@ -209,6 +209,7 @@ describe("recipe insert builders", () => {
           "inventory-1",
           {
             createdAt: "",
+            displayOrder: 1,
             id: "inventory-1",
             name: " Dutch oven ",
             ownerId: "owner-1",

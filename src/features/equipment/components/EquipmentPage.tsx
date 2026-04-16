@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { useState, type ChangeEvent, type JSX } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -11,10 +12,12 @@ import { EquipmentDataAccessError } from "../queries/equipmentApi";
 import {
   createEquipmentMutationOptions,
   deleteEquipmentMutationOptions,
+  reorderEquipmentMutationOptions,
   updateEquipmentMutationOptions,
 } from "../queries/equipmentMutationOptions";
 import { equipmentListQueryOptions } from "../queries/equipmentQueryOptions";
 import { equipmentFormSchema } from "../schemas/equipmentSchemas";
+import { moveEquipmentItemIds } from "../utils/equipmentOrdering";
 
 import type { EquipmentItem } from "../types/equipment";
 
@@ -34,6 +37,9 @@ export function EquipmentPage(): JSX.Element {
   );
   const updateMutation = useMutation(
     updateEquipmentMutationOptions(queryClient),
+  );
+  const reorderMutation = useMutation(
+    reorderEquipmentMutationOptions(queryClient),
   );
   const deleteMutation = useMutation(
     deleteEquipmentMutationOptions(queryClient),
@@ -141,7 +147,7 @@ export function EquipmentPage(): JSX.Element {
                 Your inventory
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Rename or remove equipment you no longer need.
+                Reorder, rename, or remove equipment you no longer need.
               </p>
             </div>
             <Button asChild className="rounded-md px-4" variant="outline">
@@ -156,12 +162,15 @@ export function EquipmentPage(): JSX.Element {
             </div>
           ) : (
             <ul className="space-y-3">
-              {equipment.map((item) => {
+              {equipment.map((item, index) => {
                 const draftName = draftNames[item.id] ?? item.name;
                 const isDirty = draftName.trim() !== item.name;
                 const isDeletePending =
                   deleteMutation.isPending &&
                   deleteMutation.variables?.equipmentId === item.id;
+                const isFirstItem = index === 0;
+                const isLastItem = index === equipment.length - 1;
+                const isReorderPending = reorderMutation.isPending;
                 const isUpdatePending =
                   updateMutation.isPending &&
                   updateMutation.variables?.equipmentId === item.id;
@@ -178,6 +187,35 @@ export function EquipmentPage(): JSX.Element {
                         handleUpdateEquipment(item.id, draftName);
                       }}
                     >
+                      <div className="flex items-center gap-2">
+                        <Button
+                          aria-label={`Move ${item.name} up`}
+                          className="rounded-md px-3"
+                          disabled={isFirstItem || isReorderPending}
+                          onClick={() => {
+                            handleMoveEquipment(item.id, "up");
+                          }}
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                        >
+                          <ArrowUp className="size-4" />
+                        </Button>
+                        <Button
+                          aria-label={`Move ${item.name} down`}
+                          className="rounded-md px-3"
+                          disabled={isLastItem || isReorderPending}
+                          onClick={() => {
+                            handleMoveEquipment(item.id, "down");
+                          }}
+                          size="icon"
+                          type="button"
+                          variant="outline"
+                        >
+                          <ArrowDown className="size-4" />
+                        </Button>
+                      </div>
+
                       <label className="flex-1">
                         <span className="sr-only">Equipment name</span>
                         <input
@@ -195,14 +233,14 @@ export function EquipmentPage(): JSX.Element {
                       <div className="flex items-center gap-2">
                         <Button
                           className="rounded-md px-4"
-                          disabled={!isDirty || isUpdatePending}
+                          disabled={!isDirty || isReorderPending || isUpdatePending}
                           type="submit"
                         >
                           {isUpdatePending ? "Saving..." : "Save"}
                         </Button>
                         <Button
                           className="rounded-md px-4 text-destructive hover:text-destructive"
-                          disabled={isDeletePending}
+                          disabled={isDeletePending || isReorderPending}
                           onClick={() => {
                             handleDeleteEquipment(item);
                           }}
@@ -324,6 +362,34 @@ export function EquipmentPage(): JSX.Element {
             description: "The equipment item was removed from your inventory.",
             title: "Equipment removed",
             tone: "success",
+          });
+        },
+      },
+    );
+  }
+
+  function handleMoveEquipment(
+    equipmentId: string,
+    direction: "down" | "up",
+  ): void {
+    const nextEquipmentIds = moveEquipmentItemIds(
+      equipment,
+      equipmentId,
+      direction,
+    );
+
+    if (nextEquipmentIds === null) {
+      return;
+    }
+
+    reorderMutation.mutate(
+      { equipmentIds: nextEquipmentIds },
+      {
+        onError: (error) => {
+          toast({
+            description: getEquipmentMutationErrorMessage(error),
+            title: "Equipment order could not be updated",
+            tone: "error",
           });
         },
       },

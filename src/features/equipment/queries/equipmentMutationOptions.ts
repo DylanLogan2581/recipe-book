@@ -3,6 +3,7 @@ import { mutationOptions } from "@tanstack/react-query";
 import {
   createEquipment,
   deleteEquipment,
+  reorderEquipment,
   updateEquipment,
 } from "./equipmentApi";
 import { equipmentMutationKeys, equipmentQueryKeys } from "./equipmentKeys";
@@ -12,6 +13,7 @@ import type {
   DeleteEquipmentInput,
   DeleteEquipmentResult,
   EquipmentItem,
+  ReorderEquipmentInput,
   UpdateEquipmentInput,
 } from "../types/equipment";
 import type { QueryClient } from "@tanstack/react-query";
@@ -21,6 +23,9 @@ type CreateEquipmentMutationOptions = ReturnType<
 >;
 type UpdateEquipmentMutationOptions = ReturnType<
   typeof mutationOptions<EquipmentItem, Error, UpdateEquipmentInput>
+>;
+type ReorderEquipmentMutationOptions = ReturnType<
+  typeof mutationOptions<EquipmentItem[], Error, ReorderEquipmentInput>
 >;
 type DeleteEquipmentMutationOptions = ReturnType<
   typeof mutationOptions<DeleteEquipmentResult, Error, DeleteEquipmentInput>
@@ -44,6 +49,18 @@ export function updateEquipmentMutationOptions(
   return mutationOptions({
     mutationFn: (input): Promise<EquipmentItem> => updateEquipment(input),
     mutationKey: equipmentMutationKeys.update(),
+    onSuccess: async (): Promise<void> => {
+      await invalidateEquipmentRelatedQueries(queryClient);
+    },
+  });
+}
+
+export function reorderEquipmentMutationOptions(
+  queryClient: QueryClient,
+): ReorderEquipmentMutationOptions {
+  return mutationOptions({
+    mutationFn: (input): Promise<EquipmentItem[]> => reorderEquipment(input),
+    mutationKey: equipmentMutationKeys.reorder(),
     onSuccess: async (): Promise<void> => {
       await invalidateEquipmentRelatedQueries(queryClient);
     },

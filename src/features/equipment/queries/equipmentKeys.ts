@@ -7,5 +7,6 @@ export const equipmentQueryKeys = {
 export const equipmentMutationKeys = {
   create: () => [...equipmentQueryKeys.all, "create"] as const,
   delete: () => [...equipmentQueryKeys.all, "delete"] as const,
+  reorder: () => [...equipmentQueryKeys.all, "reorder"] as const,
   update: () => [...equipmentQueryKeys.all, "update"] as const,
 };

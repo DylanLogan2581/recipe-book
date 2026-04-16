@@ -449,6 +449,7 @@ function mergeEquipmentOptions(
 
     equipmentMap.set(item.equipmentId, {
       createdAt: "",
+      displayOrder: Number.MAX_SAFE_INTEGER,
       id: item.equipmentId,
       name: item.name,
       ownerId: "",

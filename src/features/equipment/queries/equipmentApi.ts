@@ -5,12 +5,14 @@ import type {
   DeleteEquipmentInput,
   DeleteEquipmentResult,
   EquipmentItem,
+  ReorderEquipmentInput,
   UpdateEquipmentInput,
 } from "../types/equipment";
 
 type EquipmentApiClient = NonNullable<typeof supabase>;
 type EquipmentRecord = {
   created_at: string;
+  display_order: number;
   id: string;
   name: string;
   owner_id: string;
@@ -22,6 +24,7 @@ type DeletedEquipmentRecord = {
 
 export type EquipmentDataAccessErrorCode =
   | "authentication-required"
+  | "invalid-reorder"
   | "not-found"
   | "supabase-unconfigured";
 
@@ -43,6 +46,7 @@ const equipmentSelect = `
   id,
   owner_id,
   name,
+  display_order,
   created_at,
   updated_at
 `;
@@ -56,6 +60,7 @@ export async function listEquipmentForOwner(
     .from("user_equipment")
     .select(equipmentSelect)
     .eq("owner_id", ownerId.trim())
+    .order("display_order", { ascending: true })
     .order("name", { ascending: true })
     .overrideTypes<EquipmentRecord[], { merge: false }>();
 
@@ -81,6 +86,8 @@ export async function listEquipmentByIdsForOwner(
     .select(equipmentSelect)
     .eq("owner_id", ownerId.trim())
     .in("id", [...equipmentIds])
+    .order("display_order", { ascending: true })
+    .order("name", { ascending: true })
     .overrideTypes<EquipmentRecord[], { merge: false }>();
 
   if (error !== null) {
@@ -181,6 +188,58 @@ export async function deleteEquipment(
   };
 }
 
+export async function reorderEquipment(
+  input: ReorderEquipmentInput,
+  client: EquipmentApiClient | null = supabase,
+): Promise<EquipmentItem[]> {
+  const equipmentClient = getEquipmentApiClient(client);
+  const ownerId = await getAuthenticatedEquipmentUserId(equipmentClient);
+  const currentEquipment = await listEquipmentForOwner(ownerId, equipmentClient);
+  const nextEquipmentIds = input.equipmentIds.map((equipmentId) =>
+    equipmentId.trim(),
+  );
+
+  if (!isValidEquipmentReorder(currentEquipment, nextEquipmentIds)) {
+    throw new EquipmentDataAccessError(
+      "invalid-reorder",
+      "The equipment order could not be updated with the provided items.",
+    );
+  }
+
+  const currentEquipmentById = new Map(
+    currentEquipment.map((equipmentItem) => [equipmentItem.id, equipmentItem]),
+  );
+
+  const { error } = await equipmentClient.from("user_equipment").upsert(
+    nextEquipmentIds.map((equipmentId, index) => {
+      const equipmentItem = currentEquipmentById.get(equipmentId);
+
+      if (equipmentItem === undefined) {
+        throw new EquipmentDataAccessError(
+          "invalid-reorder",
+          `Equipment item ${equipmentId} is not available for reordering.`,
+        );
+      }
+
+      return {
+        display_order: index + 1,
+        id: equipmentId,
+        name: equipmentItem.name,
+        owner_id: ownerId,
+      };
+    }),
+    {
+      onConflict: "id",
+    },
+  );
+
+  if (error !== null) {
+    throw error;
+  }
+
+  return listEquipmentForOwner(ownerId, equipmentClient);
+}
+
 function getEquipmentApiClient(
   client: EquipmentApiClient | null,
 ): EquipmentApiClient {
@@ -213,9 +272,35 @@ async function getAuthenticatedEquipmentUserId(
 function mapEquipmentRecord(record: EquipmentRecord): EquipmentItem {
   return {
     createdAt: record.created_at,
+    displayOrder: record.display_order,
     id: record.id,
     name: record.name,
     ownerId: record.owner_id,
     updatedAt: record.updated_at,
   };
+}
+
+function isValidEquipmentReorder(
+  currentEquipment: EquipmentItem[],
+  nextEquipmentIds: readonly string[],
+): boolean {
+  if (currentEquipment.length !== nextEquipmentIds.length) {
+    return false;
+  }
+
+  const currentEquipmentIds = new Set(
+    currentEquipment.map((equipmentItem) => equipmentItem.id),
+  );
+
+  if (currentEquipmentIds.size !== nextEquipmentIds.length) {
+    return false;
+  }
+
+  for (const equipmentId of nextEquipmentIds) {
+    if (!currentEquipmentIds.has(equipmentId)) {
+      return false;
+    }
+  }
+
+  return true;
 }

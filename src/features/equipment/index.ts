@@ -5,6 +5,7 @@ export {
   EquipmentDataAccessError,
   listEquipmentByIdsForOwner,
   listEquipmentForOwner,
+  reorderEquipment,
   updateEquipment,
   type EquipmentDataAccessErrorCode,
 } from "./queries/equipmentApi";
@@ -15,6 +16,7 @@ export {
 export {
   createEquipmentMutationOptions,
   deleteEquipmentMutationOptions,
+  reorderEquipmentMutationOptions,
   updateEquipmentMutationOptions,
 } from "./queries/equipmentMutationOptions";
 export {
@@ -32,5 +34,6 @@ export type {
   DeleteEquipmentInput,
   DeleteEquipmentResult,
   EquipmentItem,
+  ReorderEquipmentInput,
   UpdateEquipmentInput,
 } from "./types/equipment";

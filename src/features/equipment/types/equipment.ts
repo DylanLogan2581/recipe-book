@@ -1,5 +1,6 @@
 export type EquipmentItem = {
   createdAt: string;
+  displayOrder: number;
   id: string;
   name: string;
   ownerId: string;
@@ -21,4 +22,8 @@ export type DeleteEquipmentInput = {
 
 export type DeleteEquipmentResult = {
   equipmentId: string;
+};
+
+export type ReorderEquipmentInput = {
+  equipmentIds: string[];
 };

@@ -1,8 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-
 import { useStepTimer } from "../hooks/useStepTimer";
 import {
   formatCountdownClock,
@@ -21,6 +19,7 @@ import type { JSX } from "react";
 
 type RecipeDetailCollectionSectionProps =
   | {
+      defaultExpanded?: boolean;
       displaySystem: "imperial" | "metric";
       items: RecipeIngredient[];
       kind: "ingredients";
@@ -28,11 +27,13 @@ type RecipeDetailCollectionSectionProps =
       title: string;
     }
   | {
+      defaultExpanded?: boolean;
       items: RecipeEquipment[];
       kind: "equipment";
       title: string;
     }
   | {
+      defaultExpanded?: boolean;
       items: RecipeStep[];
       kind: "steps";
       title: string;
@@ -41,14 +42,24 @@ type RecipeDetailCollectionSectionProps =
 export function RecipeDetailCollectionSection(
   props: RecipeDetailCollectionSectionProps,
 ): JSX.Element {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(props.defaultExpanded ?? false);
   const stepTimer = useStepTimer();
   const contentId = `recipe-detail-section-${props.kind}`;
+  const buttonId = `${contentId}-trigger`;
 
   return (
     <section className="space-y-4 border-t border-border pt-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <button
+        aria-controls={contentId}
+        aria-expanded={isExpanded}
+        className="flex w-full items-center justify-between gap-4 rounded-lg border border-border bg-background px-4 py-3 text-left shadow-sm outline-none transition hover:border-primary/40 hover:bg-muted/40 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+        id={buttonId}
+        onClick={() => {
+          setIsExpanded((current) => !current);
+        }}
+        type="button"
+      >
+        <div className="flex min-w-0 items-center gap-3">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             {props.title}
           </h2>
@@ -56,26 +67,18 @@ export function RecipeDetailCollectionSection(
             {props.items.length}
           </span>
         </div>
-        <Button
-          aria-controls={contentId}
-          aria-expanded={isExpanded}
-          className="rounded-md px-3"
-          onClick={() => {
-            setIsExpanded((current) => !current);
-          }}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {isExpanded ? <ChevronUp /> : <ChevronDown />}
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
           {isExpanded ? "Hide" : "Show"}
-        </Button>
-      </div>
+        </span>
+      </button>
 
       <div
         className={isExpanded ? "space-y-4" : "hidden"}
         hidden={!isExpanded}
         id={contentId}
+        role="region"
+        aria-labelledby={buttonId}
       >
         {props.items.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border px-4 py-5 text-sm text-muted-foreground">

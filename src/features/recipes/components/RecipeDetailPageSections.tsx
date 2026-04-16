@@ -39,6 +39,7 @@ export function RecipeDetailPageSections({
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
         <RecipeDetailCollectionSection
+          defaultExpanded
           displaySystem={displaySystem}
           items={recipe.ingredients}
           kind="ingredients"
@@ -46,6 +47,7 @@ export function RecipeDetailPageSections({
           title="Ingredients"
         />
         <RecipeDetailCollectionSection
+          defaultExpanded={recipe.equipment.length > 0}
           items={recipe.equipment}
           kind="equipment"
           title="Equipment"
@@ -53,6 +55,7 @@ export function RecipeDetailPageSections({
       </div>
 
       <RecipeDetailCollectionSection
+        defaultExpanded
         items={recipe.steps}
         kind="steps"
         title="Method"

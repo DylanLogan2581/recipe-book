@@ -61,11 +61,21 @@ export function RecipeCookLogSection({
     ? "space-y-4 border-t border-border/70 pt-6"
     : "space-y-4";
   const contentId = `recipe-cook-log-content-${recipe.id}`;
+  const buttonId = `${contentId}-trigger`;
 
   return (
     <section className="space-y-6 border-t border-border pt-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+      <button
+        aria-controls={contentId}
+        aria-expanded={isExpanded}
+        className="flex w-full items-center justify-between gap-4 rounded-lg border border-border bg-background px-4 py-3 text-left shadow-sm outline-none transition hover:border-primary/40 hover:bg-muted/40 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+        id={buttonId}
+        onClick={() => {
+          setIsExpanded((current) => !current);
+        }}
+        type="button"
+      >
+        <div className="flex min-w-0 items-center gap-3">
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             Kitchen memories
           </h2>
@@ -73,26 +83,18 @@ export function RecipeCookLogSection({
             {recipe.cookLogs.length}
           </span>
         </div>
-        <Button
-          aria-controls={contentId}
-          aria-expanded={isExpanded}
-          className="rounded-md px-3"
-          onClick={() => {
-            setIsExpanded((current) => !current);
-          }}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {isExpanded ? <ChevronUp /> : <ChevronDown />}
+        <span className="flex items-center gap-2 text-sm text-muted-foreground">
+          {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
           {isExpanded ? "Hide" : "Show"}
-        </Button>
-      </div>
+        </span>
+      </button>
 
       <div
         className={isExpanded ? "space-y-6" : "hidden"}
         hidden={!isExpanded}
         id={contentId}
+        role="region"
+        aria-labelledby={buttonId}
       >
         {isOwner ? (
           <section

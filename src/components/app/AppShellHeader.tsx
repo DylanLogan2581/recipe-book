@@ -34,8 +34,8 @@ export function AppShellHeader({
             to="/recipes"
             className="flex min-w-0 items-center gap-2 text-base font-semibold tracking-tight text-foreground transition hover:opacity-85"
           >
-            <BookOpenText className="size-4 text-primary" />
-            <span className="truncate">Recipe Book</span>
+            <BookOpenText className="size-4 shrink-0 text-primary" />
+            <span className="sr-only truncate sm:not-sr-only">Recipe Book</span>
           </Link>
 
           <nav className="flex items-center gap-1">
@@ -108,10 +108,7 @@ type HeaderAvatarProps = {
   label: string;
 };
 
-function HeaderAvatar({
-  avatarUrl,
-  label,
-}: HeaderAvatarProps): JSX.Element {
+function HeaderAvatar({ avatarUrl, label }: HeaderAvatarProps): JSX.Element {
   if (avatarUrl !== null) {
     return (
       <img

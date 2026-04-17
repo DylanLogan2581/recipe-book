@@ -10,6 +10,7 @@ type AuthFormCardProps = {
   onEmailChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onPasswordChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  passwordAutoComplete: "current-password" | "new-password";
   password: string;
   submitLabel: string;
   title: string;
@@ -26,6 +27,7 @@ export function AuthFormCard({
   onEmailChange,
   onPasswordChange,
   onSubmit,
+  passwordAutoComplete,
   password,
   submitLabel,
   title,
@@ -67,11 +69,7 @@ export function AuthFormCard({
             Password
           </label>
           <input
-            autoComplete={
-              submitLabel === "Create account"
-                ? "new-password"
-                : "current-password"
-            }
+            autoComplete={passwordAutoComplete}
             className={inputClassName}
             id={`${title}-password`}
             name="password"

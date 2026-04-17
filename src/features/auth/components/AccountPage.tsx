@@ -145,15 +145,16 @@ export function AccountPage(): JSX.Element {
                       successTitle: "Signed in",
                     });
                   }}
+                  passwordAutoComplete="current-password"
                   password={signInValues.password}
                   submitLabel="Sign in"
                   title="Sign in"
                 />
               </div>
               <section className="rounded-lg border border-border bg-muted/20 p-5">
-                <h3 className="text-sm font-semibold text-foreground">
+                <h2 className="text-sm font-semibold text-foreground">
                   New to Recipe Book?
-                </h3>
+                </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Create an account to save your recipes and preferences.
                 </p>
@@ -182,6 +183,7 @@ export function AccountPage(): JSX.Element {
                       successTitle: "Account ready",
                     });
                   }}
+                  passwordAutoComplete="new-password"
                   password={signUpValues.password}
                   submitLabel="Create account"
                   title="Sign up"

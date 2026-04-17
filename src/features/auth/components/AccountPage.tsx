@@ -44,7 +44,7 @@ function getHeadlineDescription(
     case "authenticated":
       return "Manage your sign-in and app settings.";
     case "guest":
-      return "Sign in to create and delete recipes.";
+      return "Sign in to continue managing recipes.";
     case "loading":
       return "Checking session status.";
     case "unconfigured":
@@ -69,8 +69,6 @@ export function AccountPage(): JSX.Element {
     ? "loading"
     : (sessionQuery.data?.kind ?? "guest");
   const headlineDescription = getHeadlineDescription(kind);
-  const isGuest =
-    sessionQuery.data?.kind === "guest" || sessionQuery.data === undefined;
   const isConfigured = sessionQuery.data?.kind !== "unconfigured";
 
   return (
@@ -113,63 +111,84 @@ export function AccountPage(): JSX.Element {
               <ProfileSettingsSection userId={sessionQuery.data.userId} />
             </>
           ) : (
-            <section className="grid gap-4 md:grid-cols-2">
-              <AuthFormCard
-                description="Use your existing account."
-                email={signInValues.email}
-                isPending={signInMutation.isPending}
-                onEmailChange={(event) => {
-                  setSignInValues((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }));
-                }}
-                onPasswordChange={(event) => {
-                  setSignInValues((current) => ({
-                    ...current,
-                    password: event.target.value,
-                  }));
-                }}
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  submitCredentials(signInValues, signInMutation, {
-                    setValues: setSignInValues,
-                    toast,
-                    successTitle: "Signed in",
-                  });
-                }}
-                password={signInValues.password}
-                submitLabel="Sign in"
-                title="Sign in"
-              />
-              <AuthFormCard
-                description="Create a new account."
-                email={signUpValues.email}
-                isPending={signUpMutation.isPending}
-                onEmailChange={(event) => {
-                  setSignUpValues((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }));
-                }}
-                onPasswordChange={(event) => {
-                  setSignUpValues((current) => ({
-                    ...current,
-                    password: event.target.value,
-                  }));
-                }}
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  submitCredentials(signUpValues, signUpMutation, {
-                    setValues: setSignUpValues,
-                    toast,
-                    successTitle: "Account ready",
-                  });
-                }}
-                password={signUpValues.password}
-                submitLabel="Create account"
-                title="Sign up"
-              />
+            <section className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+              <div className="space-y-4">
+                <section className="rounded-lg border border-primary/35 bg-primary/5 px-5 py-4">
+                  <h2 className="text-sm font-semibold text-foreground">
+                    Sign in to continue
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Create and delete recipes after signing in.
+                  </p>
+                </section>
+                <AuthFormCard
+                  description="Use your existing account."
+                  email={signInValues.email}
+                  isPending={signInMutation.isPending}
+                  onEmailChange={(event) => {
+                    setSignInValues((current) => ({
+                      ...current,
+                      email: event.target.value,
+                    }));
+                  }}
+                  onPasswordChange={(event) => {
+                    setSignInValues((current) => ({
+                      ...current,
+                      password: event.target.value,
+                    }));
+                  }}
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    submitCredentials(signInValues, signInMutation, {
+                      setValues: setSignInValues,
+                      toast,
+                      successTitle: "Signed in",
+                    });
+                  }}
+                  passwordAutoComplete="current-password"
+                  password={signInValues.password}
+                  submitLabel="Sign in"
+                  title="Sign in"
+                />
+              </div>
+              <section className="rounded-lg border border-border bg-muted/20 p-5">
+                <h2 className="text-sm font-semibold text-foreground">
+                  New to Recipe Book?
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Create an account to save your recipes and preferences.
+                </p>
+                <AuthFormCard
+                  className="mt-4 border-0 bg-transparent p-0"
+                  description="Create a new account."
+                  email={signUpValues.email}
+                  isPending={signUpMutation.isPending}
+                  onEmailChange={(event) => {
+                    setSignUpValues((current) => ({
+                      ...current,
+                      email: event.target.value,
+                    }));
+                  }}
+                  onPasswordChange={(event) => {
+                    setSignUpValues((current) => ({
+                      ...current,
+                      password: event.target.value,
+                    }));
+                  }}
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    submitCredentials(signUpValues, signUpMutation, {
+                      setValues: setSignUpValues,
+                      toast,
+                      successTitle: "Account ready",
+                    });
+                  }}
+                  passwordAutoComplete="new-password"
+                  password={signUpValues.password}
+                  submitLabel="Create account"
+                  title="Sign up"
+                />
+              </section>
             </section>
           )}
 
@@ -183,18 +202,6 @@ export function AccountPage(): JSX.Element {
               </p>
             </section>
           ) : null}
-
-          {isGuest ? (
-            <section className="rounded-lg border border-amber-300/70 bg-amber-50/80 px-5 py-4">
-              <h2 className="text-sm font-semibold text-amber-950">
-                Sign in required
-              </h2>
-              <p className="mt-1 text-sm text-amber-950/85">
-                Sign in before creating or deleting recipes.
-              </p>
-            </section>
-          ) : null}
-
         </div>
 
         <section className="space-y-4 border-t border-border pt-6">

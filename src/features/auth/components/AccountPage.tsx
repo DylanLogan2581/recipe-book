@@ -160,7 +160,7 @@ export function AccountPage(): JSX.Element {
                 </p>
                 <AuthFormCard
                   className="mt-4 border-0 bg-transparent p-0"
-                  description="Create a new account."
+                  description="Create an account if you do not have one yet."
                   email={signUpValues.email}
                   isPending={signUpMutation.isPending}
                   onEmailChange={(event) => {
@@ -186,6 +186,7 @@ export function AccountPage(): JSX.Element {
                   passwordAutoComplete="new-password"
                   password={signUpValues.password}
                   submitLabel="Create account"
+                  submitVariant="secondary"
                   title="Sign up"
                 />
               </section>

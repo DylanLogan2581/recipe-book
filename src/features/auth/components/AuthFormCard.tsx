@@ -13,6 +13,7 @@ type AuthFormCardProps = {
   passwordAutoComplete: "current-password" | "new-password";
   password: string;
   submitLabel: string;
+  submitVariant?: "primary" | "secondary";
   title: string;
 };
 
@@ -30,8 +31,14 @@ export function AuthFormCard({
   passwordAutoComplete,
   password,
   submitLabel,
+  submitVariant = "primary",
   title,
 }: AuthFormCardProps): JSX.Element {
+  const submitButtonClassName =
+    submitVariant === "secondary"
+      ? "border border-border bg-background text-foreground hover:bg-muted/50"
+      : "bg-primary text-primary-foreground hover:bg-primary/90";
+
   return (
     <article
       className={cn(
@@ -80,7 +87,10 @@ export function AuthFormCard({
         </div>
 
         <button
-          className="inline-flex h-11 w-full items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+          className={cn(
+            "inline-flex h-11 w-full items-center justify-center rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60",
+            submitButtonClassName,
+          )}
           disabled={isPending}
           type="submit"
         >

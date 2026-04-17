@@ -40,13 +40,14 @@ export function RecipeShelfFilters({
     maxSliderValue,
   );
   const rangeValue: [number, number] = [minRangeValue, maxRangeValue];
-  const selectedCategoryNames = selectedCategorySlugs.map((slug) => {
-    const matchingCategory = availableCategories.find(
-      (category) => category.slug === slug,
-    );
+  const categoryNameBySlug = new Map(
+    availableCategories.map((category) => [category.slug, category.name]),
+  );
+  const selectedCategories = selectedCategorySlugs.map((slug) => {
+    const matchingCategoryName = categoryNameBySlug.get(slug);
 
     return {
-      name: matchingCategory?.name ?? slug,
+      name: matchingCategoryName ?? slug,
       slug,
     };
   });
@@ -98,13 +99,14 @@ export function RecipeShelfFilters({
             )}
           </div>
         </details>
-        {selectedCategoryNames.length > 0 ? (
+        {selectedCategories.length > 0 ? (
           <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/30 px-2 py-2">
             <p className="px-1 text-xs font-medium text-muted-foreground">
               Active
             </p>
-            {selectedCategoryNames.map((category) => (
+            {selectedCategories.map((category) => (
               <button
+                aria-label={`Remove ${category.name} filter`}
                 className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-1 text-xs font-medium text-foreground transition hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 key={category.slug}
                 onClick={() => {
@@ -116,7 +118,6 @@ export function RecipeShelfFilters({
                 <span aria-hidden className="text-muted-foreground">
                   ×
                 </span>
-                <span className="sr-only">Remove {category.name} filter</span>
               </button>
             ))}
           </div>

@@ -42,14 +42,14 @@ export function RecipeDetailPage({
     <main className="flex w-full flex-col gap-8 py-3 sm:py-4">
       <RecipeDetailHero
         displaySystem={displaySystem}
+        onDisplaySystemChange={setDisplaySystem}
+        onScaleChange={setScaleFactor}
         recipe={recipe}
         scaleFactor={scaleFactor}
       />
       <RecipeDetailPageSections
         displaySystem={displaySystem}
         isSessionLoading={sessionQuery.isLoading}
-        onDisplaySystemChange={setDisplaySystem}
-        onScaleChange={setScaleFactor}
         recipe={recipe}
         scaleFactor={scaleFactor}
         sessionState={sessionQuery.data}

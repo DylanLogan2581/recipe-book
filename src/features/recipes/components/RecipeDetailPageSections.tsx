@@ -3,7 +3,6 @@ import type { AuthSessionState } from "@/features/auth";
 import { RecipeCookLogSection } from "./RecipeCookLogSection";
 import { RecipeDetailCollectionSection } from "./RecipeDetailCollectionSection";
 import { RecipeOwnerActionsPanel } from "./RecipeOwnerActionsPanel";
-import { RecipeScalingPanel } from "./RecipeScalingPanel";
 
 import type { RecipeDetail } from "../types/recipes";
 import type { JSX } from "react";
@@ -11,8 +10,6 @@ import type { JSX } from "react";
 type RecipeDetailPageSectionsProps = {
   displaySystem: "imperial" | "metric";
   isSessionLoading: boolean;
-  onDisplaySystemChange: (displaySystem: "imperial" | "metric") => void;
-  onScaleChange: (scaleFactor: number) => void;
   recipe: RecipeDetail;
   scaleFactor: number;
   sessionState: AuthSessionState | undefined;
@@ -21,22 +18,12 @@ type RecipeDetailPageSectionsProps = {
 export function RecipeDetailPageSections({
   displaySystem,
   isSessionLoading,
-  onDisplaySystemChange,
-  onScaleChange,
   recipe,
   scaleFactor,
   sessionState,
 }: RecipeDetailPageSectionsProps): JSX.Element {
   return (
     <div className="space-y-8">
-      <RecipeScalingPanel
-        displaySystem={displaySystem}
-        onDisplaySystemChange={onDisplaySystemChange}
-        onScaleChange={onScaleChange}
-        recipe={recipe}
-        scaleFactor={scaleFactor}
-      />
-
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
         <RecipeDetailCollectionSection
           defaultExpanded

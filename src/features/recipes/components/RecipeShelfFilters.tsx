@@ -40,51 +40,89 @@ export function RecipeShelfFilters({
     maxSliderValue,
   );
   const rangeValue: [number, number] = [minRangeValue, maxRangeValue];
+  const categoryNameBySlug = new Map(
+    availableCategories.map((category) => [category.slug, category.name]),
+  );
+  const selectedCategories = selectedCategorySlugs.map((slug) => {
+    const matchingCategoryName = categoryNameBySlug.get(slug);
+
+    return {
+      name: matchingCategoryName ?? slug,
+      slug,
+    };
+  });
 
   return (
     <section className="flex flex-col gap-4 border-t border-border pt-4 xl:flex-row xl:items-start xl:justify-between">
-      <details className="max-w-xl">
-        <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md border border-border px-3 py-2 text-sm text-foreground transition hover:bg-muted/40">
-          <span className="font-medium">Categories</span>
-          <span className="text-muted-foreground">
-            {selectedCategorySlugs.length === 0
-              ? "All categories"
-              : `${selectedCategorySlugs.length} selected`}
-          </span>
-        </summary>
-        <div className="mt-2 flex flex-wrap gap-2 rounded-md border border-border bg-background p-3">
-          {availableCategories.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No categories are available yet.
-            </p>
-          ) : (
-            availableCategories.map((category) => {
-              const isSelected = selectedCategorySlugs.includes(category.slug);
+      <div className="w-full max-w-xl space-y-2">
+        <details>
+          <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md border border-border px-3 py-2 text-sm text-foreground transition hover:bg-muted/40">
+            <span className="font-medium">Categories</span>
+            <span className="text-muted-foreground">
+              {selectedCategorySlugs.length === 0
+                ? "All categories"
+                : `${selectedCategorySlugs.length} selected`}
+            </span>
+          </summary>
+          <div className="mt-2 flex flex-wrap gap-2 rounded-md border border-border bg-background p-3">
+            {availableCategories.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No categories are available yet.
+              </p>
+            ) : (
+              availableCategories.map((category) => {
+                const isSelected = selectedCategorySlugs.includes(
+                  category.slug,
+                );
 
-              return (
-                <label
-                  key={category.id}
-                  className={
-                    isSelected
-                      ? "inline-flex cursor-pointer items-center gap-2 rounded-full border border-primary bg-primary/10 px-3 py-2 text-sm text-foreground"
-                      : "inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-sm text-foreground"
-                  }
-                >
-                  <input
-                    checked={isSelected}
-                    className="size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20"
-                    onChange={() => {
-                      onCategoryToggle(category.slug);
-                    }}
-                    type="checkbox"
-                  />
-                  {category.name}
-                </label>
-              );
-            })
-          )}
-        </div>
-      </details>
+                return (
+                  <label
+                    key={category.id}
+                    className={
+                      isSelected
+                        ? "inline-flex cursor-pointer items-center gap-2 rounded-full border border-primary bg-primary/10 px-3 py-2 text-sm text-foreground"
+                        : "inline-flex cursor-pointer items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-sm text-foreground"
+                    }
+                  >
+                    <input
+                      checked={isSelected}
+                      className="size-4 rounded border border-input text-primary shadow-sm focus:ring-2 focus:ring-primary/20"
+                      onChange={() => {
+                        onCategoryToggle(category.slug);
+                      }}
+                      type="checkbox"
+                    />
+                    {category.name}
+                  </label>
+                );
+              })
+            )}
+          </div>
+        </details>
+        {selectedCategories.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-2 rounded-md border border-border bg-muted/30 px-2 py-2">
+            <p className="px-1 text-xs font-medium text-muted-foreground">
+              Active
+            </p>
+            {selectedCategories.map((category) => (
+              <button
+                aria-label={`Remove ${category.name} filter`}
+                className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-1 text-xs font-medium text-foreground transition hover:bg-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                key={category.slug}
+                onClick={() => {
+                  onCategoryToggle(category.slug);
+                }}
+                type="button"
+              >
+                <span>{category.name}</span>
+                <span aria-hidden className="text-muted-foreground">
+                  ×
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
 
       <div className="w-full max-w-xl space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">

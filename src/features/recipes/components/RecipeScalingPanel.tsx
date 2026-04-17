@@ -69,11 +69,11 @@ export function RecipeScalingPanel({
   }
 
   return (
-    <section className="border-t border-border pt-6">
+    <section className="space-y-4 rounded-xl border border-border bg-background/80 p-4">
       {!isScalable ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
               Batch size
             </h2>
             <MeasurementSystemToggle
@@ -90,7 +90,7 @@ export function RecipeScalingPanel({
       {isScalable ? (
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+            <h2 className="text-base font-semibold tracking-tight text-foreground">
               Batch size
             </h2>
             <MeasurementSystemToggle
@@ -177,7 +177,7 @@ export function RecipeScalingPanel({
           className={
             customBatchSizeError === null
               ? "sr-only"
-              : "mt-2 text-sm text-destructive xl:text-right"
+              : "text-sm text-destructive xl:text-right"
           }
           id={`${customBatchSizeInputId}-message`}
         >

@@ -14,18 +14,23 @@ import {
 
 import { RecipeAllergenSummary } from "./RecipeAllergenSummary";
 import { RecipeCoverImage } from "./RecipeCoverImage";
+import { RecipeScalingPanel } from "./RecipeScalingPanel";
 
 import type { RecipeDetail } from "../types/recipes";
 import type { JSX } from "react";
 
 type RecipeDetailHeroProps = {
   displaySystem: "imperial" | "metric";
+  onDisplaySystemChange: (displaySystem: "imperial" | "metric") => void;
+  onScaleChange: (scaleFactor: number) => void;
   recipe: RecipeDetail;
   scaleFactor: number;
 };
 
 export function RecipeDetailHero({
   displaySystem,
+  onDisplaySystemChange,
+  onScaleChange,
   recipe,
   scaleFactor,
 }: RecipeDetailHeroProps): JSX.Element {
@@ -63,10 +68,10 @@ export function RecipeDetailHero({
         className={
           hasCoverImage
             ? "grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-start"
-            : "space-y-5"
+            : "space-y-6"
         }
       >
-        <div className="min-w-0 space-y-5">
+        <div className="min-w-0 space-y-6">
           <div className="min-w-0">
             <h1 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
               {recipe.title}
@@ -92,18 +97,30 @@ export function RecipeDetailHero({
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-            {metadata.map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-border bg-background px-3 py-1.5"
-              >
-                {item}
-              </span>
-            ))}
+          <div className="space-y-4 rounded-xl border border-border bg-muted/20 p-4">
+            <h2 className="text-sm font-semibold text-foreground">
+              Recipe facts
+            </h2>
+            <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+              {metadata.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-border bg-background px-3 py-1.5"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+            <RecipeAllergenSummary allergens={recipe.allergens} />
           </div>
 
-          <RecipeAllergenSummary allergens={recipe.allergens} />
+          <RecipeScalingPanel
+            displaySystem={displaySystem}
+            onDisplaySystemChange={onDisplaySystemChange}
+            onScaleChange={onScaleChange}
+            recipe={recipe}
+            scaleFactor={scaleFactor}
+          />
         </div>
 
         {recipe.coverImagePath !== null ? (

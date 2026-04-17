@@ -19,7 +19,7 @@ export function RecipeAllergenSummary({
   return (
     <section className="space-y-3">
       <div>
-        <h2 className="text-sm font-semibold text-foreground">Allergens</h2>
+        <h3 className="text-sm font-semibold text-foreground">Allergens</h3>
         <p className="mt-1 text-sm text-muted-foreground">
           {sortedAllergens.length === 0
             ? recipeAllergenEmptyStateLabel

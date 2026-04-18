@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { Menu, UserRound, X } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { Dialog } from "radix-ui";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { getProfileAvatarFallbackLabel } from "@/lib/profilePresentation";
+
+import { HeaderAvatar } from "./HeaderAvatar";
 
 import type { AuthActionState, HeaderNavItem } from "./AppShellHeader.types";
 import type { JSX } from "react";
@@ -18,82 +20,48 @@ export function MobileNavDrawer({
   navItems,
 }: MobileNavDrawerProps): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const drawerId = useId();
-
-  useEffect(() => {
-    if (!isOpen) {
-      return undefined;
-    }
-
-    function handleKeyDown(event: KeyboardEvent): void {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    }
-
-    document.body.classList.add("overflow-hidden");
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen]);
 
   return (
-    <div className="sm:hidden">
-      <Button
-        aria-controls={drawerId}
-        aria-expanded={isOpen}
-        aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-        className="rounded-md"
-        size="icon-sm"
-        type="button"
-        variant="outline"
-        onClick={() => {
-          setIsOpen((currentIsOpen) => !currentIsOpen);
-        }}
-      >
-        {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-      </Button>
-
-      {isOpen ? (
-        <div aria-modal="true" className="fixed inset-0 z-40" role="dialog">
-          <button
-            aria-label="Close navigation menu"
-            className="absolute inset-0 bg-foreground/15 backdrop-blur-[2px]"
+    <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
+      <div className="sm:hidden">
+        <Dialog.Trigger asChild>
+          <Button
+            aria-label={
+              isOpen ? "Close navigation menu" : "Open navigation menu"
+            }
+            className="rounded-md"
+            size="icon-sm"
             type="button"
-            onClick={() => {
-              setIsOpen(false);
-            }}
-          />
-
-          <div
-            className="absolute top-0 right-0 flex h-full w-[min(22rem,calc(100vw-1rem))] flex-col gap-6 border-l border-border bg-background px-4 py-4 shadow-2xl"
-            id={drawerId}
+            variant="outline"
           >
+            {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+          </Button>
+        </Dialog.Trigger>
+
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-foreground/15 backdrop-blur-[2px]" />
+          <Dialog.Content className="fixed top-0 right-0 z-50 flex h-full w-[min(22rem,calc(100vw-1rem))] flex-col gap-6 border-l border-border bg-background px-4 py-4 shadow-2xl outline-none">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="font-display text-lg font-semibold text-foreground">
+                <Dialog.Title className="font-display text-lg font-semibold text-foreground">
                   Menu
-                </p>
-                <p className="text-sm text-muted-foreground">
+                </Dialog.Title>
+                <Dialog.Description className="text-sm text-muted-foreground">
                   Browse recipes and account actions.
-                </p>
+                </Dialog.Description>
               </div>
 
-              <Button
-                aria-label="Close navigation menu"
-                className="rounded-md"
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-                onClick={() => {
-                  setIsOpen(false);
-                }}
-              >
-                <X className="size-4" />
-              </Button>
+              <Dialog.Close asChild>
+                <Button
+                  aria-label="Close navigation menu"
+                  className="rounded-md"
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  <X className="size-4" />
+                </Button>
+              </Dialog.Close>
             </div>
 
             <nav className="flex flex-col gap-2">
@@ -154,36 +122,9 @@ export function MobileNavDrawer({
                 </Button>
               )}
             </div>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-type HeaderAvatarProps = {
-  avatarUrl: string | null;
-  label: string;
-};
-
-function HeaderAvatar({ avatarUrl, label }: HeaderAvatarProps): JSX.Element {
-  if (avatarUrl !== null) {
-    return (
-      <img
-        alt=""
-        aria-hidden="true"
-        className="size-5 rounded-full border border-border object-cover"
-        src={avatarUrl}
-      />
-    );
-  }
-
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-flex size-5 items-center justify-center rounded-full border border-border bg-muted text-[0.65rem] font-semibold text-foreground"
-    >
-      {getProfileAvatarFallbackLabel(label)}
-    </span>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </div>
+    </Dialog.Root>
   );
 }

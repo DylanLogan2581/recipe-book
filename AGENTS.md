@@ -201,7 +201,6 @@ git commit -m "type(scope): short description"
 git push -u origin "$(git branch --show-current)"
 
 gh pr create \
-  --draft \
   --base main \
   --head "$(git branch --show-current)" \
   --title "type(scope): short description"

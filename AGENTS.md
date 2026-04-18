@@ -173,6 +173,61 @@ This template ships GitHub and commit conventions meant for downstream app repos
 
 When editing the template itself, follow the active user instruction if it differs.
 
+## GitHub Workflow
+
+Always use the GitHub CLI workflow for repository tasks in this repo.
+
+- Do all work on a branch. Never work directly on `main`.
+- Open pull requests from feature branches into `main`.
+- Do not make branch-to-branch PRs unless a maintainer explicitly asks for it.
+- Use `gh` for PR and review work instead of browser-only flows.
+- Run `npm run lint` before pushing and resolve every lint issue before opening or updating a PR.
+- After pushing, run `npm run gh-pr-review -- <pr-number>` and keep addressing feedback until there are no unresolved review threads.
+- Resolve review threads after the code that addresses them is pushed.
+- Keep PR titles and commit messages conventional.
+
+Recommended command flow:
+
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c codex/<short-description>
+
+# make changes
+npm run lint
+
+git add <files>
+git commit -m "type(scope): short description"
+git push -u origin "$(git branch --show-current)"
+
+gh pr create \
+  --draft \
+  --base main \
+  --head "$(git branch --show-current)" \
+  --title "type(scope): short description"
+
+npm run gh-pr-review -- <pr-number>
+```
+
+Useful `gh` commands:
+
+```bash
+gh pr status
+gh pr view <pr-number> --comments
+gh pr checks <pr-number> --watch
+gh pr review <pr-number> --comment --body "<message>"
+gh api graphql
+```
+
+Common mistakes to avoid:
+
+- Do not code on `main` and then branch later.
+- Do not skip `npm run lint` before pushing.
+- Do not leave review threads unresolved after the relevant fix is pushed.
+- Do not open a PR from one feature branch into another feature branch.
+- Do not rely on the GitHub web UI when `gh` can perform the task.
+- Do not stop after checks pass if review threads still exist.
+
 ## Before Finishing
 
 - Run `npm run lint` when practical.

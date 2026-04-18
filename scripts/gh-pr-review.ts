@@ -178,7 +178,11 @@ async function main(): Promise<void> {
   if (unresolvedThreads.length > 0) {
     printUnresolvedThreads(unresolvedThreads);
     printFollowUpInstructions(pullRequestNumber);
-    process.exitCode = 1;
+
+    if (process.exitCode === undefined || process.exitCode === 0) {
+      process.exitCode = 1;
+    }
+
     return;
   }
 
@@ -277,6 +281,10 @@ function watchPullRequestChecks(
 
   if (result.error !== undefined && result.status === null) {
     throw result.error;
+  }
+
+  if (result.signal !== null) {
+    throw new Error(`gh pr checks was terminated by signal ${result.signal}.`);
   }
 
   return result.status ?? 1;

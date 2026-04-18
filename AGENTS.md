@@ -184,6 +184,8 @@ Always use the GitHub CLI workflow for repository tasks in this repo.
 - Run `npm run lint` before pushing and resolve every lint issue before opening or updating a PR.
 - After pushing, run `npm run gh-pr-review -- <pr-number>` and keep addressing feedback until there are no unresolved review threads.
 - Resolve review threads after the code that addresses them is pushed.
+  Use `gh api graphql` if you are resolving threads from the CLI.
+  If a task needs the web UI, open the PR with `gh pr view <pr-number> --web` and resolve the thread there.
 - Keep PR titles and commit messages conventional.
 
 Recommended command flow:
@@ -213,6 +215,7 @@ Useful `gh` commands:
 ```bash
 gh pr status
 gh pr view <pr-number> --comments
+gh pr view <pr-number> --web
 gh pr checks <pr-number> --watch
 gh pr review <pr-number> --comment --body "<message>"
 gh api graphql

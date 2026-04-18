@@ -4,6 +4,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { setTimeout as delay } from "node:timers/promises";
 
 const DEFAULT_POLL_INTERVAL_SECONDS = 30;
+const DEFAULT_CHECKS_INTERVAL_SECONDS = 10;
 const REPOSITORY_OVERRIDE_ENV = "GH_PR_REVIEW_REPO";
 
 type CommandResult = {
@@ -151,10 +152,12 @@ async function main(): Promise<void> {
     writeLine("Checks finished.");
   } else if (checksStatus === 1) {
     writeLine("Checks finished with failures. Review polling will continue.");
+    process.exitCode = 1;
   } else {
     writeLine(
       `Checks exited with status ${String(checksStatus)}. Review polling will continue.`,
     );
+    process.exitCode = checksStatus;
   }
 
   const reviewState = await waitForReviewsToFinish(
@@ -197,7 +200,7 @@ function parsePullRequestNumber(args: string[]): number {
 
   if (rawValue === undefined || rawValue.length === 0) {
     throw new Error(
-      "Missing pull request number. Usage: npm run gh-pr-review 37",
+      "Missing pull request number. Usage: npm run gh-pr-review -- 37",
     );
   }
 
@@ -228,9 +231,13 @@ function inferRepositoryCoordinates(): RepositoryCoordinates {
 
 function parseRepositoryCoordinates(value: string): RepositoryCoordinates {
   const trimmedValue = value.trim();
-  const match = trimmedValue.match(
+  const plainMatch = trimmedValue.match(
+    /^(?<owner>[^/\s]+)\/(?<repo>[^/\s]+)$/,
+  );
+  const remoteMatch = trimmedValue.match(
     /github\.com[:/](?<owner>[^/\s]+)\/(?<repo>[^/\s]+?)(?:\.git)?$/,
   );
+  const match = plainMatch ?? remoteMatch;
 
   if (match?.groups?.owner === undefined || match.groups.repo === undefined) {
     throw new Error(
@@ -259,7 +266,7 @@ function watchPullRequestChecks(
       repository,
       "--watch",
       "--interval",
-      "10",
+      String(DEFAULT_CHECKS_INTERVAL_SECONDS),
     ],
     {
       cwd: process.cwd(),
@@ -493,7 +500,9 @@ function printFollowUpInstructions(pullRequestNumber: number): void {
   writeLine("Next steps:");
   writeLine("1. Address the unresolved review thread feedback above.");
   writeLine("2. Commit and push your fixes to the PR branch.");
-  writeLine(`3. Run npm run gh-pr-review ${String(pullRequestNumber)} again.`);
+  writeLine(
+    `3. Run npm run gh-pr-review -- ${String(pullRequestNumber)} again.`,
+  );
 }
 
 function formatRequestedReviewer(

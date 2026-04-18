@@ -69,13 +69,8 @@ type PullRequestReviewStateResponse = {
   data: {
     repository: {
       pullRequest: {
-        reviewDecision: GitHubReviewDecision;
         reviewRequests: {
           nodes: ReviewRequestNode[];
-          pageInfo: PageInfo;
-        };
-        reviews: {
-          nodes: ReviewNode[];
           pageInfo: PageInfo;
         };
         title: string;
@@ -93,6 +88,22 @@ type PullRequestThreadResponse = {
           nodes: ReviewThreadNode[];
           pageInfo: PageInfo;
         };
+      } | null;
+    } | null;
+  };
+};
+
+type PullRequestPendingReviewsResponse = {
+  data: {
+    repository: {
+      pullRequest: {
+        reviewDecision: GitHubReviewDecision;
+        reviews: {
+          nodes: ReviewNode[];
+          pageInfo: PageInfo;
+        };
+        title: string;
+        url: string;
       } | null;
     } | null;
   };
@@ -119,39 +130,6 @@ type RepositoryCoordinates = {
   name: string;
   owner: string;
   value: string;
-};
-
-type GraphQlQueryData<ResponseData> = {
-  data: ResponseData;
-};
-
-type PullRequestReviewStateData = {
-  repository: {
-    pullRequest: {
-      reviewDecision: GitHubReviewDecision;
-      reviewRequests: {
-        nodes: ReviewRequestNode[];
-        pageInfo: PageInfo;
-      };
-      reviews: {
-        nodes: ReviewNode[];
-        pageInfo: PageInfo;
-      };
-      title: string;
-      url: string;
-    } | null;
-  } | null;
-};
-
-type PullRequestThreadData = {
-  repository: {
-    pullRequest: {
-      reviewThreads: {
-        nodes: ReviewThreadNode[];
-        pageInfo: PageInfo;
-      };
-    } | null;
-  } | null;
 };
 
 async function main(): Promise<void> {
@@ -326,7 +304,7 @@ async function waitForReviewsToFinish(
 
     if (reviewState.pendingReviewAuthors.length > 0) {
       writeLine(
-        `Pending submitted reviews: ${reviewState.pendingReviewAuthors.join(", ")}`,
+        `Pending draft reviews: ${reviewState.pendingReviewAuthors.join(", ")}`,
       );
     }
 
@@ -343,16 +321,14 @@ function fetchPullRequestReviewState(
   let reviewRequestsCursor: string | null = null;
   let title = "";
   let url = "";
-  let reviewDecision: GitHubReviewDecision = null;
 
   for (;;) {
-    const response = queryReviewState(
-      REVIEW_STATE_QUERY,
+    const response = queryReviewRequests(
+      REVIEW_REQUESTS_QUERY,
       repository,
       pullRequestNumber,
       {
         reviewRequestsCursor,
-        reviewsCursor: null,
       },
     );
     const pullRequest = response.data.repository?.pullRequest;
@@ -365,7 +341,6 @@ function fetchPullRequestReviewState(
 
     title = pullRequest.title;
     url = pullRequest.url;
-    reviewDecision = pullRequest.reviewDecision;
 
     for (const node of pullRequest.reviewRequests.nodes) {
       const reviewer = formatRequestedReviewer(node.requestedReviewer);
@@ -384,14 +359,14 @@ function fetchPullRequestReviewState(
 
   const pendingReviewAuthors = new Set<string>();
   let reviewsCursor: string | null = null;
+  let reviewDecision: GitHubReviewDecision = null;
 
   for (;;) {
-    const response = queryReviewState(
-      REVIEW_STATE_QUERY,
+    const response = queryPendingReviews(
+      PENDING_REVIEWS_QUERY,
       repository,
       pullRequestNumber,
       {
-        reviewRequestsCursor: null,
         reviewsCursor,
       },
     );
@@ -402,6 +377,10 @@ function fetchPullRequestReviewState(
         `Pull request #${String(pullRequestNumber)} was not found.`,
       );
     }
+
+    title = pullRequest.title;
+    url = pullRequest.url;
+    reviewDecision = pullRequest.reviewDecision;
 
     for (const node of pullRequest.reviews.nodes) {
       const authorLogin = node.author?.login;
@@ -572,7 +551,7 @@ function ensureCommand(command: string): void {
   }
 }
 
-function queryReviewState(
+function queryReviewRequests(
   query: string,
   repository: RepositoryCoordinates,
   pullRequestNumber: number,
@@ -585,9 +564,23 @@ function queryReviewState(
     variables,
   );
 
-  return JSON.parse(
-    result.stdout,
-  ) as GraphQlQueryData<PullRequestReviewStateData>;
+  return JSON.parse(result.stdout) as PullRequestReviewStateResponse;
+}
+
+function queryPendingReviews(
+  query: string,
+  repository: RepositoryCoordinates,
+  pullRequestNumber: number,
+  variables: Record<string, string | number | null>,
+): PullRequestPendingReviewsResponse {
+  const result = runGraphQlCommand(
+    query,
+    repository,
+    pullRequestNumber,
+    variables,
+  );
+
+  return JSON.parse(result.stdout) as PullRequestPendingReviewsResponse;
 }
 
 function queryReviewThreads(
@@ -603,7 +596,7 @@ function queryReviewThreads(
     variables,
   );
 
-  return JSON.parse(result.stdout) as GraphQlQueryData<PullRequestThreadData>;
+  return JSON.parse(result.stdout) as PullRequestThreadResponse;
 }
 
 function runGraphQlCommand(
@@ -626,8 +619,12 @@ function runGraphQlCommand(
   ];
 
   for (const [name, value] of Object.entries(variables)) {
+    if (value === null) {
+      continue;
+    }
+
     args.push("-F");
-    args.push(`${name}=${value === null ? "" : String(value)}`);
+    args.push(`${name}=${String(value)}`);
   }
 
   return runCommand("gh", args);
@@ -670,19 +667,17 @@ function writeLine(message: string): void {
   process.stdout.write(`${message}\n`);
 }
 
-const REVIEW_STATE_QUERY = `
+const REVIEW_REQUESTS_QUERY = `
   query(
     $owner: String!
     $repo: String!
     $number: Int!
     $reviewRequestsCursor: String
-    $reviewsCursor: String
   ) {
     repository(owner: $owner, name: $repo) {
       pullRequest(number: $number) {
         title
         url
-        reviewDecision
         reviewRequests(first: 100, after: $reviewRequestsCursor) {
           nodes {
             requestedReviewer {
@@ -709,6 +704,23 @@ const REVIEW_STATE_QUERY = `
             hasNextPage
           }
         }
+      }
+    }
+  }
+`;
+
+const PENDING_REVIEWS_QUERY = `
+  query(
+    $owner: String!
+    $repo: String!
+    $number: Int!
+    $reviewsCursor: String
+  ) {
+    repository(owner: $owner, name: $repo) {
+      pullRequest(number: $number) {
+        title
+        url
+        reviewDecision
         reviews(first: 100, after: $reviewsCursor, states: [PENDING]) {
           nodes {
             author {
@@ -739,7 +751,7 @@ const REVIEW_THREADS_QUERY = `
             id
             isOutdated
             isResolved
-            comments(first: 20) {
+            comments(last: 1) {
               nodes {
                 author {
                   login

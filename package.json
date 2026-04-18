@@ -11,6 +11,7 @@
     "commitlint": "commitlint --edit",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "gh-pr-review": "node --experimental-strip-types ./scripts/gh-pr-review.ts",
     "lint": "npm run lint:eslint && npm run lint:docs && npm run lint:sql",
     "lint:docs": "markdownlint-cli2 \"*.md\" \".github/**/*.md\" \"src/**/*.md\" \"supabase/**/*.md\"",
     "lint:eslint": "eslint .",

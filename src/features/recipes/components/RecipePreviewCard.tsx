@@ -106,11 +106,11 @@ export function RecipePreviewCard({
           </div>
         ) : null}
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5">
           {metadata.map((item) => (
             <span
               key={item}
-              className="rounded-full border border-border bg-background px-2.5 py-1 text-xs text-muted-foreground"
+              className="inline-flex min-h-8 items-center rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-muted-foreground sm:min-h-0 sm:px-2.5 sm:py-1 sm:text-xs"
             >
               {item}
             </span>

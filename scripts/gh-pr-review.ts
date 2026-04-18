@@ -300,6 +300,18 @@ async function waitForReviewsToFinish(
       repository,
       pullRequestNumber,
     );
+    const unresolvedThreads = fetchUnresolvedReviewThreads(
+      repository,
+      pullRequestNumber,
+    );
+
+    if (unresolvedThreads.length > 0) {
+      writeLine("");
+      writeLine(
+        `Found ${String(unresolvedThreads.length)} unresolved review thread${unresolvedThreads.length === 1 ? "" : "s"} while waiting for review requests to settle.`,
+      );
+      return reviewState;
+    }
 
     if (
       reviewState.pendingReviewAuthors.length === 0 &&

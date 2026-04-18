@@ -7,6 +7,7 @@ import {
   canScaleRecipe,
   formatScaleFactorInputValue,
   formatScaleLabel,
+  isScaleFactorSelected,
   multiplyScaleFactor,
   parseScaleFactorInput,
 } from "../utils/recipeScaling";
@@ -52,7 +53,7 @@ export function RecipeScalingPanel({
     const parsedScaleFactor = parseScaleFactorInput(customBatchSize);
 
     if (parsedScaleFactor === null) {
-      setCustomBatchSizeError("Enter a positive batch size like 1, 2, or 0.5.");
+      setCustomBatchSizeError("Enter a positive multiplier like 1, 2, or 0.5.");
       return;
     }
 
@@ -77,10 +78,12 @@ export function RecipeScalingPanel({
               <h2 className="text-base font-semibold tracking-tight text-foreground">
                 Batch size
               </h2>
-              <p className="text-sm text-muted-foreground">
-                Scale the ingredient list and yield without recalculating each
-                amount by hand.
-              </p>
+              {isScalable ? (
+                <p className="text-sm text-muted-foreground">
+                  Scale the ingredient list and yield without recalculating each
+                  amount by hand.
+                </p>
+              ) : null}
             </div>
 
             {isScalable ? (
@@ -152,7 +155,11 @@ export function RecipeScalingPanel({
                   }}
                   size="sm"
                   type="button"
-                  variant={scaleFactor === 1 ? "secondary" : "outline"}
+                  variant={
+                    isScaleFactorSelected(scaleFactor, 1)
+                      ? "secondary"
+                      : "outline"
+                  }
                 >
                   Original
                 </Button>

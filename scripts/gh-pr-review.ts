@@ -66,32 +66,36 @@ type PageInfo = {
 };
 
 type PullRequestReviewStateResponse = {
-  repository: {
-    pullRequest: {
-      reviewDecision: GitHubReviewDecision;
-      reviewRequests: {
-        nodes: ReviewRequestNode[];
-        pageInfo: PageInfo;
-      };
-      reviews: {
-        nodes: ReviewNode[];
-        pageInfo: PageInfo;
-      };
-      title: string;
-      url: string;
+  data: {
+    repository: {
+      pullRequest: {
+        reviewDecision: GitHubReviewDecision;
+        reviewRequests: {
+          nodes: ReviewRequestNode[];
+          pageInfo: PageInfo;
+        };
+        reviews: {
+          nodes: ReviewNode[];
+          pageInfo: PageInfo;
+        };
+        title: string;
+        url: string;
+      } | null;
     } | null;
-  } | null;
+  };
 };
 
 type PullRequestThreadResponse = {
-  repository: {
-    pullRequest: {
-      reviewThreads: {
-        nodes: ReviewThreadNode[];
-        pageInfo: PageInfo;
-      };
+  data: {
+    repository: {
+      pullRequest: {
+        reviewThreads: {
+          nodes: ReviewThreadNode[];
+          pageInfo: PageInfo;
+        };
+      } | null;
     } | null;
-  } | null;
+  };
 };
 
 type PullRequestReviewState = {
@@ -115,6 +119,39 @@ type RepositoryCoordinates = {
   name: string;
   owner: string;
   value: string;
+};
+
+type GraphQlQueryData<ResponseData> = {
+  data: ResponseData;
+};
+
+type PullRequestReviewStateData = {
+  repository: {
+    pullRequest: {
+      reviewDecision: GitHubReviewDecision;
+      reviewRequests: {
+        nodes: ReviewRequestNode[];
+        pageInfo: PageInfo;
+      };
+      reviews: {
+        nodes: ReviewNode[];
+        pageInfo: PageInfo;
+      };
+      title: string;
+      url: string;
+    } | null;
+  } | null;
+};
+
+type PullRequestThreadData = {
+  repository: {
+    pullRequest: {
+      reviewThreads: {
+        nodes: ReviewThreadNode[];
+        pageInfo: PageInfo;
+      };
+    } | null;
+  } | null;
 };
 
 async function main(): Promise<void> {
@@ -318,7 +355,7 @@ function fetchPullRequestReviewState(
         reviewsCursor: null,
       },
     );
-    const pullRequest = response.repository?.pullRequest;
+    const pullRequest = response.data.repository?.pullRequest;
 
     if (pullRequest === null || pullRequest === undefined) {
       throw new Error(
@@ -358,7 +395,7 @@ function fetchPullRequestReviewState(
         reviewsCursor,
       },
     );
-    const pullRequest = response.repository?.pullRequest;
+    const pullRequest = response.data.repository?.pullRequest;
 
     if (pullRequest === null || pullRequest === undefined) {
       throw new Error(
@@ -406,7 +443,7 @@ function fetchUnresolvedReviewThreads(
         threadsCursor: cursor,
       },
     );
-    const pullRequest = response.repository?.pullRequest;
+    const pullRequest = response.data.repository?.pullRequest;
 
     if (pullRequest === null || pullRequest === undefined) {
       throw new Error(
@@ -548,7 +585,9 @@ function queryReviewState(
     variables,
   );
 
-  return JSON.parse(result.stdout) as PullRequestReviewStateResponse;
+  return JSON.parse(
+    result.stdout,
+  ) as GraphQlQueryData<PullRequestReviewStateData>;
 }
 
 function queryReviewThreads(
@@ -564,7 +603,7 @@ function queryReviewThreads(
     variables,
   );
 
-  return JSON.parse(result.stdout) as PullRequestThreadResponse;
+  return JSON.parse(result.stdout) as GraphQlQueryData<PullRequestThreadData>;
 }
 
 function runGraphQlCommand(

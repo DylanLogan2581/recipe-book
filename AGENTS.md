@@ -230,7 +230,7 @@ Common mistakes to avoid:
 
 ## Before Finishing
 
-- Run `npm run lint` when practical.
+- Run `npm run lint` before finishing.
 - Run `npm run build` when changes affect routing, typing, or bundling.
 - Run Vitest for the affected area when tests exist.
 - If routes changed, make sure generated routing output is current.

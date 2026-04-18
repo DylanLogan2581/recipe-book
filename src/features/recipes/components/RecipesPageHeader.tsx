@@ -34,14 +34,14 @@ export function RecipesPageHeader({
 }: RecipesPageHeaderProps): JSX.Element {
   return (
     <section className="space-y-4 border-b border-border pb-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
         <div className="min-w-0">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Recipes
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 sm:shrink-0">
           <Button asChild className="rounded-md px-4" size="lg">
             <Link to="/recipes/new">New recipe</Link>
           </Button>

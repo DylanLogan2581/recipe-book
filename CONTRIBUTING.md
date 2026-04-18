@@ -47,6 +47,61 @@ This template is designed to set up downstream repos with:
 
 When editing the template itself, follow the maintainer or task-specific instruction if it differs from those downstream defaults.
 
+### Required GitHub CLI Flow
+
+Always use the GitHub CLI workflow in this repo.
+
+- Do all work on a branch. Never commit directly to `main`.
+- Always target `main` from your feature branch.
+- Do not make branch-to-branch PRs unless a maintainer explicitly asks for it.
+- Use `gh` for GitHub tasks instead of relying on manual browser steps.
+- Run `npm run lint` before every push that is meant to update a PR.
+- Resolve all lint issues before opening or updating a PR.
+- After pushing, run `npm run gh-pr-review -- <pr-number>` and keep following that loop until there are no unresolved review threads.
+- Resolve review threads after the fixing commit is pushed.
+
+Recommended command sequence:
+
+```bash
+git switch main
+git pull --ff-only origin main
+git switch -c codex/<short-description>
+
+# make changes
+npm run lint
+
+git add <files>
+git commit -m "type(scope): short description"
+git push -u origin "$(git branch --show-current)"
+
+gh pr create \
+  --base main \
+  --head "$(git branch --show-current)" \
+  --title "type(scope): short description"
+
+npm run gh-pr-review -- <pr-number>
+```
+
+Useful `gh` commands:
+
+```bash
+gh pr status
+gh pr view <pr-number> --comments
+gh pr checks <pr-number> --watch
+gh pr create --base main --head "$(git branch --show-current)"
+gh pr review <pr-number> --comment --body "<message>"
+gh api graphql
+```
+
+Common mistakes to avoid:
+
+- starting work on `main` and branching later
+- pushing code without running `npm run lint`
+- opening a PR before resolving known lint failures
+- opening a PR from one feature branch into another feature branch
+- treating passing checks as done while unresolved review threads still exist
+- using the browser for work that should be done through `gh`
+
 ### Commit Messages
 
 Use lowercase conventional commits with a required scope.

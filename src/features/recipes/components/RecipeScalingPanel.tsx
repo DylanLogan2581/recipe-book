@@ -69,121 +69,164 @@ export function RecipeScalingPanel({
   }
 
   return (
-    <section className="space-y-4 rounded-xl border border-border bg-background/80 p-4">
-      {!isScalable ? (
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              Batch size
-            </h2>
+    <section className="rounded-xl border border-border bg-background/80 p-4 sm:p-5">
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold tracking-tight text-foreground">
+                Batch size
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Scale the ingredient list and yield without recalculating each
+                amount by hand.
+              </p>
+            </div>
+
+            {isScalable ? (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-border bg-muted/30 p-3">
+                  <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                    Current scale
+                  </p>
+                  <p className="mt-1 text-lg font-semibold text-foreground">
+                    {formatScaleLabel(scaleFactor)}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border bg-muted/30 p-3">
+                  <p className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
+                    Adjusted yield
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-foreground">
+                    {formatRecipeYield(
+                      recipe.yieldQuantityNormalized,
+                      recipe.yieldUnitFamily,
+                      recipe.yieldUnitKey,
+                      displaySystem,
+                      scaleFactor,
+                      recipe.yieldQuantity,
+                      recipe.yieldUnit,
+                    )}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                {getScalingPanelStatus(recipe)}
+              </p>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 lg:justify-end">
             <MeasurementSystemToggle
               displaySystem={displaySystem}
               onChange={onDisplaySystemChange}
             />
           </div>
-          <p className="text-sm text-muted-foreground">
-            {getScalingPanelStatus(recipe)}
-          </p>
         </div>
-      ) : null}
 
-      {isScalable ? (
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-base font-semibold tracking-tight text-foreground">
-              Batch size
-            </h2>
-            <MeasurementSystemToggle
-              displaySystem={displaySystem}
-              onChange={onDisplaySystemChange}
-            />
-            <span className="rounded-full border border-border bg-background px-3 py-1 text-sm text-muted-foreground">
-              Current: {formatScaleLabel(scaleFactor)}
-            </span>
-            <span className="text-sm text-muted-foreground">
-              Makes{" "}
-              {formatRecipeYield(
-                recipe.yieldQuantityNormalized,
-                recipe.yieldUnitFamily,
-                recipe.yieldUnitKey,
-                displaySystem,
-                scaleFactor,
-                recipe.yieldQuantity,
-                recipe.yieldUnit,
-              )}
-            </span>
-          </div>
-
+        {isScalable ? (
           <form
-            className="flex flex-wrap items-center gap-2 xl:justify-end"
+            className="grid gap-4 rounded-xl border border-border bg-muted/20 p-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end"
             onSubmit={(event) => {
               event.preventDefault();
               handleCustomBatchSizeSubmit();
             }}
           >
-            <label className="sr-only" htmlFor={customBatchSizeInputId}>
-              Batch size
-            </label>
-            <Button
-              className="rounded-md px-3"
-              onClick={() => {
-                handleScaleFactorMultiplier(0.5);
-              }}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              1/2
-            </Button>
-            <Button
-              className="rounded-md px-3"
-              onClick={() => {
-                handleScaleFactorMultiplier(2);
-              }}
-              size="sm"
-              type="button"
-              variant="outline"
-            >
-              2x
-            </Button>
-            <input
-              aria-describedby={`${customBatchSizeInputId}-message`}
-              aria-invalid={customBatchSizeError !== null}
-              className={batchSizeInputClassName}
-              id={customBatchSizeInputId}
-              inputMode="decimal"
-              onChange={(event) => {
-                setCustomBatchSize(event.target.value);
-                setCustomBatchSizeError(null);
-              }}
-              placeholder="1, 2, or 0.5"
-              value={customBatchSize}
-            />
-            <Button
-              className="rounded-md px-4"
-              size="sm"
-              type="submit"
-              variant="outline"
-            >
-              Set
-            </Button>
-          </form>
-        </div>
-      ) : null}
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-foreground">
+                  Quick scale
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Use presets for common adjustments or enter a custom
+                  multiplier.
+                </p>
+              </div>
 
-      {isScalable ? (
-        <p
-          aria-live="polite"
-          className={
-            customBatchSizeError === null
-              ? "sr-only"
-              : "text-sm text-destructive xl:text-right"
-          }
-          id={`${customBatchSizeInputId}-message`}
-        >
-          {customBatchSizeError ?? ""}
-        </p>
-      ) : null}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  className="rounded-md px-3"
+                  onClick={() => {
+                    applyScaleFactor(1);
+                  }}
+                  size="sm"
+                  type="button"
+                  variant={scaleFactor === 1 ? "secondary" : "outline"}
+                >
+                  Original
+                </Button>
+                <Button
+                  className="rounded-md px-3"
+                  onClick={() => {
+                    handleScaleFactorMultiplier(0.5);
+                  }}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Half
+                </Button>
+                <Button
+                  className="rounded-md px-3"
+                  onClick={() => {
+                    handleScaleFactorMultiplier(2);
+                  }}
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                >
+                  Double
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,11rem)_auto]">
+              <div className="space-y-1">
+                <label
+                  className="text-sm font-medium text-foreground"
+                  htmlFor={customBatchSizeInputId}
+                >
+                  Custom multiplier
+                </label>
+                <input
+                  aria-describedby={`${customBatchSizeInputId}-message`}
+                  aria-invalid={customBatchSizeError !== null}
+                  className={batchSizeInputClassName}
+                  id={customBatchSizeInputId}
+                  inputMode="decimal"
+                  onChange={(event) => {
+                    setCustomBatchSize(event.target.value);
+                    setCustomBatchSizeError(null);
+                  }}
+                  placeholder="1, 2, or 0.5"
+                  value={customBatchSize}
+                />
+              </div>
+              <Button
+                className="rounded-md px-4 sm:self-end"
+                size="sm"
+                type="submit"
+                variant="outline"
+              >
+                Apply
+              </Button>
+            </div>
+
+            <p
+              aria-live="polite"
+              className={
+                customBatchSizeError === null
+                  ? "sr-only"
+                  : "text-sm text-destructive lg:col-span-2"
+              }
+              id={`${customBatchSizeInputId}-message`}
+            >
+              {customBatchSizeError ?? ""}
+            </p>
+          </form>
+        ) : null}
+      </div>
     </section>
   );
 }

@@ -339,9 +339,6 @@ function fetchPullRequestReviewState(
       );
     }
 
-    title = pullRequest.title;
-    url = pullRequest.url;
-
     for (const node of pullRequest.reviewRequests.nodes) {
       const reviewer = formatRequestedReviewer(node.requestedReviewer);
 

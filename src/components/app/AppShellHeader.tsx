@@ -2,20 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { BookOpenText, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { getProfileAvatarFallbackLabel } from "@/lib/profilePresentation";
 
+import { HeaderAvatar } from "./HeaderAvatar";
+import { MobileNavDrawer } from "./MobileNavDrawer";
+
+import type { AuthActionState, HeaderNavItem } from "./AppShellHeader.types";
 import type { JSX } from "react";
-
-export type AuthActionState =
-  | {
-      kind: "authenticated";
-      avatarUrl: string | null;
-      label: string;
-    }
-  | {
-      kind: "guest" | "loading" | "unconfigured";
-      label: string;
-    };
 
 type AppShellHeaderProps = {
   authAction: AuthActionState;
@@ -26,6 +18,24 @@ export function AppShellHeader({
   authAction,
   showAdminNav,
 }: AppShellHeaderProps): JSX.Element {
+  const navItems: HeaderNavItem[] = [
+    {
+      label: "Recipes",
+      to: "/recipes",
+    },
+    {
+      label: "Equipment",
+      to: "/equipment",
+    },
+  ];
+
+  if (showAdminNav) {
+    navItems.push({
+      label: "Admin",
+      to: "/admin/categories",
+    });
+  }
+
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur">
       <div className="flex min-h-15 items-center justify-between gap-4 py-3">
@@ -38,37 +48,22 @@ export function AppShellHeader({
             <span className="sr-only truncate sm:not-sr-only">Recipe Book</span>
           </Link>
 
-          <nav className="flex items-center gap-1">
-            <Button
-              asChild
-              className="rounded-md px-3"
-              size="sm"
-              variant="ghost"
-            >
-              <Link to="/recipes">Recipes</Link>
-            </Button>
-            <Button
-              asChild
-              className="rounded-md px-3"
-              size="sm"
-              variant="ghost"
-            >
-              <Link to="/equipment">Equipment</Link>
-            </Button>
-            {showAdminNav ? (
+          <nav className="hidden items-center gap-1 sm:flex">
+            {navItems.map((navItem) => (
               <Button
+                key={navItem.to}
                 asChild
                 className="rounded-md px-3"
                 size="sm"
                 variant="ghost"
               >
-                <Link to="/admin/categories">Admin</Link>
+                <Link to={navItem.to}>{navItem.label}</Link>
               </Button>
-            ) : null}
+            ))}
           </nav>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="hidden items-center gap-2 sm:flex">
           {authAction.kind === "authenticated" ? (
             <Button
               asChild
@@ -98,34 +93,9 @@ export function AppShellHeader({
             </Button>
           )}
         </div>
+
+        <MobileNavDrawer authAction={authAction} navItems={navItems} />
       </div>
     </header>
-  );
-}
-
-type HeaderAvatarProps = {
-  avatarUrl: string | null;
-  label: string;
-};
-
-function HeaderAvatar({ avatarUrl, label }: HeaderAvatarProps): JSX.Element {
-  if (avatarUrl !== null) {
-    return (
-      <img
-        alt=""
-        aria-hidden="true"
-        className="size-5 rounded-full border border-border object-cover"
-        src={avatarUrl}
-      />
-    );
-  }
-
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-flex size-5 items-center justify-center rounded-full border border-border bg-muted text-[0.65rem] font-semibold text-foreground"
-    >
-      {getProfileAvatarFallbackLabel(label)}
-    </span>
   );
 }

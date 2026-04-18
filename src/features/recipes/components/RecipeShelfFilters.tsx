@@ -57,7 +57,7 @@ export function RecipeShelfFilters({
       <div className="grid gap-4 rounded-xl border border-border/70 bg-card/70 p-4 shadow-sm xl:grid-cols-[minmax(0,1.2fr)_minmax(18rem,0.8fr)] xl:items-start">
         <div className="min-w-0 space-y-2">
           <details>
-            <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md border border-border bg-background/80 px-3 py-2 text-sm text-foreground transition hover:bg-muted/40">
+            <summary className="flex cursor-pointer list-none items-center gap-3 rounded-md border border-border bg-background/80 px-3 py-2 text-sm text-foreground transition hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <span className="font-medium">Categories</span>
               <span className="text-muted-foreground">
                 {selectedCategorySlugs.length === 0

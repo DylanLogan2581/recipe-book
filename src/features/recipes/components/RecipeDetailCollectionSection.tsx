@@ -71,7 +71,11 @@ export function RecipeDetailCollectionSection(
           </span>
         </div>
         <span className="flex items-center gap-2 text-sm text-muted-foreground">
-          {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+          {isExpanded ? (
+            <ChevronUp className="size-4" />
+          ) : (
+            <ChevronDown className="size-4" />
+          )}
           <span aria-hidden>{isExpanded ? "Hide" : "Show"}</span>
         </span>
       </button>
@@ -94,7 +98,7 @@ export function RecipeDetailCollectionSection(
             {props.items.map((ingredient) => (
               <li key={ingredient.id} className="px-4 py-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                  <div className="flex shrink-0 items-center justify-center w-6 h-6 text-sm font-medium text-muted-foreground">
                     {ingredient.position}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -129,7 +133,7 @@ export function RecipeDetailCollectionSection(
             {props.items.map((equipment) => (
               <li key={equipment.id} className="px-4 py-4">
                 <div className="flex items-start gap-3">
-                  <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                  <div className="flex shrink-0 items-center justify-center w-6 h-6 text-sm font-medium text-muted-foreground">
                     {equipment.position}
                   </div>
                   <div className="min-w-0 flex-1">
